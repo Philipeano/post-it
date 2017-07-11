@@ -59,3 +59,6 @@ typings/
 
 # OS-specific hidden files
 .DS_Store
+
+#Others
+.idea
