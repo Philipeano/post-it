@@ -1,14 +1,14 @@
 {
   "name": "post-it",
   "version": "1.0.0",
-  "description": "A simple app for small or large group conversations.",
-  "main": "index.js",
+  "description": "PostIT is a simple app for small or large group conversations.",
+  "main": "server/app.js",
   "scripts": {
-    "test": "mocha server/tests/test.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Philipeano/post-it.git"
+    "url": "git+https://github.com/Philipeano/post-it.git"
   },
   "keywords": [
     "post",
@@ -16,7 +16,7 @@
     "group",
     "broadcast"
   ],
-  "author": "Philip Newman",
+  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Philipeano/post-it/issues"
