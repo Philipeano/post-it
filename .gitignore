@@ -57,8 +57,7 @@ typings/
 # dotenv environment variables file
 .env
 
-# OS-specific hidden files
-.DS_Store
-
 #Others
+.DS_Store
 .idea
+.sass-cache
