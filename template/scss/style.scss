@@ -17,7 +17,8 @@ body {
 }
 
 .row {
-  padding: 15px;
+  padding: 10px 25px;
+  margin-bottom: 40px;
 }
 .row::after {
   content: "";
@@ -155,7 +156,7 @@ nav {
 .central::after {
   content: "";
   background-image: url("../images/logo-main.png");
-  background-repeat: repeat-x;
+  background-repeat: repeat;
   opacity: 0.05;
   top: 0;
   left: 0;
@@ -198,7 +199,8 @@ nav {
 
 .aside {
   background-color: $blue-faint;
-  padding: 10px;
+  padding: 20px 10px;
+  min-height: 50%;
   color: $blue-major;
   text-align: left;
   font-size: 14px;
