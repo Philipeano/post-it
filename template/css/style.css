@@ -156,6 +156,10 @@ nav {
 
 .navbar .navbar-inverse {
   width: 100%;
+  border-color: #01233f !important;
+  background-color: #01233f !important; }
+
+.navbar .navbar-inverse .container-fluid .navbar-header button.navbar-toggle {
   border-color: transparent;
   background-color: transparent; }
 
