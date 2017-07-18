@@ -4,8 +4,9 @@
   "description": "PostIT is a simple app for small or large group conversations.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon server/dist/server.js",
-    "build": "babel template/js -d template/bundle"
+    "build-server": "babel server/src -d server/dist",
+    "build-client": "babel template/js -d template/bundle",
+    "start:dev": "npm run build-server && nodemon server/dist/app.js"
   },
   "repository": {
     "type": "git",

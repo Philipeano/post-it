@@ -27,11 +27,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // Default/random route
 app.use('/*', (req, res) => {
-  res.status(200).send({ message: 'Welcome! PostIT API is running...' })
+  res.status(200).send({ message: 'Welcome! PostIT API is running...' });
 });
 
 // Retrieve port for this app environment
-const port = parseInt(process.env.PORT, 10) || 8000;
+const port = process.env.PORT || 8000;
 
 // TODO: Run Sequelize sync on models
 
