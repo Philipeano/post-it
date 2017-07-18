@@ -1,11 +1,13 @@
 const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
   entry: './template/js/index.js',
   output: {
-    path: './template/bundle',
+    path: path.resolve(__dirname, './template/bundle'),
     filename: 'index.js',
-    resolve: { extensions: ['', '.js', '.jsx'] },
+    // publicPath: "assets",
+    // resolve: { extensions: ['', '.js', '.jsx'] },
   },
   module: {
     loaders: [{
@@ -15,3 +17,5 @@ module.exports = {
     }]
   }
 }
+
+
