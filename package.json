@@ -5,8 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-server": "babel server/src -d server/dist",
-    "build-client": "babel template/js -d template/bundle",
-    "start:dev": "npm run build-server && nodemon server/dist/app.js"
+    "start:dev": "npm run build-server && webpack && nodemon server/dist/app.js"
   },
   "repository": {
     "type": "git",
