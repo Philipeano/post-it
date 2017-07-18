@@ -4,7 +4,7 @@
   "description": "PostIT is a simple app for small or large group conversations.",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon ../server/dist/lib",
+    "start:dev": "nodemon server/dist/server.js",
     "build": "babel template/js -d template/bundle"
   },
   "repository": {
@@ -25,6 +25,7 @@
   "homepage": "https://github.com/Philipeano/post-it#readme",
   "dependencies": {
     "body-parser": "^1.17.2",
+    "dotenv": "^4.0.0",
     "express": "^4.15.3",
     "morgan": "^1.8.2",
     "webpack": "^3.1.0"
