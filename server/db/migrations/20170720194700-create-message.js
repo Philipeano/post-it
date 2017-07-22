@@ -1,13 +1,34 @@
 module.exports = {
   up: (queryInterface, Sequelize) =>
     queryInterface.createTable('Messages', {
-      id: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV1, primaryKey: true },
-      createdAt: { allowNull: false, type: Sequelize.DATE },
-      updatedAt: { allowNull: false, type: Sequelize.DATE },
+      id: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV1,
+        primaryKey: true
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
 
-      content: { type: Sequelize.STRING, allowNull: false },
-      status: { type: Sequelize.ENUM, values: ['visible', 'archived'], defaultValue: 'visible' },
-      priority: { type: Sequelize.ENUM, values: ['normal', 'urgent', 'critical'], defaultValue: 'normal' },
+      content: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      status: {
+        type: Sequelize.ENUM,
+        values: ['visible', 'archived'],
+        defaultValue: 'visible'
+      },
+      priority: {
+        type: Sequelize.ENUM,
+        values: ['normal', 'urgent', 'critical'],
+        defaultValue: 'normal'
+      },
 
       senderId: {
         type: Sequelize.UUID,
@@ -29,5 +50,6 @@ module.exports = {
       },
     }),
 
-  down: queryInterface /* , Sequelize */ => queryInterface.dropTable('Messages'),
+  down: queryInterface /* , Sequelize */ => queryInterface
+    .dropTable('Messages'),
 };
