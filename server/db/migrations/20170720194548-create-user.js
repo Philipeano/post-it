@@ -37,10 +37,10 @@ module.exports = {
         allowNull: false,
         defaultValue: true
       },
-      picture: {
-        type: Sequelize.BINARY,
-        allowNull: true
-      },
+      // picture: {
+      //   type: Sequelize.BINARY,
+      //   allowNull: true
+      // },
     }),
 
   down: queryInterface /* , Sequelize */ => queryInterface.dropTable('Users'),

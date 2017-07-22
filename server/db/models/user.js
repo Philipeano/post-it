@@ -22,10 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true
     },
-    picture: {
-      type: DataTypes.BINARY,
-      allowNull: true
-    }
+    // picture: {
+    //   type: DataTypes.BINARY,
+    //   allowNull: true
+    // }
     /*
     id: {
      type: DataTypes.UUID,

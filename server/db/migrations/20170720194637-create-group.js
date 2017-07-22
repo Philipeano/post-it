@@ -28,10 +28,10 @@ module.exports = {
         allowNull: false,
         defaultValue: true
       },
-      picture: {
-        type: Sequelize.BINARY,
-        allowNull: true
-      },
+      // picture: {
+      //   type: Sequelize.BINARY,
+      //   allowNull: true
+      // },
 
       creatorId: {
         type: Sequelize.UUID,
