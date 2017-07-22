@@ -12,12 +12,15 @@ let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable]);
 } else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+  sequelize = new Sequelize(config.database,
+    config.username, config.password, config);
 }
 
 fs
   .readdirSync(__dirname)
-  .filter(file => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
+  .filter(file => (file.indexOf('.') !== 0) &&
+    (file !== basename) &&
+    (file.slice(-3) === '.js'))
   .forEach((file) => {
     const model = sequelize.import((path.join(__dirname, file)));
     db[model.name] = model;
@@ -33,3 +36,18 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 export default db;
+
+
+// var Sequelize = require('sequelize');
+//
+// var options = {
+//   logging: false,
+//   dialect: 'postgres',
+//   port = process.env.DB_PORT;
+// }
+//
+// var sequelize = new Sequelize(process.env.DB_DATABASE ||
+// '', process.env.DB_USER || '', process.env.DB_PASS || '', options)
+//
+// sequelize.authenticate().then(function(test){console.log(test)});
+// Errors out
