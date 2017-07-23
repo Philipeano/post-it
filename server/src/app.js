@@ -26,8 +26,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // TODO: Set up all other routes
 
 // Default/random route
-app.use('/*', (req, res) => {
+app.use('/api', (req, res) => {
   res.status(200).send({ message: 'Welcome! PostIT API is running...' });
+});
+
+app.use('*', (req, res) => {
+  res.status(200).sendFile('../../template/index.html');
 });
 
 // Retrieve port for this app environment
