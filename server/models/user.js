@@ -1,4 +1,7 @@
-module.exports = (sequelize, DataTypes) => {
+import bcrypt from 'bcrypt';
+
+// module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
@@ -58,6 +61,21 @@ module.exports = (sequelize, DataTypes) => {
         User.hasMany(models.Notification, {
           foreignKey: 'recipientId',
           as: 'notifications',
+        });
+      },
+      generateHash: (plainText) => {
+        // Create hash from new password
+        bcrypt.hash(plainText, 10, (err, hash) => {
+          // Store hashed password in database
+          this.password = hash;
+        });
+      },
+      verifyPassword: (plainText) => {
+        // Load password hash from database
+        const hash = this.password;
+        bcrypt.compare(plainText, hash, (err, res) => {
+          // Return comparison result
+          return res;
         });
       },
     },

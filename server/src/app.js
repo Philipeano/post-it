@@ -5,8 +5,12 @@ import express from 'express';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import models from './models';
-// TODO: import all routes
+import user from '../routes/user';
+import group from '../routes/group';
+import groupmember from '../routes/groupmember';
+import message from '../routes/message';
+import notification from '../routes/notification';
+import models from '../models';
 
 // Configure environment settings
 dotenv.config();
