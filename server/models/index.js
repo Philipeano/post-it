@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
+// const DataTypes = require('sequelize/lib/data-types');
 
 const basename = path.basename(module.filename);
 const env = process.env.NODE_ENV || 'development';
@@ -34,20 +35,8 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+db.DataTypes = DataTypes;
 
 export default db;
 
-
-// var Sequelize = require('sequelize');
-//
-// var options = {
-//   logging: false,
-//   dialect: 'postgres',
-//   port = process.env.DB_PORT;
-// }
-//
-// var sequelize = new Sequelize(process.env.DB_DATABASE ||
-// '', process.env.DB_USER || '', process.env.DB_PASS || '', options)
-//
 // sequelize.authenticate().then(function(test){console.log(test)});
-// Errors out

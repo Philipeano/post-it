@@ -3,53 +3,55 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+require('babel-register');
+var express = require('express');
+var logger = require('morgan');
+var bodyParser = require('body-parser');
+var dotenv = require('dotenv');
+var userRouter = require('../routes/user');
+var groupRouter = require('../routes/group');
+var groupMemberRouter = require('../routes/groupmember');
+var messageRouter = require('../routes/message');
+var notificationRouter = require('../routes/notification');
+// const models = require('../models');
 
-var _express = require('express');
-
-var _express2 = _interopRequireDefault(_express);
-
-var _morgan = require('morgan');
-
-var _morgan2 = _interopRequireDefault(_morgan);
-
-var _bodyParser = require('body-parser');
-
-var _bodyParser2 = _interopRequireDefault(_bodyParser);
-
-var _dotenv = require('dotenv');
-
-var _dotenv2 = _interopRequireDefault(_dotenv);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// TODO: import all routes
-// TODO: import all models
+// import express from 'express';
+// import logger from 'morgan';
+// import bodyParser from 'body-parser';
+// import dotenv from 'dotenv';
+// import userRouter from '../routes/user';
+// import group from '../routes/group';
+// import groupmember from '../routes/groupmember';
+// import message from '../routes/message';
+// import notification from '../routes/notification';
+// import models from '../models';
 
 // Configure environment settings
-// const express = require('express');
-// const logger = require('morgan');
-// const bodyParser = require('body-parser');
-_dotenv2.default.config();
+dotenv.config();
 
 // Set up server express
-var app = (0, _express2.default)();
+var app = express();
 
 // Log requests to the console
-app.use((0, _morgan2.default)('dev'));
+app.use(logger('dev'));
 
 // Parse incoming requests data
-app.use(_bodyParser2.default.json());
-app.use(_bodyParser2.default.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // TODO: Set up middleware
 // TODO: Set up authentication routes
 // TODO: Set up all other routes
 
-// Default/random route
+// User route
+app.use('/api/user', userRouter);
+
+// Default API route
 app.use('/api', function (req, res) {
   res.status(200).send({ message: 'Welcome! PostIT API is running...' });
 });
 
+// Random API route
 app.use('*', function (req, res) {
   res.status(200).sendFile('../../template/index.html');
 });

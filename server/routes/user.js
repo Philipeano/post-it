@@ -1,6 +1,6 @@
 import express from 'express';
-import user from '../controllers/user';
-import InputValidator from '../controllers/validator';
+import UserController from '../controllers/user';
+// import Validator from '../controllers/validator';
 
 const userRouter = express.Router();
 
@@ -9,22 +9,23 @@ const userRouter = express.Router();
  * @module
  */
 
-const userController = new user.User();
+const userController = new User();
+/*
 
 // Register new user
-userRouter.post('api/user/signup', (req, res) => {
-  if (InputValidator.isEmpty('Username', req.body.username)) {
-    res.json({ message: InputValidator.lastErrorMessage });
+userRouter.post('/api/user/signup', (req, res) => {
+  if (Validator.isEmpty('Username', req.body.username)) {
+    res.json({ message: Validator.lastErrorMessage });
   }
-  else if (InputValidator.isEmpty('E-mail Address',
+  else if (Validator.isEmpty('E-mail Address',
       req.body.email.toString())) {
-    res.json({ message: InputValidator.lastErrorMessage });
+    res.json({ message: Validator.lastErrorMessage });
   }
-  else if (InputValidator.isEmpty('Password', req.body.password)) {
-    res.json({ message: InputValidator.lastErrorMessage });
+  else if (Validator.isEmpty('Password', req.body.password)) {
+    res.json({ message: Validator.lastErrorMessage });
   }
-  else if (InputValidator.isEmpty('Password Retype', req.body.cPassword)) {
-    res.json({ message: InputValidator.lastErrorMessage });
+  else if (Validator.isEmpty('Password Retype', req.body.cPassword)) {
+    res.json({ message: Validator.lastErrorMessage });
   }
   else {
     userController.createUser(req.body.username, req.body.email,
@@ -32,20 +33,25 @@ userRouter.post('api/user/signup', (req, res) => {
       .then(res.status(201).json(user));
   }
 });
+*/
+
+
+// Register new user
+userRouter.post('/api/users/signup', (req, res) => {
+  userController.createUser(req, res);
+});
 
 // Fetch all users
-userRouter.get('api/users', (req, res) => {
+userRouter.get('/api/users', (req, res) => {
+});
+
+userRouter.get('/api/users', (req, res) => {
 });
 
 // Fetch users with specified key
-userRouter.get('api/:userId/users', userController.getUserByKey);
+userRouter.get('/api/users/:userId', userController.getUserByKey);
 
 // Delete users with specified key
-userRouter.delete('/:userId/users', userController.deleteUser);
-
-// Respond to random requests
-userRouter.use('/*', (req, res) => {
-  res.status(200).send({ message: 'PostIT API is running...' });
-});
+userRouter.delete('/api/users/:userId', userController.deleteUser);
 
 export default userRouter;

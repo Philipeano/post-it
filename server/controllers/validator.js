@@ -2,14 +2,14 @@
  * @description: Defines controller for validating all user input
  * @class
  */
-class InputValidator {
+class Validator {
   /**
    * @description: Initializes validator object with no error
    * @param {Object} errors
    * @constructor
    */
   constructor() {
-    this.lastErrorMessage = '';
+    this.validationMessage = '';
   }
 
   /**
@@ -31,7 +31,7 @@ class InputValidator {
       result.isValid = true;
       result.errorMessage = `${fieldName} cannot be null or empty.`;
     }
-    this.lastErrorMessage = result.errorMessage;
+    this.validationMessage = result.errorMessage;
     return result;
   }
 
@@ -48,7 +48,7 @@ class InputValidator {
       result.isValid = false;
       result.errorMessage = `${fieldName} is not a valid email address.`;
     }
-    this.lastErrorMessage = result.errorMessage;
+    this.validationMessage = result.errorMessage;
     return result;
   }
 
@@ -65,7 +65,7 @@ class InputValidator {
       result.isValid = false;
       result.errorMessage = `${fieldName} is not a valid password.`;
     }
-    this.lastErrorMessage = result.errorMessage;
+    this.validationMessage = result.errorMessage;
     return result;
   }
 
@@ -81,8 +81,8 @@ class InputValidator {
       result.isValid = false;
       result.errorMessage = 'The two passwords do not match.';
     }
-    this.lastErrorMessage = result.errorMessage;
+    this.validationMessage = result.errorMessage;
     return result;
   }
 }
-export default InputValidator;
+export default Validator;

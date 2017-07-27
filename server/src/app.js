@@ -1,16 +1,25 @@
-// const express = require('express');
-// const logger = require('morgan');
-// const bodyParser = require('body-parser');
-import express from 'express';
-import logger from 'morgan';
-import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
-import user from '../routes/user';
-import group from '../routes/group';
-import groupmember from '../routes/groupmember';
-import message from '../routes/message';
-import notification from '../routes/notification';
-import models from '../models';
+require('babel-register');
+const express = require('express');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
+const userRouter = require('../routes/user');
+const groupRouter = require('../routes/group');
+const groupMemberRouter = require('../routes/groupmember');
+const messageRouter = require('../routes/message');
+const notificationRouter = require('../routes/notification');
+// const models = require('../models');
+
+// import express from 'express';
+// import logger from 'morgan';
+// import bodyParser from 'body-parser';
+// import dotenv from 'dotenv';
+// import userRouter from '../routes/user';
+// import group from '../routes/group';
+// import groupmember from '../routes/groupmember';
+// import message from '../routes/message';
+// import notification from '../routes/notification';
+// import models from '../models';
 
 // Configure environment settings
 dotenv.config();
@@ -29,11 +38,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // TODO: Set up authentication routes
 // TODO: Set up all other routes
 
-// Default/random route
-app.use('/api', (req, res) => {
-  res.status(200).send({ message: 'Welcome! PostIT API is running...' });
+// User route
+app.use('/api/user', userRouter);
+
+// Group route
+app.use('/api/group', userRouter);
+
+// Respond to random requests
+app.use('/api/*', (req, res) => {
+  res.status(200).send({ message: 'PostIT API is running...' });
 });
 
+// Random API route
 app.use('*', (req, res) => {
   res.status(200).sendFile('../../template/index.html');
 });
