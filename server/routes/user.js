@@ -9,7 +9,7 @@ const userRouter = express.Router();
  * @module
  */
 
-const userController = new User();
+const userController = new UserController();
 /*
 
 // Register new user
@@ -38,20 +38,23 @@ userRouter.post('/api/user/signup', (req, res) => {
 
 // Register new user
 userRouter.post('/api/users/signup', (req, res) => {
-  userController.createUser(req, res);
+  userController.signUpUser(req, res);
+});
+
+// Authenticate user
+userRouter.post('/api/users/signin', (req, res) => {
+  userController.signInUser(req, res);
 });
 
 // Fetch all users
 userRouter.get('/api/users', (req, res) => {
+  userController.getAllUsers(req, res);
 });
 
-userRouter.get('/api/users', (req, res) => {
-});
-
-// Fetch users with specified key
+// Fetch user with specified key
 userRouter.get('/api/users/:userId', userController.getUserByKey);
 
-// Delete users with specified key
+// Delete user with specified key
 userRouter.delete('/api/users/:userId', userController.deleteUser);
 
 export default userRouter;

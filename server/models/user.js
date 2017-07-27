@@ -69,10 +69,8 @@ export default (sequelize, DataTypes) => {
           this.password = hash;
         });
       },
-      verifyPassword: (plainText) => {
-        // Load password hash from database
-        const hash = this.password;
-        bcrypt.compare(plainText, hash, (err, res) => {
+      verifyPassword: (plainText, hashFromDB) => {
+        bcrypt.compare(plainText, hashFromDB, (err, res) => {
           // Return comparison result
           return res;
         });

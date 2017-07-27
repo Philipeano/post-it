@@ -26,7 +26,7 @@ class UserController {
    * @param {Object} res
    * @return {Object} newUser
    */
-  createUser(req, res) {
+  signUpUser(req, res) {
     errorMessage = '';
     if (Validator.isEmpty('Username', req.body.username))
       errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
@@ -40,7 +40,9 @@ class UserController {
       errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
 
     if (errorMessage.trim() !== '')
-      res.status(400).json({message: errorMessage});
+      res.status(400).json({ message: errorMessage });
+    else if (this.isDuplicate(req.body.username, req.body.email))
+      res.status(409).json({ message: 'Username or email already exists!' });
     else {
       reqPasswordHash = user.classMethods.generateHash(req.body.password);
       return this.user.sync().then(() => {
@@ -49,6 +51,8 @@ class UserController {
           email: req.body.email,
           password: reqPasswordHash
         }).then((newUser) => {
+          req.session.user = newUser;
+          // res.redirect('/protected_page');
           res.status(201).json(newUser);
         }).catch((err) => {
           throw new Error(err);
@@ -56,6 +60,79 @@ class UserController {
         });
       });
     }
+  }
+
+  /**
+   * @description: Logs in a user
+   * @param {Object} req
+   * @param {Object} res
+   * @return {Object} user
+   */
+  signInUser(req, res) {
+    errorMessage = '';
+    if (Validator.isEmpty('Username', req.body.username))
+      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+    if (Validator.isEmpty('Password', req.body.password))
+      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+
+    if (errorMessage.trim() !== '')
+      res.status(400).json({ message: errorMessage });
+    else {
+      this.user.findOne({ where: { username: req.body.username } })
+        .then((matchingUser) => {
+          if (matchingUser) {
+            if (user.classMethods
+                .verifyPassword(req.body.password, matchingUser.password)) {
+              req.session.user = matchingUser;
+              // res.redirect('/protected_page');
+              res.status(200).json(matchingUser);
+            } else {
+              res.status(400).json({ message: 'Password is invalid!' });
+            }
+          } else {
+            res.status(400).json({ message: 'Username does not exist!' });
+          }
+        }).catch((err) => {
+          throw new Error(err);
+          res.status(500).json({message: err.message});
+        });
+    }
+  }
+
+  /**
+   * @description: Checks if user is signed in
+   * @param {Object} req
+   * @return {Boolean} true/false
+   */
+  isSignedIn(req, res) {
+    if (req.session.user)
+      return true;
+    console.log('You are not logged in!');
+    return false;
+  }
+
+  /**
+   * @description: Checks if supplied username and email already exist
+   * @param {String} testUsername
+   * @param {String} testEmail
+   * @return {Boolean} true/false
+   */
+  isDuplicate(testUsername, testEmail) {
+    errorMessage = '';
+    this.user.findAll({ where: { username: testUsername } })
+      .then((matchingUsers) => {
+        if (matchingUsers.length > 0)
+          errorMessage = `${errorMessage}\n - Username is already taken!`;
+      });
+    this.user.findAll({ where: { email: testEmail } })
+      .then((matchingUsers) => {
+        if (matchingUsers.length > 0)
+          errorMessage = `${errorMessage}\n - Email already exists!`;
+      });
+    if (errorMessage.trim() === '')
+      return false;
+    console.log(errorMessage);
+    return true;
   }
 
   /**
@@ -84,7 +161,7 @@ class UserController {
     if (Validator.isEmpty('User ID', req.params.userId))
       errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
     if (errorMessage.trim() !== '')
-      res.status(400).json({message: errorMessage});
+      res.status(400).json({ message: errorMessage });
     else {
       this.user.findOne({where: { userId: req.params.userId } })
         .then((matchingUser) => {
@@ -109,7 +186,7 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.user.destroy({where: { userId: req.params.userId } })
+      this.user.destroy({ where: { userId: req.params.userId } })
         .then((matchingUser) => {
           res.status(200).json(matchingUser);
         }).catch((err) => {
