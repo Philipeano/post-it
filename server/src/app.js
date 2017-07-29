@@ -5,11 +5,10 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import userRouter from '../routes/user';
-import group from '../routes/group';
-import groupmember from '../routes/groupmember';
-import message from '../routes/message';
+import groupRouter from '../routes/group';
+import groupMemberRouter from '../routes/groupmember';
+import messageRouter from '../routes/message';
 import notification from '../routes/notification';
-import models from '../models';
 
 // require('babel-register');
 // const express = require('express');
@@ -38,33 +37,35 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({ secret: 'PostItGroupChatByPhilipeano' }));
+app.use(session({ secret: 'PostItMessagingSystemByPhilipeano' }));
 
-// TODO: Set up middleware
-// TODO: Set up authentication routes
-// TODO: Set up all other routes
-
-// User route
-app.use('/api/user', userRouter);
-
-
-function checkSignIn(req, res) {
+/**
+ * @description: Checks if user is authenticated
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Function} next
+ * @return {void}
+ */
+const checkSignIn = (req, res, next) => {
   if (req.session.user) {
-    next();     // If session exists, proceed to page
+    next();
   } else {
-    const err = new Error('Not logged in!');
-    console.log(req.session.user);
-    next(err);  // Error, trying to access unauthorized page!
+    res.status(401).json({ message: 'Access denied! Please sign in first.' });
   }
 }
 
-app.get('/protected_page', checkSignIn, (req, res) => {
-  res.render('protected_page', {id: req.session.user.id});
+// User route
+app.use('/api/users', userRouter);
+
+// Protected routes
+app.use('/api/groups/*', checkSignIn, (req, res, next) => {
+  next();
 });
 
+app.use('/api/groups', groupRouter);
+app.use('/api/groups/:groupId/users', groupMemberRouter);
+app.use('/api/groups/:groupId/messages', messageRouter);
 
-// Group route
-app.use('/api/group', userRouter);
 
 // Respond to random requests
 app.use('/api/*', (req, res) => {
@@ -79,7 +80,6 @@ app.use('*', (req, res) => {
 // Retrieve port for this app environment
 const port = process.env.PORT || 8000;
 
-// TODO: Run Sequelize sync on models
 
 // Create server and initialize it with the express app
 const server = app.listen(port, () => {

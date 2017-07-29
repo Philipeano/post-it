@@ -38,5 +38,3 @@ db.Sequelize = Sequelize;
 db.DataTypes = DataTypes;
 
 export default db;
-
-// sequelize.authenticate().then(function(test){console.log(test)});

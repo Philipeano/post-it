@@ -1,6 +1,5 @@
 import express from 'express';
-import Group from '../controllers/group';
-import Validator from '../controllers/validator';
+import GroupController from '../controllers/group';
 
 const groupRouter = express.Router();
 
@@ -9,46 +8,22 @@ const groupRouter = express.Router();
  * @module
  */
 
-const groupController = new Group();
+const groupController = new GroupController();
 
 // Create new group
-groupRouter.post('/api/group', (req, res) => {
-  if (Validator.isEmpty('Title', req.body.title)) {
-    res.json({ message: Validator.validationMessage });
-  }
-  else if (Validator.isEmpty('Purpose',
-      req.body.purpose.toString())) {
-    res.json({ message: Validator.validationMessage });
-  }
-  else {
-    groupController.createGroup(
-      req.body.title,
-      req.body.creatorId,
-      req.body.purpose,
-      true, () => {})
-      .then(res.status(201).json(group));
-  }
+groupRouter.post('/api/groups', (req, res) => {
+  groupController.createGroup(req, res);
 });
 
-
 // Fetch all groups
-groupRouter.get('/api/group', (req, res) => {
+groupRouter.get('/api/groups', (req, res) => {
+  groupController.getAllUsers(req, res);
 });
 
 // Fetch groups with specified key
-groupRouter.get('/api/group/:groupId', groupController.getGroupByKey);
+groupRouter.get('/api/groups/:groupId', groupController.getGroupByKey);
 
 // Delete groups with specified key
-groupRouter.delete('/api/group/:groupId', groupController.deleteGroup);
+groupRouter.delete('/api/groups/:groupId', groupController.deleteGroup);
 
 export default groupRouter;
-
-/*
-An API route that allow users add other users to groups:
-  POST: /api/group/<group id>/user
-An API route that allows a logged in user post messages to created groups:
-  POST: /api/group/<group id>/message
-An API route that allows a logged in user retrieve messages that have been
-posted to groups he/she belongs to:
-  GET: /api/group/<group id>/messages
-*/

@@ -1,6 +1,5 @@
 import express from 'express';
 import UserController from '../controllers/user';
-// import Validator from '../controllers/validator';
 
 const userRouter = express.Router();
 
@@ -10,40 +9,20 @@ const userRouter = express.Router();
  */
 
 const userController = new UserController();
-/*
-
-// Register new user
-userRouter.post('/api/user/signup', (req, res) => {
-  if (Validator.isEmpty('Username', req.body.username)) {
-    res.json({ message: Validator.lastErrorMessage });
-  }
-  else if (Validator.isEmpty('E-mail Address',
-      req.body.email.toString())) {
-    res.json({ message: Validator.lastErrorMessage });
-  }
-  else if (Validator.isEmpty('Password', req.body.password)) {
-    res.json({ message: Validator.lastErrorMessage });
-  }
-  else if (Validator.isEmpty('Password Retype', req.body.cPassword)) {
-    res.json({ message: Validator.lastErrorMessage });
-  }
-  else {
-    userController.createUser(req.body.username, req.body.email,
-      req.body.password, () => {})
-      .then(res.status(201).json(user));
-  }
-});
-*/
-
 
 // Register new user
 userRouter.post('/api/users/signup', (req, res) => {
   userController.signUpUser(req, res);
 });
 
-// Authenticate user
+// Log in user
 userRouter.post('/api/users/signin', (req, res) => {
   userController.signInUser(req, res);
+});
+
+// Log out user
+userRouter.post('/api/users/signout', (req, res) => {
+  userController.signOutUser(req, res);
 });
 
 // Fetch all users

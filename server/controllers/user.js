@@ -5,7 +5,6 @@ import Validator from '../controllers/validator';
 const sequelize = db.sequelize;
 let errorMessage;
 let reqPasswordHash;
-// let reqUsername, reqEmail, reqPassword, reqPasswordRetype;
 
 /**
  * @description: Defines controller for manipulating 'user' model
@@ -55,7 +54,8 @@ class UserController {
           // res.redirect('/protected_page');
           res.status(201).json(newUser);
         }).catch((err) => {
-          throw new Error(err);
+          // throw new Error(err);
+          console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
       });
@@ -93,10 +93,25 @@ class UserController {
             res.status(400).json({ message: 'Username does not exist!' });
           }
         }).catch((err) => {
-          throw new Error(err);
-          res.status(500).json({message: err.message});
+          // throw new Error(err);
+          console.error(err.stack)
+          res.status(500).json({ message: err.message });
         });
     }
+  }
+
+  /**
+   * @description: Logs out a user
+   * @param {Object} req
+   * @param {Object} res
+   * @return {void}
+   */
+  signOutUser(req, res) {
+    req.session.destroy(() => {
+      // console.log('You have been logged out.');
+      // res.redirect('/signin');
+      res.status(200).json({ message: 'You have been logged out.' });
+    });
   }
 
   /**
@@ -104,7 +119,7 @@ class UserController {
    * @param {Object} req
    * @return {Boolean} true/false
    */
-  isSignedIn(req, res) {
+  isSignedIn(req) {
     if (req.session.user)
       return true;
     console.log('You are not logged in!');
@@ -145,7 +160,8 @@ class UserController {
     this.user.findAll().then((allUsers) => {
       res.status(200).json(allUsers);
     }).catch((err) => {
-      throw new Error(err);
+      // throw new Error(err);
+      console.error(err.stack)
       res.status(500).json({ message: err.message });
     });
   }
@@ -163,11 +179,12 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.user.findOne({where: { userId: req.params.userId } })
+      this.user.findOne({ where: { userId: req.params.userId } })
         .then((matchingUser) => {
           res.status(200).json(matchingUser);
         }).catch((err) => {
-          throw new Error(err);
+          // throw new Error(err);
+          console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
     }
@@ -190,7 +207,8 @@ class UserController {
         .then((matchingUser) => {
           res.status(200).json(matchingUser);
         }).catch((err) => {
-          throw new Error(err);
+          // throw new Error(err);
+          console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
     }
@@ -199,66 +217,3 @@ class UserController {
 }
 
 export default UserController;
-
-
-// POST: /api/user/signin
-// Username & Password
-
-/**
- * @description: Registers a new user
- * @param {String} username
- * @param {String} email
- * @param {String} password
- * @param {Function} done
- * @return {Object} newUser
- */
-/*
-createUser(username, email, password, done) {
-  const hashedPassword = user.classMethods.generateHash(password);
-  return this.user.sync().then(() => {
-    this.user.create({
-      username: username,
-      email: email,
-      password: hashedPassword
-    }).then((newUser) => {
-      done(newUser);
-    }).catch((err) => {
-      throw new Error(err);
-    });
-  });
-}*/
-
-/**
- * @description: Fetches all available users
- * @param {Function} done
- * @return {Object} allUsers
- */
-/*
-  getAllUsers(done) {
-    this.user.findAll().then((allUsers) => {
-      done(allUsers);
-    });
-  }
-*/
-
-/**
- * @description: Fetches a user matching specified userKey
- * @param {String} userKey
- * @param {Function} done
- * @return {Object} matchingUsers
- */
-/*getUserByKey(userKey, done) {
-  this.user.findOne({ where: { userId: userKey } })
-    .then((matchingUser) => {
-      done(matchingUser);
-    });
-}*/
-
-/**
- * @description: Deletes a user matching specified userKey
- * @param {String} userKey
- * @return {Object} deletedUser
- */
-/*deleteUser(userKey) {
-  this.user.destroy({ where: { userId: userKey } });
-}*/
