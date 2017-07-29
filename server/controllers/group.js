@@ -62,7 +62,7 @@ class GroupController {
    */
   isDuplicate(testTitle) {
     errorMessage = '';
-    this.group.findAll({ where: { title: testTitle } })
+    this.group.findOne({ where: { title: testTitle } })
       .then((matchingGroups) => {
         if (matchingGroups.length > 0)
           errorMessage = `${errorMessage}\n - Group Title is already taken!`;

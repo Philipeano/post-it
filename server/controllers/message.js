@@ -62,7 +62,7 @@ class MessageController {
    */
   isMember(testGroupId, testUserId) {
     errorMessage = '';
-    this.groupMember.find({
+    this.groupMember.findOne({
       where: { groupId: testGroupId, memberId: testUserId }
     })
       .then((memberships) => {
@@ -81,7 +81,7 @@ class MessageController {
    */
   isSender(testMessageId, testUserId) {
     errorMessage = '';
-    this.message.find({
+    this.message.findOne({
       where: { messageId: testMessageId, senderId: testUserId }
     })
       .then((matchingMessages) => {

@@ -134,12 +134,12 @@ class UserController {
    */
   isDuplicate(testUsername, testEmail) {
     errorMessage = '';
-    this.user.findAll({ where: { username: testUsername } })
+    this.user.findOne({ where: { username: testUsername } })
       .then((matchingUsers) => {
         if (matchingUsers.length > 0)
           errorMessage = `${errorMessage}\n - Username is already taken!`;
       });
-    this.user.findAll({ where: { email: testEmail } })
+    this.user.findOne({ where: { email: testEmail } })
       .then((matchingUsers) => {
         if (matchingUsers.length > 0)
           errorMessage = `${errorMessage}\n - Email already exists!`;

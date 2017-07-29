@@ -83,7 +83,7 @@ class GroupMemberController {
    */
   isDuplicate(testGroupId, testUserId) {
     errorMessage = '';
-    this.groupMember.findAll({ where: { groupId: testGroupId,
+    this.groupMember.findOne({ where: { groupId: testGroupId,
       memberId: testUserId } })
       .then((memberships) => {
         if (memberships.length > 0)
