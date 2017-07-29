@@ -3,52 +3,112 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-require('babel-register');
-var express = require('express');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var dotenv = require('dotenv');
-var userRouter = require('../routes/user');
-var groupRouter = require('../routes/group');
-var groupMemberRouter = require('../routes/groupmember');
-var messageRouter = require('../routes/message');
-var notificationRouter = require('../routes/notification');
+
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _dotenv = require('dotenv');
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
+var _morgan = require('morgan');
+
+var _morgan2 = _interopRequireDefault(_morgan);
+
+var _bodyParser = require('body-parser');
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
+var _expressSession = require('express-session');
+
+var _expressSession2 = _interopRequireDefault(_expressSession);
+
+var _cookieParser = require('cookie-parser');
+
+var _cookieParser2 = _interopRequireDefault(_cookieParser);
+
+var _user = require('../routes/user');
+
+var _user2 = _interopRequireDefault(_user);
+
+var _group = require('../routes/group');
+
+var _group2 = _interopRequireDefault(_group);
+
+var _groupmember = require('../routes/groupmember');
+
+var _groupmember2 = _interopRequireDefault(_groupmember);
+
+var _message = require('../routes/message');
+
+var _message2 = _interopRequireDefault(_message);
+
+var _notification = require('../routes/notification');
+
+var _notification2 = _interopRequireDefault(_notification);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// require('babel-register');
+// const express = require('express');
+// const dotenv = require('dotenv');
+// const logger = require('morgan');
+// const bodyParser = require('body-parser');
+// const session = require('express-session');
+// const cookieParser = require('cookie-parser');
+// const userRouter = require('../routes/user');
+// const groupRouter = require('../routes/group');
+// const groupMemberRouter = require('../routes/groupmember');
+// const messageRouter = require('../routes/message');
+// const notificationRouter = require('../routes/notification');
 // const models = require('../models');
 
-// import express from 'express';
-// import logger from 'morgan';
-// import bodyParser from 'body-parser';
-// import dotenv from 'dotenv';
-// import userRouter from '../routes/user';
-// import group from '../routes/group';
-// import groupmember from '../routes/groupmember';
-// import message from '../routes/message';
-// import notification from '../routes/notification';
-// import models from '../models';
-
 // Configure environment settings
-dotenv.config();
+_dotenv2.default.config();
 
 // Set up server express
-var app = express();
+var app = (0, _express2.default)();
 
 // Log requests to the console
-app.use(logger('dev'));
+app.use((0, _morgan2.default)('dev'));
 
 // Parse incoming requests data
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(_bodyParser2.default.json());
+app.use(_bodyParser2.default.urlencoded({ extended: true }));
+app.use((0, _cookieParser2.default)());
+app.use((0, _expressSession2.default)({ secret: 'PostItMessagingSystemByPhilipeano' }));
 
-// TODO: Set up middleware
-// TODO: Set up authentication routes
-// TODO: Set up all other routes
+/**
+ * @description: Checks if user is authenticated
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Function} next
+ * @return {void}
+ */
+var checkSignIn = function checkSignIn(req, res, next) {
+  if (req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Access denied! Please sign in first.' });
+  }
+};
 
 // User route
-app.use('/api/user', userRouter);
+app.use('/api/users', _user2.default);
 
-// Default API route
-app.use('/api', function (req, res) {
-  res.status(200).send({ message: 'Welcome! PostIT API is running...' });
+// Protected routes
+app.use('/api/groups/*', checkSignIn, function (req, res, next) {
+  next();
+});
+
+app.use('/api/groups', _group2.default);
+app.use('/api/groups/:groupId/users', _groupmember2.default);
+app.use('/api/groups/:groupId/messages', _message2.default);
+
+// Respond to random requests
+app.use('/api/*', function (req, res) {
+  res.status(200).send({ message: 'PostIT API is running...' });
 });
 
 // Random API route
@@ -58,8 +118,6 @@ app.use('*', function (req, res) {
 
 // Retrieve port for this app environment
 var port = process.env.PORT || 8000;
-
-// TODO: Run Sequelize sync on models
 
 // Create server and initialize it with the express app
 var server = app.listen(port, function () {
