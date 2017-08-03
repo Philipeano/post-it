@@ -10,10 +10,10 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var cookieParser = require('cookie-parser');
-var userRouter = require('../routes/user');
-var groupRouter = require('../routes/group');
-var groupMemberRouter = require('../routes/groupmember');
-var messageRouter = require('../routes/message');
+var userRouter = require('../routes/userRouter');
+var groupRouter = require('../routes/groupRouter');
+var groupMemberRouter = require('../routes/membershipRouter');
+var messageRouter = require('../routes/messageRouter');
 // const notificationRouter = require('../routes/notification');
 // const path = require('path');
 

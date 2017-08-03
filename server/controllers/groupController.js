@@ -1,10 +1,10 @@
 import db from '../models/index';
 import group from '../models/group';
-import GroupMemberController from '../controllers/groupmember';
+import MembershipController from './membershipController';
 import Validator from '../controllers/validator';
 
 const sequelize = db.sequelize;
-const memberController = new GroupMemberController();
+const membershipController = new MembershipController();
 let errorMessage;
 
 /**
@@ -44,7 +44,7 @@ class GroupController {
           purpose: req.body.purpose,
           creatorId: req.session.userId
         }).then((newGroup) => {
-          memberController.addDefaultMemberToGroup(groupId, userId);
+          membershipController.addDefaultMemberToGroup(groupId, userId);
           res.status(201).json(newGroup);
         }).catch((err) => {
           // throw new Error(err);

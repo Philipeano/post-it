@@ -5,10 +5,10 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const userRouter = require('../routes/user');
-const groupRouter = require('../routes/group');
-const groupMemberRouter = require('../routes/groupmember');
-const messageRouter = require('../routes/message');
+const userRouter = require('../routes/userRouter');
+const groupRouter = require('../routes/groupRouter');
+const membershipRouter = require('../routes/membershipRouter');
+const messageRouter = require('../routes/messageRouter');
 // const notificationRouter = require('../routes/notification');
 // const path = require('path');
 
@@ -51,7 +51,7 @@ app.use('/api/groups', checkSignIn, (req, res, next) => {
 });
 
 app.use('/api/groups', groupRouter);
-app.use('/api/groups/:groupId/users', groupMemberRouter);
+app.use('/api/groups/:groupId/users', membershipRouter);
 app.use('/api/groups/:groupId/messages', messageRouter);
 
 

@@ -9,7 +9,7 @@ let errorMessage;
  * @description: Defines controller for manipulating 'groupMember' model
  * @class
  */
-class GroupMemberController {
+class MembershipController {
   /**
    * @description: Initializes instance with 'groupMember' as local property
    * @constructor
@@ -149,4 +149,4 @@ class GroupMemberController {
 
 }
 
-export default GroupMemberController;
+export default MembershipController;
