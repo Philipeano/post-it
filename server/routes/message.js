@@ -9,21 +9,22 @@ const messageRouter = express.Router();
  */
 
 const messageController = new MessageController();
+// baseURL /api/groups/:groupId/messages
 
 // Post a message to a group
-messageRouter.post('/api/groups/:groupId/messages', (req, res) => {
+messageRouter.post('/', (req, res) => {
   messageController.postMessageToGroup(req, res);
 });
 
 // Fetch all messages available to a group
-messageRouter.get('/api/groups/:groupId/messages', (req, res) => {
+messageRouter.get('/', (req, res) => {
   messageController.getMessagesFromGroup(req, res);
 });
 
 // Delete a message sent to a group
-messageRouter.delete('/api/groups/:groupId/messages/:messageId', (req, res) => {
+messageRouter.delete('/:messageId', (req, res) => {
   messageController.deletePostedMessage(req, res);
 });
 
-export default messageRouter;
-
+// export default messageRouter;
+module.exports = messageRouter;

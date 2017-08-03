@@ -28,22 +28,49 @@ class UserController {
   signUpUser(req, res) {
     errorMessage = '';
     if (Validator.isEmpty('Username', req.body.username))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
-    if (Validator.isEmpty('E-mail Address', req.body.email.toString()))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      { errorMessage = `${errorMessage} ${Validator.validationMessage}`; }
+    if (Validator.isEmpty('Email Address', req.body.email))
+      { errorMessage = `${errorMessage} ${Validator.validationMessage}`; }
     if (Validator.isEmpty('Password', req.body.password))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      { errorMessage = `${errorMessage} ${Validator.validationMessage}`; }
     if (Validator.isEmpty('Password Retype', req.body.cPassword))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
-    if (!Validator.passwordsMatch(req.body.password, req.body.cPassword))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      { errorMessage = `${errorMessage} ${Validator.validationMessage}`; }
 
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
-    else if (this.isDuplicate(req.body.username, req.body.email))
-      res.status(409).json({ message: 'Username or email already exists!' });
+    else if (!(Validator.passwordsMatch(req.body.password, req.body.cPassword)))
+    {
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
+      res.status(400).json({ message: errorMessage });
+    }
+    else if (!(Validator.isValidEmail(req.body.email)))
+    {
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
+      res.status(400).json({ message: errorMessage });
+    }
+    else if (!(Validator.isValidPassword(req.body.password)))
+    {
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
+      res.status(400).json({ message: errorMessage });
+    }
     else {
-      reqPasswordHash = user.classMethods.generateHash(req.body.password);
+      this.user.findOne({ where: { username: req.body.username } })
+        .then((matchingUsers) => {
+          if (matchingUsers) {
+            res.status(409)
+              .json({ message: 'Username is already in use!' });
+            res.end();
+          }
+        });
+      this.user.findOne({ where: { email: req.body.email } })
+        .then((matchingUsers) => {
+          if (matchingUsers) {
+            res.status(409)
+              .json({ message: 'Email Address already exists!' });
+            res.end();
+          }
+        });
+      reqPasswordHash = Validator.generateHash(req.body.password);
       return this.user.sync().then(() => {
         this.user.create({
           username: req.body.username,
@@ -54,8 +81,6 @@ class UserController {
           // res.redirect('/protected_page');
           res.status(201).json(newUser);
         }).catch((err) => {
-          // throw new Error(err);
-          console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
       });
@@ -71,9 +96,9 @@ class UserController {
   signInUser(req, res) {
     errorMessage = '';
     if (Validator.isEmpty('Username', req.body.username))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
     if (Validator.isEmpty('Password', req.body.password))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
 
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
@@ -81,7 +106,7 @@ class UserController {
       this.user.findOne({ where: { username: req.body.username } })
         .then((matchingUser) => {
           if (matchingUser) {
-            if (user.classMethods
+            if (Validator
                 .verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
               // res.redirect('/protected_page');
@@ -93,8 +118,6 @@ class UserController {
             res.status(400).json({ message: 'Username does not exist!' });
           }
         }).catch((err) => {
-          // throw new Error(err);
-          console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
     }
@@ -108,7 +131,6 @@ class UserController {
    */
   signOutUser(req, res) {
     req.session.destroy(() => {
-      // console.log('You have been logged out.');
       // res.redirect('/signin');
       res.status(200).json({ message: 'You have been logged out.' });
     });
@@ -122,32 +144,7 @@ class UserController {
   isSignedIn(req) {
     if (req.session.user)
       return true;
-    console.log('You are not logged in!');
     return false;
-  }
-
-  /**
-   * @description: Checks if supplied username and email already exist
-   * @param {String} testUsername
-   * @param {String} testEmail
-   * @return {Boolean} true/false
-   */
-  isDuplicate(testUsername, testEmail) {
-    errorMessage = '';
-    this.user.findOne({ where: { username: testUsername } })
-      .then((matchingUsers) => {
-        if (matchingUsers.length > 0)
-          errorMessage = `${errorMessage}\n - Username is already taken!`;
-      });
-    this.user.findOne({ where: { email: testEmail } })
-      .then((matchingUsers) => {
-        if (matchingUsers.length > 0)
-          errorMessage = `${errorMessage}\n - Email already exists!`;
-      });
-    if (errorMessage.trim() === '')
-      return false;
-    console.log(errorMessage);
-    return true;
   }
 
   /**
@@ -160,8 +157,6 @@ class UserController {
     this.user.findAll().then((allUsers) => {
       res.status(200).json(allUsers);
     }).catch((err) => {
-      // throw new Error(err);
-      console.error(err.stack)
       res.status(500).json({ message: err.message });
     });
   }
@@ -173,18 +168,20 @@ class UserController {
    * @return {Object} matchingUser
    */
   getUserByKey(req, res) {
+    console.log(req.params);
+    console.log(this.user);
     errorMessage = '';
     if (Validator.isEmpty('User ID', req.params.userId))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.user.findOne({ where: { userId: req.params.userId } })
+      this.user.findOne({ where: { id: req.params.userId } })
         .then((matchingUser) => {
           res.status(200).json(matchingUser);
         }).catch((err) => {
           // throw new Error(err);
-          console.error(err.stack)
+          // console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
     }
@@ -199,11 +196,11 @@ class UserController {
   deleteUser(req, res) {
     errorMessage = '';
     if (Validator.isEmpty('User ID', req.params.userId))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} - ${Validator.validationMessage}`;
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.user.destroy({ where: { userId: req.params.userId } })
+      this.user.destroy({ where: { id: req.params.userId } })
         .then((matchingUser) => {
           res.status(200).json(matchingUser);
         }).catch((err) => {

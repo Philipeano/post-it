@@ -1,5 +1,12 @@
-export default (sequelize, DataTypes) => {
+import DataTypes from 'sequelize/lib/data-types';
+
+export default (sequelize) => {
   const Message = sequelize.define('Message', {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV1,
+      primaryKey: true
+    },
     content: {
       type: DataTypes.STRING,
       allowNull: false
@@ -15,11 +22,6 @@ export default (sequelize, DataTypes) => {
       defaultValue: 'normal'
     }
     /*
-    id: {
-     type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV1,
-       primaryKey: true
-        },
     senderId: {
      type: DataTypes.UUID,
       allowNull: false

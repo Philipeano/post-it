@@ -1,5 +1,12 @@
-export default (sequelize, DataTypes) => {
+import DataTypes from 'sequelize/lib/data-types';
+
+export default (sequelize) => {
   const Notification = sequelize.define('Notification', {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     notificationType: {
       type: DataTypes.STRING,
       defaultValue: 'in-app'
@@ -10,11 +17,6 @@ export default (sequelize, DataTypes) => {
       defaultValue: 'unread'
     }
     /*
-    id: {
-     type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-       primaryKey: true
-        },
     recipientId: {
      type: DataTypes.UUID,
       allowNull: false

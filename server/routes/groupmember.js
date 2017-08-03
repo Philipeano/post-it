@@ -9,21 +9,22 @@ const groupMemberRouter = express.Router();
  */
 
 const groupMemberController = new GroupMemberController();
+// baseURL /api/groups/:groupId/users
 
 // Add a user to a group
-groupMemberRouter.post('/api/groups/:groupId/users', (req, res) => {
+groupMemberRouter.post('/', (req, res) => {
   groupMemberController.addOtherMemberToGroup(req, res);
 });
 
 // Fetch all members in a group
-groupMemberRouter.get('/api/groups/:groupId/users', (req, res) => {
+groupMemberRouter.get('/', (req, res) => {
   groupMemberController.getMembersInGroup(req, res);
 });
 
 // Remove a member from a group
-groupMemberRouter.delete('/api/groups/:groupId/users/:userId', (req, res) => {
+groupMemberRouter.delete('/:userId', (req, res) => {
   groupMemberController.deleteMemberFromGroup(req, res);
 });
 
-export default groupMemberRouter;
-
+// export default groupMemberRouter;
+module.exports = groupMemberRouter;

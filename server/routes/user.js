@@ -1,7 +1,7 @@
 import express from 'express';
 import UserController from '../controllers/user';
 
-const userRouter = express.Router();
+const userRouter = express.Router({ mergeParams: true });
 
 /**
  * @description: Defines router for handling all 'user' requests
@@ -11,29 +11,30 @@ const userRouter = express.Router();
 const userController = new UserController();
 
 // Register new user
-userRouter.post('/api/users/signup', (req, res) => {
+userRouter.post('/signup', (req, res) => {
   userController.signUpUser(req, res);
 });
 
 // Log in user
-userRouter.post('/api/users/signin', (req, res) => {
+userRouter.post('/signin', (req, res) => {
   userController.signInUser(req, res);
 });
 
 // Log out user
-userRouter.post('/api/users/signout', (req, res) => {
+userRouter.post('/signout', (req, res) => {
   userController.signOutUser(req, res);
 });
 
 // Fetch all users
-userRouter.get('/api/users', (req, res) => {
+userRouter.get('/', (req, res) => {
   userController.getAllUsers(req, res);
 });
 
 // Fetch user with specified key
-userRouter.get('/api/users/:userId', userController.getUserByKey);
+userRouter.get('/:userId', userController.getUserByKey);
 
 // Delete user with specified key
-userRouter.delete('/api/users/:userId', userController.deleteUser);
+userRouter.delete('/:userId', userController.deleteUser);
 
-export default userRouter;
+// export default userRouter;
+module.exports = userRouter;

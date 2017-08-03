@@ -3,81 +3,34 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _express = require('express');
-
-var _express2 = _interopRequireDefault(_express);
-
-var _dotenv = require('dotenv');
-
-var _dotenv2 = _interopRequireDefault(_dotenv);
-
-var _morgan = require('morgan');
-
-var _morgan2 = _interopRequireDefault(_morgan);
-
-var _bodyParser = require('body-parser');
-
-var _bodyParser2 = _interopRequireDefault(_bodyParser);
-
-var _expressSession = require('express-session');
-
-var _expressSession2 = _interopRequireDefault(_expressSession);
-
-var _cookieParser = require('cookie-parser');
-
-var _cookieParser2 = _interopRequireDefault(_cookieParser);
-
-var _user = require('../routes/user');
-
-var _user2 = _interopRequireDefault(_user);
-
-var _group = require('../routes/group');
-
-var _group2 = _interopRequireDefault(_group);
-
-var _groupmember = require('../routes/groupmember');
-
-var _groupmember2 = _interopRequireDefault(_groupmember);
-
-var _message = require('../routes/message');
-
-var _message2 = _interopRequireDefault(_message);
-
-var _notification = require('../routes/notification');
-
-var _notification2 = _interopRequireDefault(_notification);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// require('babel-register');
-// const express = require('express');
-// const dotenv = require('dotenv');
-// const logger = require('morgan');
-// const bodyParser = require('body-parser');
-// const session = require('express-session');
-// const cookieParser = require('cookie-parser');
-// const userRouter = require('../routes/user');
-// const groupRouter = require('../routes/group');
-// const groupMemberRouter = require('../routes/groupmember');
-// const messageRouter = require('../routes/message');
+require('babel-register');
+var express = require('express');
+var dotenv = require('dotenv');
+var logger = require('morgan');
+var bodyParser = require('body-parser');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+var userRouter = require('../routes/user');
+var groupRouter = require('../routes/group');
+var groupMemberRouter = require('../routes/groupmember');
+var messageRouter = require('../routes/message');
 // const notificationRouter = require('../routes/notification');
-// const models = require('../models');
+// const path = require('path');
 
 // Configure environment settings
-_dotenv2.default.config();
+dotenv.config();
 
 // Set up server express
-var app = (0, _express2.default)();
+var app = express();
 
 // Log requests to the console
-app.use((0, _morgan2.default)('dev'));
+app.use(logger('dev'));
 
 // Parse incoming requests data
-app.use(_bodyParser2.default.json());
-app.use(_bodyParser2.default.urlencoded({ extended: true }));
-app.use((0, _cookieParser2.default)());
-app.use((0, _expressSession2.default)({ secret: 'PostItMessagingSystemByPhilipeano' }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({ secret: 'PostItMessagingSystemByPhilipeano' }));
 
 /**
  * @description: Checks if user is authenticated
@@ -95,25 +48,27 @@ var checkSignIn = function checkSignIn(req, res, next) {
 };
 
 // User route
-app.use('/api/users', _user2.default);
+app.use('/api/users', userRouter);
 
 // Protected routes
-app.use('/api/groups/*', checkSignIn, function (req, res, next) {
+app.use('/api/groups', checkSignIn, function (req, res, next) {
   next();
 });
 
-app.use('/api/groups', _group2.default);
-app.use('/api/groups/:groupId/users', _groupmember2.default);
-app.use('/api/groups/:groupId/messages', _message2.default);
+app.use('/api/groups', groupRouter);
+app.use('/api/groups/:groupId/users', groupMemberRouter);
+app.use('/api/groups/:groupId/messages', messageRouter);
 
-// Respond to random requests
-app.use('/api/*', function (req, res) {
+// Default API request
+app.get('/api/', function (req, res) {
+  res.set('Content-Type', 'application/json');
   res.status(200).send({ message: 'PostIT API is running...' });
 });
 
-// Random API route
-app.use('*', function (req, res) {
-  res.status(200).sendFile('../../template/index.html');
+// Random or invalid request
+app.get('*', function (req, res) {
+  res.set('Content-Type', 'application/json');
+  res.status(404).send({ message: 'Error! No resource matches your request!' });
 });
 
 // Retrieve port for this app environment
@@ -126,4 +81,3 @@ var server = app.listen(port, function () {
 
 // Export server
 exports.default = server;
-// module.exports = server;

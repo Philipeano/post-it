@@ -1,16 +1,18 @@
-export default (sequelize, DataTypes) => {
+import DataTypes from 'sequelize/lib/data-types';
+
+export default (sequelize) => {
   const GroupMember = sequelize.define('GroupMember', {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     userRole: {
       type: DataTypes.STRING,
       allowNull: true,
       defaultValue: 'member'
     }
   /*
-    id: {
-     type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV1,
-       primaryKey: true
-        },
     groupId: {
      type: DataTypes.UUID,
       allowNull: false

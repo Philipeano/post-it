@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+
 /**
  * @description: Defines controller for validating all user input
  * @class
@@ -13,64 +15,59 @@ class Validator {
   }
 
   /**
-   * @description: holds last generated error message
+   * @description: Holds last generated error message
    * @property {String}
   static message
    */
 
   /**
-   * @description: checks for null/empty entry
+   * @description: Checks for null/empty entry
    * @param {String} fieldName
    * @param {String} fieldValue
-   * @return {Object} isValid
+   * @return {Boolean} result
    */
   static isEmpty(fieldName, fieldValue) {
-    const result = { isValid: false, errorMessage: '' };
+    let result = false;
     if (fieldValue === undefined || fieldValue === null
       || fieldValue.trim() === '') {
-      result.isValid = true;
-      result.errorMessage = `${fieldName} cannot be null or empty.`;
+      result = true;
+      this.validationMessage = ` - ${fieldName} cannot be null or empty.`;
     }
-    this.validationMessage = result.errorMessage;
     return result;
   }
 
   /**
-   * @description: checks for valid email address
-   * @param {String} fieldName
-   * @param {String} fieldValue
-   * @return {Object} isValid
+   * @description: Checks for valid email address
+   * @param {String} testEmail
+   * @return {Boolean} result
    */
-  static isValidEmail(fieldName, fieldValue) {
-    const result = { isValid: true, errorMessage: '' };
+  static isValidEmail(testEmail) {
+    let result = true;
     const pattern = /\S+@\S+\.\S+/;
-    if (pattern.test(fieldValue) === false) {
-      result.isValid = false;
-      result.errorMessage = `${fieldName} is not a valid email address.`;
+    if (!pattern.test(testEmail)) {
+      result = false;
+      this.validationMessage = ` - ${testEmail} is not a valid email address.`;
     }
-    this.validationMessage = result.errorMessage;
     return result;
   }
 
   /**
-   * @description: checks for valid password
-   * @param {String} fieldName
-   * @param {String} fieldValue
-   * @return {Object} isValid
+   * @description: Checks for valid password
+   * @param {String} testPassword
+   * @return {Boolean} result
    */
-  static isValidPassword(fieldName, fieldValue) {
-    const result = { isValid: true, errorMessage: '' };
+  static isValidPassword(testPassword) {
+    let result = true;
     const pattern = /^\w+([.-]? w+)*@\w+([.-]? w+)*(.\w{2,3})+$/;
-    if (fieldValue.match(pattern) === false) {
-      result.isValid = false;
-      result.errorMessage = `${fieldName} is not a valid password.`;
+    if (!testPassword.match(pattern)) {
+      result = false;
+      this.validationMessage = ` - ${testPassword} is not a valid password.`;
     }
-    this.validationMessage = result.errorMessage;
     return result;
   }
 
   /**
-   * @description: checks for matching passwords
+   * @description: Checks for matching passwords
    * @param {String} password1
    * @param {String} password2
    * @return {Object} isValid
@@ -79,10 +76,32 @@ class Validator {
     const result = { isValid: true, errorMessage: '' };
     if (password1 !== password2) {
       result.isValid = false;
-      result.errorMessage = 'The two passwords do not match.';
+      result.errorMessage = ' - The two passwords do not match.';
     }
     this.validationMessage = result.errorMessage;
+    return result.isValid;
+  }
+
+  /**
+   * @description: Generates hash from plain password
+   * @param {String} plainText
+   * @return {String} hash
+   */
+  static generateHash(plainText) {
+    const hash = bcrypt.hashSync(plainText, 3);
+    return hash;
+  }
+
+  /**
+   * @description: Verifies plain password against hashed DB password
+   * @param {String} plainText
+   * @param {String} hashFromDB
+   * @return {Boolean} res
+   */
+  static verifyPassword(plainText, hashFromDB) {
+    const result = bcrypt.compareSync(plainText, hashFromDB);
     return result;
   }
+
 }
 export default Validator;

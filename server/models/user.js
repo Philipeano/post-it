@@ -1,7 +1,13 @@
-import bcrypt from 'bcrypt';
+// import bcrypt from 'bcrypt';
+import DataTypes from 'sequelize/lib/data-types';
 
-export default (sequelize, DataTypes) => {
+export default (sequelize) => {
   const User = sequelize.define('User', {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV1,
+      primaryKey: true
+    },
     username: {
       type: DataTypes.STRING,
       allowNull: false
@@ -24,16 +30,12 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true
     },
+
     // picture: {
     //   type: DataTypes.BINARY,
     //   allowNull: true
     // }
     /*
-    id: {
-     type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV1,
-       primaryKey: true
-        },
     dateRegistered: {
      type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
@@ -62,6 +64,7 @@ export default (sequelize, DataTypes) => {
           as: 'notifications',
         });
       },
+      /*
       generateHash: (plainText) => {
         // Create hash from new password
         bcrypt.hash(plainText, 10, (err, hash) => {
@@ -75,6 +78,7 @@ export default (sequelize, DataTypes) => {
           return res;
         });
       },
+      */
     },
   });
   return User;
