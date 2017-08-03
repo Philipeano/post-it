@@ -1,5 +1,17 @@
+<<<<<<< HEAD
 module.exports = (sequelize, DataTypes) => {
   const Group = sequelize.define('Group', {
+=======
+import DataTypes from 'sequelize/lib/data-types';
+
+export default (sequelize) => {
+  const Group = sequelize.define('Group', {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV1,
+      primaryKey: true
+    },
+>>>>>>> server
     title: {
       type: DataTypes.STRING,
       allowNull: false
@@ -19,10 +31,13 @@ module.exports = (sequelize, DataTypes) => {
     // }
     /*
     id: {
+<<<<<<< HEAD
      type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV1,
        primaryKey: true
         },
+=======
+>>>>>>> server
     creatorId: {
      type: DataTypes.UUID,
       allowNull: false

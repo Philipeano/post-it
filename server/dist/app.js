@@ -3,57 +3,76 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _express = require('express');
-
-var _express2 = _interopRequireDefault(_express);
-
-var _morgan = require('morgan');
-
-var _morgan2 = _interopRequireDefault(_morgan);
-
-var _bodyParser = require('body-parser');
-
-var _bodyParser2 = _interopRequireDefault(_bodyParser);
-
-var _dotenv = require('dotenv');
-
-var _dotenv2 = _interopRequireDefault(_dotenv);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// TODO: import all routes
-// TODO: import all models
+require('babel-register');
+var express = require('express');
+var dotenv = require('dotenv');
+var logger = require('morgan');
+var bodyParser = require('body-parser');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+var userRouter = require('../routes/userRouter');
+var groupRouter = require('../routes/groupRouter');
+var groupMemberRouter = require('../routes/membershipRouter');
+var messageRouter = require('../routes/messageRouter');
+// const notificationRouter = require('../routes/notification');
+// const path = require('path');
 
 // Configure environment settings
-// const express = require('express');
-// const logger = require('morgan');
-// const bodyParser = require('body-parser');
-_dotenv2.default.config();
+dotenv.config();
 
 // Set up server express
-var app = (0, _express2.default)();
+var app = express();
 
 // Log requests to the console
-app.use((0, _morgan2.default)('dev'));
+app.use(logger('dev'));
 
 // Parse incoming requests data
-app.use(_bodyParser2.default.json());
-app.use(_bodyParser2.default.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({ secret: 'PostItMessagingSystemByPhilipeano' }));
 
-// TODO: Set up middleware
-// TODO: Set up authentication routes
-// TODO: Set up all other routes
+/**
+ * @description: Checks if user is authenticated
+ * @param {Object} req
+ * @param {Object} res
+ * @param {Function} next
+ * @return {void}
+ */
+var checkSignIn = function checkSignIn(req, res, next) {
+  if (req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ message: 'Access denied! Please sign in first.' });
+  }
+};
 
-// Default/random route
-app.use('/*', function (req, res) {
-  res.status(200).send({ message: 'Welcome! PostIT API is running...' });
+// User route
+app.use('/api/users', userRouter);
+
+// Protected routes
+app.use('/api/groups', checkSignIn, function (req, res, next) {
+  next();
+});
+
+app.use('/api/groups', groupRouter);
+app.use('/api/groups/:groupId/users', groupMemberRouter);
+app.use('/api/groups/:groupId/messages', messageRouter);
+
+// Default API request
+app.get('/api/', function (req, res) {
+  res.set('Content-Type', 'application/json');
+  res.status(200).send({ message: 'PostIT API is running...' });
+});
+
+// Random or invalid request
+app.get('*', function (req, res) {
+  res.set('Content-Type', 'application/json');
+  res.status(404).send({ message: 'Error! No resource matches your request!' });
 });
 
 // Retrieve port for this app environment
 var port = process.env.PORT || 8000;
-
-// TODO: Run Sequelize sync on models
 
 // Create server and initialize it with the express app
 var server = app.listen(port, function () {
@@ -62,4 +81,3 @@ var server = app.listen(port, function () {
 
 // Export server
 exports.default = server;
-// module.exports = server;

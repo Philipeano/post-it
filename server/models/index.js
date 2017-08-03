@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -6,6 +7,18 @@ const basename = path.basename(module.filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require('../config/config.json')[env];
 // const config = require(`${__dirname}/../config/config.json`)[env];
+=======
+/* eslint-disable spaced-comment */
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+// const DataTypes = require('sequelize/lib/data-types');
+
+const basename = path.basename(module.filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.json')[env];
+
+>>>>>>> server
 const db = {};
 
 let sequelize;
@@ -34,6 +47,7 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+<<<<<<< HEAD
 
 export default db;
 
@@ -51,3 +65,8 @@ export default db;
 //
 // sequelize.authenticate().then(function(test){console.log(test)});
 // Errors out
+=======
+// db.DataTypes = DataTypes;
+
+export default db;
+>>>>>>> server

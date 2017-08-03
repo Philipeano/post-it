@@ -1,5 +1,17 @@
+<<<<<<< HEAD
 module.exports = (sequelize, DataTypes) => {
   const Message = sequelize.define('Message', {
+=======
+import DataTypes from 'sequelize/lib/data-types';
+
+export default (sequelize) => {
+  const Message = sequelize.define('Message', {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV1,
+      primaryKey: true
+    },
+>>>>>>> server
     content: {
       type: DataTypes.STRING,
       allowNull: false
@@ -15,11 +27,14 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'normal'
     }
     /*
+<<<<<<< HEAD
     id: {
      type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV1,
        primaryKey: true
         },
+=======
+>>>>>>> server
     senderId: {
      type: DataTypes.UUID,
       allowNull: false
