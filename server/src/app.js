@@ -9,7 +9,7 @@ const userRouter = require('../routes/userRouter');
 const groupRouter = require('../routes/groupRouter');
 const membershipRouter = require('../routes/membershipRouter');
 const messageRouter = require('../routes/messageRouter');
-// const notificationRouter = require('../routes/notification');
+// const notificationRouter = require('../routes/notificationRouter');
 // const path = require('path');
 
 // Configure environment settings

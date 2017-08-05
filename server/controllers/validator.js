@@ -58,8 +58,11 @@ class Validator {
    */
   static isValidPassword(testPassword) {
     let result = true;
-    const pattern = /^\w+([.-]? w+)*@\w+([.-]? w+)*(.\w{2,3})+$/;
-    if (!testPassword.match(pattern)) {
+    // const pattern = /^\w+([.-]? w+)*@\w+([.-]? w+)*(.\w{2,3})+$/;
+    // if (!testPassword.match(pattern)) {
+    const strongRegex = new RegExp('^(?=.*[a-z])' +
+      '(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})');
+    if (!strongRegex.test(testPassword)) {
       result = false;
       this.validationMessage = ` - ${testPassword} is not a valid password.`;
     }

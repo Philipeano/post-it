@@ -12,9 +12,9 @@ var session = require('express-session');
 var cookieParser = require('cookie-parser');
 var userRouter = require('../routes/userRouter');
 var groupRouter = require('../routes/groupRouter');
-var groupMemberRouter = require('../routes/membershipRouter');
+var membershipRouter = require('../routes/membershipRouter');
 var messageRouter = require('../routes/messageRouter');
-// const notificationRouter = require('../routes/notification');
+// const notificationRouter = require('../routes/notificationRouter');
 // const path = require('path');
 
 // Configure environment settings
@@ -56,7 +56,7 @@ app.use('/api/groups', checkSignIn, function (req, res, next) {
 });
 
 app.use('/api/groups', groupRouter);
-app.use('/api/groups/:groupId/users', groupMemberRouter);
+app.use('/api/groups/:groupId/users', membershipRouter);
 app.use('/api/groups/:groupId/messages', messageRouter);
 
 // Default API request

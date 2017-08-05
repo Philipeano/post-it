@@ -5,6 +5,7 @@ import Validator from '../controllers/validator';
 const sequelize = db.sequelize;
 let errorMessage;
 let reqPasswordHash;
+let userModelInstance;
 
 /**
  * @description: Defines controller for manipulating 'user' model
@@ -17,6 +18,7 @@ class UserController {
    */
   constructor() {
     this.user = user(sequelize);
+    userModelInstance = this.user;
   }
 
   /**
@@ -38,23 +40,21 @@ class UserController {
 
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
-    else if (!(Validator.passwordsMatch(req.body.password, req.body.cPassword)))
-    {
+    else if (!(Validator.passwordsMatch(req.body.password,
+        req.body.cPassword))) {
       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
       res.status(400).json({ message: errorMessage });
     }
-    else if (!(Validator.isValidEmail(req.body.email)))
-    {
+    else if (!(Validator.isValidEmail(req.body.email))) {
       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
       res.status(400).json({ message: errorMessage });
     }
-    else if (!(Validator.isValidPassword(req.body.password)))
-    {
+    else if (!(Validator.isValidPassword(req.body.password))) {
       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
       res.status(400).json({ message: errorMessage });
     }
     else {
-      this.user.findOne({ where: { username: req.body.username } })
+      userModelInstance.findOne({ where: { username: req.body.username } })
         .then((matchingUsers) => {
           if (matchingUsers) {
             res.status(409)
@@ -62,7 +62,7 @@ class UserController {
             res.end();
           }
         });
-      this.user.findOne({ where: { email: req.body.email } })
+      userModelInstance.findOne({ where: { email: req.body.email } })
         .then((matchingUsers) => {
           if (matchingUsers) {
             res.status(409)
@@ -71,15 +71,16 @@ class UserController {
           }
         });
       reqPasswordHash = Validator.generateHash(req.body.password);
-      return this.user.sync().then(() => {
-        this.user.create({
+      return userModelInstance.sync().then(() => {
+        userModelInstance.create({
           username: req.body.username,
           email: req.body.email,
           password: reqPasswordHash
         }).then((newUser) => {
           req.session.user = newUser;
           // res.redirect('/protected_page');
-          res.status(201).json(newUser);
+          res.status(201).json({ message: 'You signed up successfully!',
+            user: newUser });
         }).catch((err) => {
           res.status(500).json({ message: err.message });
         });
@@ -103,14 +104,16 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.user.findOne({ where: { username: req.body.username } })
+      userModelInstance.findOne({ where: { username: req.body.username } })
         .then((matchingUser) => {
           if (matchingUser) {
             if (Validator
                 .verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
               // res.redirect('/protected_page');
-              res.status(200).json(matchingUser);
+              // res.status(200).json(matchingUser);
+              res.status(200).json({ message: 'You signed in successfully!',
+                user: matchingUser });
             } else {
               res.status(400).json({ message: 'Password is invalid!' });
             }
@@ -154,8 +157,8 @@ class UserController {
    * @return {Object} allUsers
    */
   getAllUsers(req, res) {
-    this.user.findAll().then((allUsers) => {
-      res.status(200).json(allUsers);
+    userModelInstance.findAll().then((allUsers) => {
+      res.status(200).json({ 'Registered users': allUsers });
     }).catch((err) => {
       res.status(500).json({ message: err.message });
     });
@@ -168,20 +171,20 @@ class UserController {
    * @return {Object} matchingUser
    */
   getUserByKey(req, res) {
-    console.log(req.params);
-    console.log(this.user);
     errorMessage = '';
     if (Validator.isEmpty('User ID', req.params.userId))
       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.user.findOne({ where: { id: req.params.userId } })
+      userModelInstance.findOne({ where: { id: req.params.userId } })
         .then((matchingUser) => {
-          res.status(200).json(matchingUser);
+          if (matchingUser) {
+            res.status(200).json({ 'Specified user': matchingUser });
+          } else {
+            res.status(404).json({ message: 'Specified user does not exist' });
+          }
         }).catch((err) => {
-          // throw new Error(err);
-          // console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
     }
@@ -200,12 +203,19 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.user.destroy({ where: { id: req.params.userId } })
+      userModelInstance.findOne({ where: { id: req.params.userId } })
         .then((matchingUser) => {
-          res.status(200).json(matchingUser);
+          if (matchingUser) {
+            userModelInstance.destroy({ where: { id: req.params.userId } })
+              .then(() => {
+                res.status(200).json({ message: 'User deleted successfully!' });
+              }).catch((err) => {
+                res.status(500).json({ message: err.message });
+              });
+          } else {
+            res.status(404).json({ message: 'Specified user does not exist' });
+          }
         }).catch((err) => {
-          // throw new Error(err);
-          console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
     }
