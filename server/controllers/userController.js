@@ -111,7 +111,6 @@ class UserController {
                 .verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
               // res.redirect('/protected_page');
-              // res.status(200).json(matchingUser);
               res.status(200).json({ message: 'You signed in successfully!',
                 user: matchingUser });
             } else {
@@ -194,12 +193,12 @@ class UserController {
    * @description: Deletes a user matching specified userKey
    * @param {Object} req
    * @param {Object} res
-   * @return {Object} deletedUser
+   * @return {Object} null
    */
   deleteUser(req, res) {
     errorMessage = '';
     if (Validator.isEmpty('User ID', req.params.userId))
-      errorMessage = `${errorMessage} - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {

@@ -1,7 +1,7 @@
 import express from 'express';
 import MembershipController from '../controllers/membershipController';
 
-const membershipRouter = express.Router();
+const membershipRouter = express.Router({ mergeParams: true });
 
 /**
  * @description: Defines router for handling all 'group membership' requests

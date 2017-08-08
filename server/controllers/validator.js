@@ -1,13 +1,12 @@
 import bcrypt from 'bcrypt';
 
 /**
- * @description: Defines controller for validating all user input
+ * @description: Defines utility controller for validating all user input
  * @class
  */
 class Validator {
   /**
    * @description: Initializes validator object with no error
-   * @param {Object} errors
    * @constructor
    */
   constructor() {
@@ -58,8 +57,6 @@ class Validator {
    */
   static isValidPassword(testPassword) {
     let result = true;
-    // const pattern = /^\w+([.-]? w+)*@\w+([.-]? w+)*(.\w{2,3})+$/;
-    // if (!testPassword.match(pattern)) {
     const strongRegex = new RegExp('^(?=.*[a-z])' +
       '(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})');
     if (!strongRegex.test(testPassword)) {
