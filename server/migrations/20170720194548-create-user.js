@@ -32,37 +32,8 @@ module.exports = {
         allowNull: false,
         defaultValue: true
       },
-      isLoggedIn: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-      },
-      // picture: {
-      //   type: Sequelize.BINARY,
-      //   allowNull: true
-      // },
     }),
 
   down: queryInterface /* , Sequelize */ => queryInterface.dropTable('Users'),
 };
-
-//         User.hasMany(models.Group, {
-//           foreignKey: 'creatorId',
-//           as: 'ownGroups',
-//         });
-//
-//         User.hasMany(models.GroupMember, {
-//           foreignKey: 'memberId',
-//           as: 'memberships',
-//         });
-//
-//         User.hasMany(models.Message, {
-//           foreignKey: 'senderId',
-//           as: 'sentMessages',
-//         });
-//
-//         User.hasMany(models.Notification, {
-//           foreignKey: 'recipientId',
-//           as: 'notifications',
-//         });
 

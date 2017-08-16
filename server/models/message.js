@@ -30,32 +30,22 @@ export default (sequelize) => {
      type: DataTypes.UUID,
       allowNull: false
        },
-    datePosted: {
-     type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-       },
     */
-  }, {
-    classMethods: {
-      associate: (models) => {
-        Message.belongsTo(models.User, {
-          foreignKey: 'senderId',
-          as: 'sender',
-          onDelete: 'CASCADE',
-        });
-
-        Message.belongsTo(models.Group, {
-          foreignKey: 'groupId',
-          as: 'group',
-          onDelete: 'CASCADE',
-        });
-
-        Message.hasMany(models.Notification, {
-          foreignKey: 'notificationId',
-          as: 'notifications',
-        });
-      }
-    }
   });
+
+  Message.associate = (models) => {
+    Message.belongsTo(models.User, {
+      foreignKey: 'senderId',
+      as: 'sender',
+      onDelete: 'CASCADE',
+    });
+
+    Message.belongsTo(models.Group, {
+      foreignKey: 'groupId',
+      as: 'group',
+      onDelete: 'CASCADE',
+    });
+  };
+
   return Message;
 };

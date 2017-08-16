@@ -1,6 +1,6 @@
 import db from '../models/index';
 import message from '../models/message';
-import groupMember from '../models/groupmember';
+import groupMember from '../models/membership';
 // import notification from '../models/notification';
 import Validator from '../controllers/validator';
 

@@ -1,8 +1,6 @@
-/* eslint-disable spaced-comment */
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
-// const DataTypes = require('sequelize/lib/data-types');
 
 const basename = path.basename(module.filename);
 const env = process.env.NODE_ENV || 'development';
@@ -36,6 +34,5 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-// db.DataTypes = DataTypes;
 
 export default db;

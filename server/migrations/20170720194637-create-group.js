@@ -28,11 +28,6 @@ module.exports = {
         allowNull: false,
         defaultValue: true
       },
-      // picture: {
-      //   type: Sequelize.BINARY,
-      //   allowNull: true
-      // },
-
       creatorId: {
         type: Sequelize.UUID,
         onDelete: 'CASCADE',
@@ -46,13 +41,3 @@ module.exports = {
 
   down: queryInterface /* , Sequelize */ => queryInterface.dropTable('Users'),
 };
-
-// Group.hasMany(models.GroupMember, {
-//   foreignKey: 'id',
-//   as: 'memberGroups',
-// });
-//
-// Group.hasMany(models.Message, {
-//   foreignKey: 'groupId',
-//   as: 'messages',
-// });

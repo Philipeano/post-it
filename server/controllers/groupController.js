@@ -1,12 +1,10 @@
 import db from '../models/index';
-import group from '../models/group';
-import groupMember from '../models/groupmember';
 import Validator from '../controllers/validator';
 
-const sequelize = db.sequelize;
+const groupModelInstance = db.Group;
+const membershipModelInstance = db.Membership;
+const userModelInstance = db.User;
 let errorMessage;
-let groupModelInstance;
-let membershipModelInstance;
 
 /**
  * @description: Defines controller for manipulating 'group' model
@@ -14,15 +12,17 @@ let membershipModelInstance;
  */
 class GroupController {
   /**
-   * @description: Initializes instance with 'group' and 'groupMember' models
+   * @description: Initializes instance with 'group' and 'membership' models
    * as local properties
    * @constructor
    */
   constructor() {
-    this.group = group(sequelize);
-    this.membership = groupMember(sequelize);
-    groupModelInstance = this.group;
-    membershipModelInstance = this.membership;
+    this.group = db['Group'];
+    this.membership = db['Membership'];
+    this.user = db['User'];
+    // groupModelInstance = this.group;
+    // membershipModelInstance = this.membership;
+    // userModelInstance = this.user;
   }
 
   /**
@@ -50,35 +50,53 @@ class GroupController {
               groupModelInstance.create({
                 title: req.body.title,
                 purpose: req.body.purpose,
-                creator: req.session.user
+                creatorId: req.session.user.id
               }).then((newGroup) => {
-                // newGroup.setUser(req.session.user);
-                const createdGroup = newGroup;
                 membershipModelInstance.sync().then(() => {
                   membershipModelInstance.create({
-                    userRole: 'admin'
-                    // group: createdGroup,
-                    // groupId: createdGroup.id,
-                    // member: req.session.user,
-                    // memberId: req.session.user.id,
+                    userRole: 'admin',
+                    groupId: newGroup.id,
+                    memberId: req.session.user.id
                   }).then((newMembership) => {
-                    // newMembership.setGroup(newGroup);
-                    // newMembership.setMember(req.session.user);
-                    // console.log(`Current User: ${req.session.user},
-                    //  \nNew Group: ${createdGroup.toJSON()},
-                    //  \nMembership: ${newMembership.toJSON()}`);
+                    console.log(`Current User: ${req.session.user},
+                   \nNew Group: ${newGroup.toJSON()},
+                   \nMembership: ${newMembership.toJSON()}`);
                     res.status(201).json({
                       message: 'Group created successfully!',
-                      group: createdGroup
+                      group: newGroup
                     });
-                  }).catch((err) => {
-                    res.status(500).json({ message: err.message });
                   });
+                }).catch((err) => {
+                  res.status(500).json({ message: err.message });
                 });
-              }).catch((err) => {
-                res.status(500).json({ message: err.message });
               });
             });
+
+            // groupModelInstance.sync().then(() => {
+            //   groupModelInstance.create({
+            //     title: req.body.title,
+            //     purpose: req.body.purpose,
+            //     creatorId: req.session.user.id
+            //   }).then((newGroup) => {
+            //     membershipModelInstance.sync().then(() => {
+            //       membershipModelInstance.create({
+            //         userRole: 'admin',
+            //         groupId: newGroup.id,
+            //         memberId: req.session.user.id
+            //       }).then((newMembership) => {
+            //         console.log(`Current User: ${req.session.user},
+            //        \nNew Group: ${newGroup.toJSON()},
+            //        \nMembership: ${newMembership.toJSON()}`);
+            //         res.status(201).json({
+            //           message: 'Group created successfully!',
+            //           group: newGroup
+            //         });
+            //       });
+            //     }).catch((err) => {
+            //       res.status(500).json({ message: err.message });
+            //     });
+            //   });
+            // });
           }
         });
     }
@@ -91,11 +109,15 @@ class GroupController {
    * @return {Object} allGroups
    */
   getAllGroups(req, res) {
-    groupModelInstance.findAll().then((allGroups) => {
-      res.status(200).json({ 'Available groups': allGroups });
-    }).catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+    groupModelInstance.findAll({
+      include: [{ model: 'User', as: 'Creator' },
+        { model: 'Message', as: 'messages' }]
+    })
+      .then((allGroups) => {
+        res.status(200).json({ 'Available groups': allGroups });
+      }).catch((err) => {
+        res.status(500).json({ message: err.message });
+      });
   }
 
   /**

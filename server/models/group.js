@@ -20,41 +20,23 @@ export default (sequelize) => {
       allowNull: false,
       defaultValue: true
     },
-    // picture: {
-    //   type: DataTypes.BINARY,
-    //   allowNull: true
-    // }
-    /*
-    id: {
-    creatorId: {
-     type: DataTypes.UUID,
-      allowNull: false
-       },
-    dateCreated: {
-     type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW
-       },
-    */
-  }, {
-    classMethods: {
-      associate: (models) => {
-        Group.belongsTo(models.User, {
-          foreignKey: 'creatorId',
-          as: 'creator',
-          onDelete: 'CASCADE',
-        });
-
-        Group.hasMany(models.GroupMember, {
-          foreignKey: 'id',
-          as: 'memberGroups',
-        });
-
-        Group.hasMany(models.Message, {
-          foreignKey: 'groupId',
-          as: 'messages',
-        });
-      },
-    },
   });
+
+  Group.associate = (models) => {
+    Group.belongsTo(models.User, {
+      foreignKey: 'creatorId',
+      as: 'creator',
+      onDelete: 'CASCADE',
+    });
+    Group.belongsToMany(models.User, {
+      through: models.Membership,
+      foreignKey: 'memberId',
+      as: 'member',
+    });
+    Group.hasMany(models.Message, {
+      foreignKey: 'groupId',
+    });
+  };
+
   return Group;
 };

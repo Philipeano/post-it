@@ -1,5 +1,5 @@
 import db from '../models/index';
-import groupMember from '../models/groupmember';
+import membership from '../models/membership';
 import Validator from '../controllers/validator';
 
 const sequelize = db.sequelize;
@@ -7,7 +7,7 @@ let errorMessage;
 let membershipModelInstance;
 
 /**
- * @description: Defines controller for manipulating 'groupMember' model
+ * @description: Defines controller for manipulating 'membership' model
  * @class
  */
 class MembershipController {
@@ -16,7 +16,7 @@ class MembershipController {
    * @constructor
    */
   constructor() {
-    this.membership = groupMember(sequelize);
+    this.membership = membership(sequelize);
     membershipModelInstance = this.membership;
   }
 
@@ -30,14 +30,14 @@ class MembershipController {
     errorMessage = '';
     if (Validator.isEmpty('Group ID', req.params.groupId))
       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
-    if (Validator.isEmpty('User ID', req.params.userId))
+    if (Validator.isEmpty('User ID', req.body.userId))
       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
 
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
       membershipModelInstance.findOne({ where: { groupId: req.params.groupId,
-        memberId: req.params.userId } })
+        memberId: req.body.userId } })
         .then((existingMembership) => {
           if (existingMembership)
             res.status(409).json({ message: 'User is already in the group!' });
@@ -45,7 +45,7 @@ class MembershipController {
             membershipModelInstance.sync().then(() => {
               membershipModelInstance.create({
                 groupId: req.params.groupId,
-                memberId: req.params.userId,
+                memberId: req.body.userId,
                 userRole: 'member'
               }).then((newMembership) => {
                 res.status(201).json({
