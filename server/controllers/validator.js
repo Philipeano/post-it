@@ -14,12 +14,6 @@ class Validator {
   }
 
   /**
-   * @description: Holds last generated error message
-   * @property {String}
-  static message
-   */
-
-  /**
    * @description: Checks for null/empty entry
    * @param {String} fieldName
    * @param {String} fieldValue
@@ -73,13 +67,12 @@ class Validator {
    * @return {Object} isValid
    */
   static passwordsMatch(password1, password2) {
-    const result = { isValid: true, errorMessage: '' };
+    let result = true;
     if (password1 !== password2) {
-      result.isValid = false;
-      result.errorMessage = ' - The two passwords do not match.';
+      result = false;
+      this.validationMessage = ' - The two passwords do not match.';
     }
-    this.validationMessage = result.errorMessage;
-    return result.isValid;
+    return result;
   }
 
   /**

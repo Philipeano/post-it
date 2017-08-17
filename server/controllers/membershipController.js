@@ -1,10 +1,9 @@
 import db from '../models/index';
-import membership from '../models/membership';
 import Validator from '../controllers/validator';
 
-const sequelize = db.sequelize;
+const groupModel = db.Group;
+const membershipModel = db.Membership;
 let errorMessage;
-let membershipModelInstance;
 
 /**
  * @description: Defines controller for manipulating 'membership' model
@@ -16,8 +15,8 @@ class MembershipController {
    * @constructor
    */
   constructor() {
-    this.membership = membership(sequelize);
-    membershipModelInstance = this.membership;
+    this.group = groupModel;
+    this.membership = membershipModel;
   }
 
   /**
@@ -36,28 +35,44 @@ class MembershipController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModelInstance.findOne({ where: { groupId: req.params.groupId,
-        memberId: req.body.userId } })
-        .then((existingMembership) => {
-          if (existingMembership)
-            res.status(409).json({ message: 'User is already in the group!' });
-          else {
-            membershipModelInstance.sync().then(() => {
-              membershipModelInstance.create({
-                groupId: req.params.groupId,
-                memberId: req.body.userId,
-                userRole: 'member'
-              }).then((newMembership) => {
-                res.status(201).json({
-                  message: 'User added to group successfully!',
-                  membership: newMembership
+      groupModel.findById(req.params.groupId).then((matchingGroup) => {
+        if (matchingGroup) {
+          membershipModel.findOne({
+            where: {
+              groupId: req.params.groupId,
+              memberId: req.body.userId
+            }
+          })
+            .then((existingMembership) => {
+              if (existingMembership)
+                res.status(409)
+                  .json({ message: 'User is already in the group!' });
+              else {
+                membershipModel.sync().then(() => {
+                  membershipModel.create({
+                    groupId: req.params.groupId,
+                    memberId: req.body.userId,
+                    userRole: 'member'
+                  }).then((newMembership) => {
+                    res.status(201).json({
+                      message: 'User added to group successfully!',
+                      membership: newMembership
+                    });
+                  }).catch((err) => {
+                    res.status(500).json({ message: err.message });
+                  });
                 });
-              }).catch((err) => {
-                res.status(500).json({ message: err.message });
-              });
+              }
+            }).catch((err) => {
+              res.status(500).json({ message: err.message });
             });
-          }
-        });
+        } else {
+          res.status(404)
+            .json({ message: 'Specified group does not exist!' });
+        }
+      }).catch((err) => {
+        res.status(500).json({ message: err.message });
+      });
     }
   }
 
@@ -74,7 +89,7 @@ class MembershipController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModelInstance
+      membershipModel
         .findAll({ where: { groupId: req.params.groupId } })
         .then((memberships) => {
           res.status(200).json({ Memberships: memberships });
@@ -100,11 +115,11 @@ class MembershipController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModelInstance.findOne({ where: { groupId: req.params.groupId,
+      membershipModel.findOne({ where: { groupId: req.params.groupId,
         memberId: req.params.userId } })
         .then((matchingMembership) => {
           if (matchingMembership) {
-            membershipModelInstance
+            membershipModel
               .destroy({ where: { groupId: req.params.groupId,
                 memberId: req.params.userId } })
               .then(() => {

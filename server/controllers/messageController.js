@@ -1,14 +1,10 @@
 import db from '../models/index';
-import message from '../models/message';
-import groupMember from '../models/membership';
-// import notification from '../models/notification';
 import Validator from '../controllers/validator';
 
-const sequelize = db.sequelize;
+const groupModel = db.Group;
+const membershipModel = db.Membership;
+const messageModel = db.Message;
 let errorMessage;
-let messageModelInstance;
-let membershipModelInstance;
-// let notificationModelInstance;
 
 /**
  * @description: Defines controller for manipulating 'message' model
@@ -21,9 +17,9 @@ class MessageController {
    * @constructor
    */
   constructor() {
-    this.message = message(sequelize);
-    this.membership = groupMember(sequelize);
-    // this.notification = notification(sequelize);
+    this.group = groupModel;
+    this.membership = membershipModel;
+    this.message = messageModel;
   }
 
   /**
@@ -42,71 +38,46 @@ class MessageController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModelInstance.findOne({
-        where: { groupId: req.params.groupId,
-          memberId: req.session.user.id } })
-        .then((membership) => {
-          if (membership) {
-            messageModelInstance.sync().then(() => {
-              messageModelInstance.create({
-                groupId: req.params.groupId,
-                senderId: req.session.user.id,
-                content: req.body.content
-              }).then((newMessage) => {
-                res.status(201)
-                  .json({ message: 'Message posted to group successfully!',
-                    'new message': newMessage });
-              }).catch((err) => {
-                res.status(500).json({ message: err.message });
-              });
+      groupModel.findById(req.params.groupId).then((matchingGroup) => {
+        if (matchingGroup) {
+          membershipModel.findOne({
+            where: {
+              groupId: req.params.groupId,
+              memberId: req.session.user.id
+            }
+          })
+            .then((membership) => {
+              if (membership) {
+                messageModel.sync().then(() => {
+                  messageModel.create({
+                    groupId: req.params.groupId,
+                    senderId: req.session.user.id,
+                    content: req.body.content
+                  }).then((newMessage) => {
+                    res.status(201).json({
+                      message: 'Message posted to group successfully!',
+                      'posted message': newMessage
+                    });
+                  }).catch((err) => {
+                    res.status(500).json({ message: err.message });
+                  });
+                });
+              } else {
+                res.status(403)
+                  .json({ message: 'You do not belong to this group!' });
+              }
+            }).catch((err) => {
+              res.status(500).json({ message: err.message });
             });
-          } else {
-            res.status(403)
-              .json({ message: 'You do not belong to this group!' });
-          }
-        }).catch((err) => {
-          res.status(500).json({ message: err.message });
-        });
+        } else {
+          res.status(404)
+            .json({ message: 'Specified group does not exist!' });
+        }
+      }).catch((err) => {
+        res.status(500).json({ message: err.message });
+      });
     }
   }
-  //
-  // /**
-  //  * @description: Checks if current user can post to a group
-  //  * @param {String} testGroupId
-  //  * @param {String} testUserId
-  //  * @return {Boolean} true/false
-  //  */
-  // isMember(testGroupId, testUserId) {
-  //   errorMessage = '';
-  //   this.groupMember.findOne({
-  //     where: { groupId: testGroupId, memberId: testUserId }
-  //   })
-  //     .then((memberships) => {
-  //       if (memberships.length > 0)
-  //         return true;
-  //       errorMessage = `${errorMessage} You do not belong to this group!`;
-  //       return false;
-  //     });
-  // }
-  //
-  // /**
-  //  * @description: Checks if current user is sender of a message
-  //  * @param {String} testMessageId
-  //  * @param {String} testUserId
-  //  * @return {Boolean} true/false
-  //  */
-  // isSender(testMessageId, testUserId) {
-  //   errorMessage = '';
-  //   this.message.findOne({
-  //     where: { messageId: testMessageId, senderId: testUserId }
-  //   })
-  //     .then((matchingMessages) => {
-  //       if (matchingMessages.length > 0)
-  //         return true;
-  //       errorMessage = `${errorMessage} The message was not posted by you!`;
-  //       return false;
-  //     });
-  // }
 
   /**
    * @description: Fetches all messages in a group
@@ -121,12 +92,12 @@ class MessageController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModelInstance.findOne({
+      membershipModel.findOne({
         where: { groupId: req.params.groupId,
           memberId: req.session.user.id } })
         .then((membership) => {
           if (membership) {
-            messageModelInstance
+            messageModel
               .findAll({ where: { groupId: req.params.groupId } })
               .then((messages) => {
                 res.status(200).json({ Messages: messages });
@@ -159,18 +130,18 @@ class MessageController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModelInstance.findOne({
+      membershipModel.findOne({
         where: { groupId: req.params.groupId,
           memberId: req.session.user.id } })
         .then((membership) => {
           if (membership) {
-            messageModelInstance
+            messageModel
               .findAll({ where: { groupId: req.params.groupId,
                 id: req.params.messageId,
                 senderId: req.session.user.id } })
               .then((messages) => {
                 if (messages) {
-                  messageModelInstance
+                  messageModel
                     .destroy({ where: { id: req.params.messageId } })
                     .then(() => {
                       res.status(200)

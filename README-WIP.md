@@ -1,5 +1,6 @@
 # PostIT
-PostIT is a simple web application that enables friends and colleagues create groups for notifications.
+PostIT is a simple web application that enables friends and colleagues create groups for notifications. 
+It is a multi-purpose system built for group-wide messaging.  
 
 ![TravisCI]()
 ![HoundCI]()
@@ -8,10 +9,6 @@ PostIT is a simple web application that enables friends and colleagues create gr
 
 
 > You can access the hosted app here: https://philipeano-postit.herokuapp.com/api.
-
-This is a long description.
-
-## Table of Contents
 
 - [Getting Started](#background)
 - [Install](#install)

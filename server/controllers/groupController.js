@@ -1,9 +1,9 @@
 import db from '../models/index';
 import Validator from '../controllers/validator';
 
-const groupModelInstance = db.Group;
-const membershipModelInstance = db.Membership;
-const userModelInstance = db.User;
+const groupModel = db.Group;
+const membershipModel = db.Membership;
+const userModel = db.User;
 let errorMessage;
 
 /**
@@ -17,12 +17,9 @@ class GroupController {
    * @constructor
    */
   constructor() {
-    this.group = db['Group'];
-    this.membership = db['Membership'];
-    this.user = db['User'];
-    // groupModelInstance = this.group;
-    // membershipModelInstance = this.membership;
-    // userModelInstance = this.user;
+    this.group = groupModel;
+    this.membership = membershipModel;
+    this.user = userModel;
   }
 
   /**
@@ -41,26 +38,23 @@ class GroupController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      groupModelInstance.findOne({ where: { title: req.body.title } })
+      groupModel.findOne({ where: { title: req.body.title } })
         .then((matchingGroup) => {
           if (matchingGroup)
             res.status(409).json({ message: 'Group Title is already taken!' });
           else {
-            groupModelInstance.sync().then(() => {
-              groupModelInstance.create({
+            groupModel.sync().then(() => {
+              groupModel.create({
                 title: req.body.title,
                 purpose: req.body.purpose,
                 creatorId: req.session.user.id
               }).then((newGroup) => {
-                membershipModelInstance.sync().then(() => {
-                  membershipModelInstance.create({
+                membershipModel.sync().then(() => {
+                  membershipModel.create({
                     userRole: 'admin',
                     groupId: newGroup.id,
                     memberId: req.session.user.id
-                  }).then((newMembership) => {
-                    console.log(`Current User: ${req.session.user},
-                   \nNew Group: ${newGroup.toJSON()},
-                   \nMembership: ${newMembership.toJSON()}`);
+                  }).then(() => {
                     res.status(201).json({
                       message: 'Group created successfully!',
                       group: newGroup
@@ -71,32 +65,6 @@ class GroupController {
                 });
               });
             });
-
-            // groupModelInstance.sync().then(() => {
-            //   groupModelInstance.create({
-            //     title: req.body.title,
-            //     purpose: req.body.purpose,
-            //     creatorId: req.session.user.id
-            //   }).then((newGroup) => {
-            //     membershipModelInstance.sync().then(() => {
-            //       membershipModelInstance.create({
-            //         userRole: 'admin',
-            //         groupId: newGroup.id,
-            //         memberId: req.session.user.id
-            //       }).then((newMembership) => {
-            //         console.log(`Current User: ${req.session.user},
-            //        \nNew Group: ${newGroup.toJSON()},
-            //        \nMembership: ${newMembership.toJSON()}`);
-            //         res.status(201).json({
-            //           message: 'Group created successfully!',
-            //           group: newGroup
-            //         });
-            //       });
-            //     }).catch((err) => {
-            //       res.status(500).json({ message: err.message });
-            //     });
-            //   });
-            // });
           }
         });
     }
@@ -109,9 +77,9 @@ class GroupController {
    * @return {Object} allGroups
    */
   getAllGroups(req, res) {
-    groupModelInstance.findAll({
-      include: [{ model: 'User', as: 'Creator' },
-        { model: 'Message', as: 'messages' }]
+    groupModel.findAll({
+      // include: [{ model: 'User', as: 'Creator' },
+      //   { model: 'Message', as: 'messages' }]
     })
       .then((allGroups) => {
         res.status(200).json({ 'Available groups': allGroups });
@@ -133,7 +101,7 @@ class GroupController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      groupModelInstance.findOne({ where: { id: req.params.groupId } })
+      groupModel.findOne({ where: { id: req.params.groupId } })
         .then((matchingGroup) => {
           if (matchingGroup) {
             res.status(200).json({ 'Specified group': matchingGroup });
@@ -159,10 +127,10 @@ class GroupController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      groupModelInstance.findOne({ where: { id: req.params.groupId } })
+      groupModel.findOne({ where: { id: req.params.groupId } })
         .then((matchingGroup) => {
           if (matchingGroup) {
-            groupModelInstance.destroy({ where: { id: req.params.groupId } })
+            groupModel.destroy({ where: { id: req.params.groupId } })
               .then(() => {
                 res.status(200)
                   .json({ message: 'Group deleted successfully!' });

@@ -1,11 +1,9 @@
 import db from '../models/index';
-import user from '../models/user';
 import Validator from '../controllers/validator';
 
-const sequelize = db.sequelize;
-let errorMessage;
+const userModel = db.User;
 let reqPasswordHash;
-let userModelInstance;
+let errorMessage;
 
 /**
  * @description: Defines controller for manipulating 'user' model
@@ -17,8 +15,7 @@ class UserController {
    * @constructor
    */
   constructor() {
-    this.user = user(sequelize);
-    userModelInstance = this.user;
+    this.user = userModel;
   }
 
   /**
@@ -54,7 +51,7 @@ class UserController {
       res.status(400).json({ message: errorMessage });
     }
     else {
-      userModelInstance.findOne({ where: { username: req.body.username } })
+      userModel.findOne({ where: { username: req.body.username } })
         .then((matchingUsers) => {
           if (matchingUsers) {
             res.status(409)
@@ -62,7 +59,7 @@ class UserController {
             res.end();
           }
         });
-      userModelInstance.findOne({ where: { email: req.body.email } })
+      userModel.findOne({ where: { email: req.body.email } })
         .then((matchingUsers) => {
           if (matchingUsers) {
             res.status(409)
@@ -71,8 +68,8 @@ class UserController {
           }
         });
       reqPasswordHash = Validator.generateHash(req.body.password);
-      return userModelInstance.sync().then(() => {
-        userModelInstance.create({
+      return userModel.sync().then(() => {
+        userModel.create({
           username: req.body.username,
           email: req.body.email,
           password: reqPasswordHash
@@ -104,13 +101,12 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      userModelInstance.findOne({ where: { username: req.body.username } })
+      userModel.findOne({ where: { username: req.body.username } })
         .then((matchingUser) => {
           if (matchingUser) {
             if (Validator
                 .verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
-              // res.redirect('/protected_page');
               res.status(200).json({ message: 'You signed in successfully!',
                 user: matchingUser });
             } else {
@@ -156,7 +152,7 @@ class UserController {
    * @return {Object} allUsers
    */
   getAllUsers(req, res) {
-    userModelInstance.findAll().then((allUsers) => {
+    userModel.findAll().then((allUsers) => {
       res.status(200).json({ 'Registered users': allUsers });
     }).catch((err) => {
       res.status(500).json({ message: err.message });
@@ -176,7 +172,7 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      userModelInstance.findOne({ where: { id: req.params.userId } })
+      userModel.findOne({ where: { id: req.params.userId } })
         .then((matchingUser) => {
           if (matchingUser) {
             res.status(200).json({ 'Specified user': matchingUser });
@@ -202,10 +198,10 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      userModelInstance.findOne({ where: { id: req.params.userId } })
+      userModel.findOne({ where: { id: req.params.userId } })
         .then((matchingUser) => {
           if (matchingUser) {
-            userModelInstance.destroy({ where: { id: req.params.userId } })
+            userModel.destroy({ where: { id: req.params.userId } })
               .then(() => {
                 res.status(200).json({ message: 'User deleted successfully!' });
               }).catch((err) => {

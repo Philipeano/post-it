@@ -1,7 +1,7 @@
 import express from 'express';
 import MessageController from '../controllers/messageController';
 
-const messageRouter = express.Router();
+const messageRouter = express.Router({ mergeParams: true });
 
 /**
  * @description: Defines router for handling all 'group message' requests
