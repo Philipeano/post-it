@@ -1,6 +1,6 @@
 # PostIT
 
-[![Build Status](https://travis-ci.org/Philipeano/post-it.svg?branch=develop)]
+[![Build Status](https://travis-ci.org/Philipeano/post-it.svg?branch=develop)](https://travis-ci.org/Philipeano/post-it?branch=develop) 
 [![Coverage Status](https://coveralls.io/repos/github/Philipeano/post-it/badge.svg?branch=develop)](https://coveralls.io/github/Philipeano/post-it?branch=develop)
 
 ## Overview
