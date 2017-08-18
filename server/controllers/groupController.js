@@ -1,10 +1,9 @@
 import db from '../models/index';
-import group from '../models/group';
-import MembershipController from './membershipController';
 import Validator from '../controllers/validator';
 
-const sequelize = db.sequelize;
-const membershipController = new MembershipController();
+const groupModel = db.Group;
+const membershipModel = db.Membership;
+const userModel = db.User;
 let errorMessage;
 
 /**
@@ -13,11 +12,14 @@ let errorMessage;
  */
 class GroupController {
   /**
-   * @description: Initializes instance with 'group' model as local property
+   * @description: Initializes instance with 'group' and 'membership' models
+   * as local properties
    * @constructor
    */
   constructor() {
-    this.group = group(sequelize);
+    this.group = groupModel;
+    this.membership = membershipModel;
+    this.user = userModel;
   }
 
   /**
@@ -29,48 +31,43 @@ class GroupController {
   createGroup(req, res) {
     errorMessage = '';
     if (Validator.isEmpty('Title', req.body.title))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
     if (Validator.isEmpty('Purpose', req.body.purpose))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
 
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
-    else if (this.isDuplicate(req.body.title))
-      res.status(409).json({ message: 'Group Title is already taken!' });
     else {
-      return this.group.sync().then(() => {
-        this.group.create({
-          title: req.body.title,
-          purpose: req.body.purpose,
-          creatorId: req.session.userId
-        }).then((newGroup) => {
-          membershipController.addDefaultMemberToGroup(groupId, userId);
-          res.status(201).json(newGroup);
-        }).catch((err) => {
-          // throw new Error(err);
-          console.error(err.stack)
-          res.status(500).json({ message: err.message });
+      groupModel.findOne({ where: { title: req.body.title } })
+        .then((matchingGroup) => {
+          if (matchingGroup)
+            res.status(409).json({ message: 'Group Title is already taken!' });
+          else {
+            groupModel.sync().then(() => {
+              groupModel.create({
+                title: req.body.title,
+                purpose: req.body.purpose,
+                creatorId: req.session.user.id
+              }).then((newGroup) => {
+                membershipModel.sync().then(() => {
+                  membershipModel.create({
+                    userRole: 'admin',
+                    groupId: newGroup.id,
+                    memberId: req.session.user.id
+                  }).then(() => {
+                    res.status(201).json({
+                      message: 'Group created successfully!',
+                      group: newGroup
+                    });
+                  });
+                }).catch((err) => {
+                  res.status(500).json({ message: err.message });
+                });
+              });
+            });
+          }
         });
-      });
     }
-  }
-
-  /**
-   * @description: Checks if supplied group title already exists
-   * @param {String} testTitle
-   * @return {Boolean} true/false
-   */
-  isDuplicate(testTitle) {
-    errorMessage = '';
-    this.group.findOne({ where: { title: testTitle } })
-      .then((matchingGroups) => {
-        if (matchingGroups.length > 0)
-          errorMessage = `${errorMessage}\n - Group Title is already taken!`;
-      });
-    if (errorMessage.trim() === '')
-      return false;
-    console.log(errorMessage);
-    return true;
   }
 
   /**
@@ -80,17 +77,19 @@ class GroupController {
    * @return {Object} allGroups
    */
   getAllGroups(req, res) {
-    this.group.findAll().then((allGroups) => {
-      res.status(200).json(allGroups);
-    }).catch((err) => {
-      // throw new Error(err);
-      console.error(err.stack)
-      res.status(500).json({ message: err.message });
-    });
+    groupModel.findAll({
+      // include: [{ model: 'User', as: 'Creator' },
+      //   { model: 'Message', as: 'messages' }]
+    })
+      .then((allGroups) => {
+        res.status(200).json({ 'Available groups': allGroups });
+      }).catch((err) => {
+        res.status(500).json({ message: err.message });
+      });
   }
 
   /**
-   * @description: Fetches all groups matching specified groupKey
+   * @description: Fetches a group matching specified groupKey
    * @param {Object} req
    * @param {Object} res
    * @return {Object} matchingGroup
@@ -98,16 +97,18 @@ class GroupController {
   getGroupByKey(req, res) {
     errorMessage = '';
     if (Validator.isEmpty('Group ID', req.params.groupId))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.group.findOne({ where: { groupId: req.params.groupId } })
+      groupModel.findOne({ where: { id: req.params.groupId } })
         .then((matchingGroup) => {
-          res.status(200).json(matchingGroup);
+          if (matchingGroup) {
+            res.status(200).json({ 'Specified group': matchingGroup });
+          } else {
+            res.status(404).json({ message: 'Specified group does not exist' });
+          }
         }).catch((err) => {
-          // throw new Error(err);
-          console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
     }
@@ -117,21 +118,29 @@ class GroupController {
    * @description: Deletes a group matching specified groupKey
    * @param {Object} req
    * @param {Object} res
-   * @return {Object} deletedGroup
+   * @return {Object} null
    */
   deleteGroup(req, res) {
     errorMessage = '';
     if (Validator.isEmpty('Group ID', req.params.groupId))
-      errorMessage = `${errorMessage}\n - ${Validator.validationMessage}`;
+      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.group.destroy({ where: { groupId: req.params.groupId } })
+      groupModel.findOne({ where: { id: req.params.groupId } })
         .then((matchingGroup) => {
-          res.status(200).json(matchingGroup);
+          if (matchingGroup) {
+            groupModel.destroy({ where: { id: req.params.groupId } })
+              .then(() => {
+                res.status(200)
+                  .json({ message: 'Group deleted successfully!' });
+              }).catch((err) => {
+                res.status(500).json({ message: err.message });
+              });
+          } else {
+            res.status(404).json({ message: 'Specified group does not exist' });
+          }
         }).catch((err) => {
-          // throw new Error(err);
-          console.error(err.stack)
           res.status(500).json({ message: err.message });
         });
     }

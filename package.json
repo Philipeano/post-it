@@ -2,10 +2,16 @@
   "name": "post-it",
   "version": "1.0.0",
   "description": "PostIT is a simple app for small or large group conversations.",
+  "engines": {
+    "node": "8.1.4",
+    "npm": "5.3.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-server": "babel server/src -d server/dist",
-    "start:dev": "npm run build-server && webpack && nodemon server/dist/app.js"
+    "start:dev": "npm run build-server && webpack && nodemon server/dist/app.js",
+    "postinstall": "npm run build-server && webpack",
+    "start": "node server/dist/app.js"
   },
   "repository": {
     "type": "git",
@@ -34,7 +40,7 @@
     "morgan": "^1.8.2",
     "pg": "^6.4.1",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.3.2",
+    "sequelize": "^4.4.4",
     "webpack": "^3.1.0"
   },
   "devDependencies": {

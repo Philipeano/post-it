@@ -30,6 +30,7 @@ export default (sequelize) => {
       allowNull: false,
       defaultValue: true
     },
+<<<<<<< HEAD
     isLoggedIn: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -64,17 +65,27 @@ export default (sequelize) => {
           foreignKey: 'creatorId',
           as: 'ownGroups',
         });
+=======
+  });
 
-        User.hasMany(models.GroupMember, {
-          foreignKey: 'memberId',
-          as: 'memberships',
-        });
+  User.associate = (models) => {
+    User.hasMany(models.Group, {
+      foreignKey: 'creatorId',
+      as: 'creator',
+    });
+>>>>>>> server
 
-        User.hasMany(models.Message, {
-          foreignKey: 'senderId',
-          as: 'sentMessages',
-        });
+    User.hasMany(models.Message, {
+      foreignKey: 'senderId',
+      as: 'sender',
+    });
 
+    User.hasMany(models.Notification, {
+      foreignKey: 'recipientId',
+      as: 'recipient',
+    });
+
+<<<<<<< HEAD
         User.hasMany(models.Notification, {
           foreignKey: 'recipientId',
           as: 'notifications',
@@ -100,5 +111,27 @@ export default (sequelize) => {
 >>>>>>> server
     },
   });
+=======
+    User.belongsToMany(models.Group, {
+      through: models.Membership,
+      foreignKey: 'groupId',
+    });
+  };
+  /*
+  generateHash: (plainText) => {
+    // Create hash from new password
+    bcrypt.hash(plainText, 10, (err, hash) => {
+      // Store hashed password in database
+      this.password = hash;
+    });
+  },
+  verifyPassword: (plainText, hashFromDB) => {
+    bcrypt.compare(plainText, hashFromDB, (err, res) => {
+      // Return comparison result
+      return res;
+    });
+  },
+  */
+>>>>>>> server
   return User;
 };

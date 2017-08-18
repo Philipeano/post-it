@@ -1,7 +1,7 @@
 import express from 'express';
 import GroupController from '../controllers/groupController';
 
-const groupRouter = express.Router();
+const groupRouter = express.Router({ mergeParams: true });
 
 /**
  * @description: Defines router for handling all 'group' requests

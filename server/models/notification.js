@@ -21,6 +21,7 @@ export default (sequelize) => {
       values: ['unread', 'read', 'archived'],
       defaultValue: 'unread'
     }
+<<<<<<< HEAD
     /*
 <<<<<<< HEAD
     id: {
@@ -55,6 +56,23 @@ export default (sequelize) => {
         });
       }
     }
+=======
+>>>>>>> server
   });
+
+  Notification.associate = (models) => {
+    Notification.belongsTo(models.User, {
+      foreignKey: 'recipientId',
+      as: 'recipient',
+      onDelete: 'CASCADE',
+    });
+
+    Notification.belongsTo(models.Message, {
+      foreignKey: 'messageId',
+      as: 'originalMessage',
+      onDelete: 'CASCADE',
+    });
+  };
+
   return Notification;
 };
