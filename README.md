@@ -1,7 +1,7 @@
 # PostIT
 
-[![Build Status](https://travis-ci.org/Philipeano/post-it.svg?branch=develop)](https://travis-ci.org/Philipeano/post-it?branch=develop) 
-[![Coverage Status](https://coveralls.io/repos/github/Philipeano/post-it/badge.svg?branch=develop)](https://coveralls.io/github/Philipeano/post-it?branch=develop)
+[![Build Status](https://travis-ci.org/Philipeano/post-it.svg?branch=server)](https://travis-ci.org/Philipeano/post-it?branch=server) 
+[![Coverage Status](https://coveralls.io/repos/github/Philipeano/post-it/badge.svg?branch=server)](https://coveralls.io/github/Philipeano/post-it?branch=server)
 
 ## Overview
 PostIT is a simple web application that enables friends and colleagues create groups for notifications. It is a multi-purpose system built for group-wide messaging.  
