@@ -2,9 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Philipeano/post-it.svg?branch=master)](https://travis-ci.org/Philipeano/post-it)
 https://travis-ci.org/Philipeano/post-it.svg?branch=master
-![HoundCI]()
 [![Coverage Status](https://coveralls.io/repos/github/Philipeano/post-it/badge.svg?branch=master)](https://coveralls.io/github/Philipeano/post-it?branch=develop)
-![CodeClimate]()
 
 
 ## Overview
