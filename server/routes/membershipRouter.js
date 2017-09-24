@@ -26,5 +26,5 @@ membershipRouter.delete('/:userId', (req, res) => {
   membershipController.deleteMemberFromGroup(req, res);
 });
 
-// export default membershipController;
+// export default membershipRouter;
 module.exports = membershipRouter;

@@ -54,17 +54,17 @@ class UserController {
       userModel.findOne({ where: { username: req.body.username } })
         .then((matchingUsers) => {
           if (matchingUsers) {
-            res.status(409)
+            return res.status(409)
               .json({ message: 'Username is already in use!' });
-            res.end();
+            // res.end();
           }
         });
       userModel.findOne({ where: { email: req.body.email } })
         .then((matchingUsers) => {
           if (matchingUsers) {
-            res.status(409)
+            return res.status(409)
               .json({ message: 'Email Address already exists!' });
-            res.end();
+            // res.end();
           }
         });
       reqPasswordHash = Validator.generateHash(req.body.password);

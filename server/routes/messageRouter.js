@@ -21,10 +21,15 @@ messageRouter.get('/', (req, res) => {
   messageController.getMessagesFromGroup(req, res);
 });
 
+// Update a message sent to a group
+messageRouter.patch('/:messageId', (req, res) => {
+  messageController.updatePostedMessage(req, res);
+});
+
 // Delete a message sent to a group
 messageRouter.delete('/:messageId', (req, res) => {
   messageController.deletePostedMessage(req, res);
 });
 
-// export default messageRouter;
 module.exports = messageRouter;
+// export default messageRouter;

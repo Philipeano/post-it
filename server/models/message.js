@@ -1,6 +1,4 @@
-import DataTypes from 'sequelize/lib/data-types';
-
-export default (sequelize) => {
+export default (sequelize, DataTypes) => {
   const Message = sequelize.define('Message', {
     id: {
       type: DataTypes.UUID,
@@ -21,16 +19,6 @@ export default (sequelize) => {
       values: ['normal', 'urgent', 'critical'],
       defaultValue: 'normal'
     }
-    /*
-    senderId: {
-     type: DataTypes.UUID,
-      allowNull: false
-       },
-    groupId: {
-     type: DataTypes.UUID,
-      allowNull: false
-       },
-    */
   });
 
   Message.associate = (models) => {

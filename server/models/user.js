@@ -1,7 +1,4 @@
-// import bcrypt from 'bcrypt';
-import DataTypes from 'sequelize/lib/data-types';
-
-export default (sequelize) => {
+export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
       type: DataTypes.UUID,
@@ -30,38 +27,24 @@ export default (sequelize) => {
   User.associate = (models) => {
     User.hasMany(models.Group, {
       foreignKey: 'creatorId',
-      as: 'creator',
+      as: 'creator'
     });
 
     User.hasMany(models.Message, {
       foreignKey: 'senderId',
-      as: 'sender',
+      as: 'sender'
     });
 
     User.hasMany(models.Notification, {
       foreignKey: 'recipientId',
-      as: 'recipient',
+      as: 'recipient'
     });
 
     User.belongsToMany(models.Group, {
       through: models.Membership,
-      foreignKey: 'groupId',
+      foreignKey: 'memberId',
+      otherKey: 'groupId'
     });
   };
-  /*
-  generateHash: (plainText) => {
-    // Create hash from new password
-    bcrypt.hash(plainText, 10, (err, hash) => {
-      // Store hashed password in database
-      this.password = hash;
-    });
-  },
-  verifyPassword: (plainText, hashFromDB) => {
-    bcrypt.compare(plainText, hashFromDB, (err, res) => {
-      // Return comparison result
-      return res;
-    });
-  },
-  */
   return User;
 };

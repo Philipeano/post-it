@@ -1,6 +1,4 @@
-import DataTypes from 'sequelize/lib/data-types';
-
-export default (sequelize) => {
+export default (sequelize, DataTypes) => {
   const Notification = sequelize.define('Notification', {
     id: {
       type: DataTypes.UUID,
