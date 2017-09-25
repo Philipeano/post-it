@@ -4,32 +4,46 @@ import MessageController from '../controllers/messageController';
 const messageRouter = express.Router({ mergeParams: true });
 
 /**
- * @description: Defines router for handling all 'group message' requests
+ * @description: Defines router for handling all 'message' requests
  * @module
  */
 
 const messageController = new MessageController();
-// baseURL /api/groups/:groupId/messages
 
-// Post a message to a group
+/**
+ * @description: Post a message to a group
+ * @param {Object} req
+ * @param {Object} res
+ */
 messageRouter.post('/', (req, res) => {
   messageController.postMessageToGroup(req, res);
 });
 
-// Fetch all messages available to a group
+/**
+ * @description: Fetch all messages available to a group
+ * @param {Object} req
+ * @param {Object} res
+ */
 messageRouter.get('/', (req, res) => {
   messageController.getMessagesFromGroup(req, res);
 });
 
-// Update a message sent to a group
+/**
+ * @description: Update a message sent to a group
+ * @param {Object} req
+ * @param {Object} res
+ */
 messageRouter.patch('/:messageId', (req, res) => {
   messageController.updatePostedMessage(req, res);
 });
 
-// Delete a message sent to a group
+/**
+ * @description: Delete a message sent to a group
+ * @param {Object} req
+ * @param {Object} res
+ */
 messageRouter.delete('/:messageId', (req, res) => {
   messageController.deletePostedMessage(req, res);
 });
 
-module.exports = messageRouter;
-// export default messageRouter;
+export default messageRouter;

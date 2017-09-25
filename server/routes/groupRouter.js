@@ -9,23 +9,42 @@ const groupRouter = express.Router({ mergeParams: true });
  */
 
 const groupController = new GroupController();
-// baseURL /api/groups
 
-// Create new group
+/**
+ * @description: Create new group
+ * @param {Object} req
+ * @param {Object} res
+ */
 groupRouter.post('/', (req, res) => {
   groupController.createGroup(req, res);
 });
 
-// Fetch all groups
+/**
+ * @description: Fetch all groups
+ * @param {Object} req
+ * @param {Object} res
+ */
 groupRouter.get('/', (req, res) => {
   groupController.getAllGroups(req, res);
 });
 
-// Fetch groups with specified key
-groupRouter.get('/:groupId', groupController.getGroupByKey);
+/**
+ * @description: Fetch group with specified key
+ * @param {Object} req
+ * @param {Object} res
+ */
+groupRouter.get('/:groupId', (req, res) => {
+  groupController.getGroupByKey(req, res);
+});
 
-// Delete groups with specified key
-groupRouter.delete('/:groupId', groupController.deleteGroup);
+/**
+ * @description: Delete group with specified key
+ * @param {Object} req
+ * @param {Object} res
+ */
+groupRouter.delete('/:groupId', (req, res) => {
+  groupController.deleteGroup(req, res);
+});
 
-// export default groupRouter;
-module.exports = groupRouter;
+export default groupRouter;
+

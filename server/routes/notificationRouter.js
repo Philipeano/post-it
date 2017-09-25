@@ -4,7 +4,7 @@
 // const notificationRouter = express.Router({ mergeParams: true });
 //
 // /**
-//  * @description: Defines router for handling all 'notifications' requests
+//  * @description: Defines router for handling all 'notification' requests
 //  * @module
 //  */
 //
@@ -36,5 +36,4 @@
 //   notificationController.deleteNotification(req, res);
 // });
 //
-// // module.exports = NotificationRouter;
 // export default notificationRouter;

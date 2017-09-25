@@ -10,31 +10,58 @@ const userRouter = express.Router({ mergeParams: true });
 
 const userController = new UserController();
 
-// Register new user
+/**
+ * @description: Register new user
+ * @param {Object} req
+ * @param {Object} res
+ */
 userRouter.post('/signup', (req, res) => {
   userController.signUpUser(req, res);
 });
 
-// Log in user
+/**
+ * @description: Log in user
+ * @param {Object} req
+ * @param {Object} res
+ */
 userRouter.post('/signin', (req, res) => {
   userController.signInUser(req, res);
 });
 
-// Log out user
+/**
+ * @description: Log out user
+ * @param {Object} req
+ * @param {Object} res
+ */
 userRouter.post('/signout', (req, res) => {
   userController.signOutUser(req, res);
 });
 
-// Fetch all users
+/**
+ * @description: Fetch all users
+ * @param {Object} req
+ * @param {Object} res
+ */
 userRouter.get('/', (req, res) => {
   userController.getAllUsers(req, res);
 });
 
-// Fetch user with specified key
-userRouter.get('/:userId', userController.getUserByKey);
+/**
+ * @description: Fetch user with specified key
+ * @param {Object} req
+ * @param {Object} res
+ */
+userRouter.get('/:userId', (req, res) => {
+  userController.getUserByKey(req, res);
+});
 
-// Delete user with specified key
-userRouter.delete('/:userId', userController.deleteUser);
+/**
+ * @description: Delete user with specified key
+ * @param {Object} req
+ * @param {Object} res
+ */
+userRouter.delete('/:userId', (req, res) => {
+  userController.deleteUser(req, res);
+});
 
-// export default userRouter;
-module.exports = userRouter;
+export default userRouter;
