@@ -1,0 +1,62 @@
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _groupController = require('../controllers/groupController');
+
+var _groupController2 = _interopRequireDefault(_groupController);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var groupRouter = _express2.default.Router({ mergeParams: true });
+
+/**
+ * @description: Defines router for handling all 'group' requests
+ * @module
+ */
+
+var groupController = new _groupController2.default();
+
+/**
+ * @description: Create new group
+ * @param {Object} req
+ * @param {Object} res
+ */
+groupRouter.post('/', function (req, res) {
+  groupController.createGroup(req, res);
+});
+
+/**
+ * @description: Fetch all groups
+ * @param {Object} req
+ * @param {Object} res
+ */
+groupRouter.get('/', function (req, res) {
+  groupController.getAllGroups(req, res);
+});
+
+/**
+ * @description: Fetch group with specified key
+ * @param {Object} req
+ * @param {Object} res
+ */
+groupRouter.get('/:groupId', function (req, res) {
+  groupController.getGroupByKey(req, res);
+});
+
+/**
+ * @description: Delete group with specified key
+ * @param {Object} req
+ * @param {Object} res
+ */
+groupRouter.delete('/:groupId', function (req, res) {
+  groupController.deleteGroup(req, res);
+});
+
+exports.default = groupRouter;

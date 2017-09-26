@@ -1,5 +1,5 @@
 import db from '../models/index';
-import Validator from '../controllers/validator';
+import Validator from './validator';
 
 const groupModel = db.Group;
 const membershipModel = db.Membership;

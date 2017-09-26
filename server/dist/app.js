@@ -28,40 +28,27 @@ var _cookieParser = require('cookie-parser');
 
 var _cookieParser2 = _interopRequireDefault(_cookieParser);
 
-var _userRouter = require('../routes/userRouter');
+var _userRouter = require('./routes/userRouter');
 
 var _userRouter2 = _interopRequireDefault(_userRouter);
 
-var _groupRouter = require('../routes/groupRouter');
+var _groupRouter = require('./routes/groupRouter');
 
 var _groupRouter2 = _interopRequireDefault(_groupRouter);
 
-var _membershipRouter = require('../routes/membershipRouter');
+var _membershipRouter = require('./routes/membershipRouter');
 
 var _membershipRouter2 = _interopRequireDefault(_membershipRouter);
 
-var _messageRouter = require('../routes/messageRouter');
+var _messageRouter = require('./routes/messageRouter');
 
 var _messageRouter2 = _interopRequireDefault(_messageRouter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// const express = require('express');
-// const dotenv = require('dotenv');
-// const logger = require('morgan');
-// const bodyParser = require('body-parser');
-// const session = require('express-session');
-// const cookieParser = require('cookie-parser');
-// const userRouter = require('../routes/userRouter');
-// const groupRouter = require('../routes/groupRouter');
-// const membershipRouter = require('../routes/membershipRouter');
-// const messageRouter = require('../routes/messageRouter');
-// const notificationRouter = require('../routes/notificationRouter');
-// const path = require('path');
+// import notificationRouter from '../routes/notificationRouter';
 
 // Configure environment settings
-// require('babel-register');
-
 _dotenv2.default.config();
 
 // Set up server express
@@ -92,9 +79,6 @@ var checkSignIn = function checkSignIn(req, res, next) {
 };
 
 // User route
-app.use('/api/users', checkSignIn, function (req, res, next) {
-  next();
-});
 app.use('/api/users', _userRouter2.default);
 
 // Protected routes

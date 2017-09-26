@@ -1,5 +1,5 @@
 import db from '../models/index';
-import Validator from '../controllers/validator';
+import Validator from './validator';
 
 const userModel = db.User;
 let reqPasswordHash;

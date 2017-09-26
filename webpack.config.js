@@ -1,10 +1,6 @@
-// import webpack from 'webpack';
-// import path from 'path';
-const path = require('path');
-const webpack = require('webpack');
+import path from 'path';
 
-// export default {
-module.exports = {
+export default {
   entry: './template/js/index.js',
   output: {
     path: path.resolve(__dirname, './template/bundle'),

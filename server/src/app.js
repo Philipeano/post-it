@@ -4,25 +4,11 @@ import logger from 'morgan';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import userRouter from '../routes/userRouter';
-import groupRouter from '../routes/groupRouter';
-import membershipRouter from '../routes/membershipRouter';
-import messageRouter from '../routes/messageRouter';
+import userRouter from './routes/userRouter';
+import groupRouter from './routes/groupRouter';
+import membershipRouter from './routes/membershipRouter';
+import messageRouter from './routes/messageRouter';
 // import notificationRouter from '../routes/notificationRouter';
-// import path from 'path';
-
-// const express = require('express');
-// const dotenv = require('dotenv');
-// const logger = require('morgan');
-// const bodyParser = require('body-parser');
-// const session = require('express-session');
-// const cookieParser = require('cookie-parser');
-// const userRouter = require('../routes/userRouter');
-// const groupRouter = require('../routes/groupRouter');
-// const membershipRouter = require('../routes/membershipRouter');
-// const messageRouter = require('../routes/messageRouter');
-// // const notificationRouter = require('../routes/notificationRouter');
-// // const path = require('path');
 
 // Configure environment settings
 dotenv.config();
@@ -55,9 +41,6 @@ const checkSignIn = (req, res, next) => {
 }
 
 // User route
-app.use('/api/users', checkSignIn, (req, res, next) => {
-  next();
-});
 app.use('/api/users', userRouter);
 
 // Protected routes
@@ -68,7 +51,6 @@ app.use('/api/groups', checkSignIn, (req, res, next) => {
 app.use('/api/groups', groupRouter);
 app.use('/api/groups/:groupId/users', membershipRouter);
 app.use('/api/groups/:groupId/messages', messageRouter);
-
 
 // Default API request
 app.get('/api/', (req, res) => {
