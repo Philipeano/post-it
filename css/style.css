@@ -184,7 +184,7 @@ nav {
 
 .central::after {
   content: "";
-  background-image: url("../images/logo-main.png");
+  background-image: url("images/logo-main.png");
   background-repeat: repeat;
   opacity: 0.05;
   top: 0;
