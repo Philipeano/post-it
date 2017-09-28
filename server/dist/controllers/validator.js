@@ -88,7 +88,7 @@ var Validator = function () {
      * @description: Checks for matching passwords
      * @param {String} password1
      * @param {String} password2
-     * @return {Object} isValid
+     * @return {Boolean} result
      */
 
   }, {
@@ -119,7 +119,7 @@ var Validator = function () {
      * @description: Verifies plain password against hashed DB password
      * @param {String} plainText
      * @param {String} hashFromDB
-     * @return {Boolean} res
+     * @return {Boolean} result
      */
 
   }, {

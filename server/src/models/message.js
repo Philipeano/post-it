@@ -23,14 +23,14 @@ export default (sequelize, DataTypes) => {
 
   Message.associate = (models) => {
     Message.belongsTo(models.User, {
-      foreignKey: 'senderId',
       as: 'sender',
+      foreignKey: 'senderId',
       onDelete: 'CASCADE',
     });
 
     Message.belongsTo(models.Group, {
-      foreignKey: 'groupId',
       as: 'group',
+      foreignKey: 'groupId',
       onDelete: 'CASCADE',
     });
   };

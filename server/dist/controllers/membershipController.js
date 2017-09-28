@@ -18,8 +18,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var groupModel = _index2.default.Group;
-var membershipModel = _index2.default.Membership;
 var errorMessage = void 0;
 
 /**
@@ -35,8 +33,8 @@ var MembershipController = function () {
   function MembershipController() {
     _classCallCheck(this, MembershipController);
 
-    this.group = groupModel;
-    this.membership = membershipModel;
+    this.group = _index2.default.Group;
+    this.membership = _index2.default.Membership;
   }
 
   /**
@@ -55,17 +53,17 @@ var MembershipController = function () {
       if (_validator2.default.isEmpty('User ID', req.body.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        groupModel.findById(req.params.groupId).then(function (matchingGroup) {
+        _index2.default.Group.findById(req.params.groupId).then(function (matchingGroup) {
           if (matchingGroup) {
-            membershipModel.findOne({
+            _index2.default.Membership.findOne({
               where: {
                 groupId: req.params.groupId,
                 memberId: req.body.userId
               }
             }).then(function (existingMembership) {
               if (existingMembership) res.status(409).json({ message: 'User is already in the group!' });else {
-                membershipModel.sync().then(function () {
-                  membershipModel.create({
+                _index2.default.Membership.sync().then(function () {
+                  _index2.default.Membership.create({
                     groupId: req.params.groupId,
                     memberId: req.body.userId,
                     userRole: 'member'
@@ -104,7 +102,7 @@ var MembershipController = function () {
       errorMessage = '';
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        membershipModel.findAll({ where: { groupId: req.params.groupId } }).then(function (memberships) {
+        _index2.default.Membership.findAll({ where: { groupId: req.params.groupId } }).then(function (memberships) {
           res.status(200).json({ Memberships: memberships });
         }).catch(function (err) {
           res.status(500).json({ message: err.message });
@@ -127,10 +125,10 @@ var MembershipController = function () {
       if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        membershipModel.findOne({ where: { groupId: req.params.groupId,
+        _index2.default.Membership.findOne({ where: { groupId: req.params.groupId,
             memberId: req.params.userId } }).then(function (matchingMembership) {
           if (matchingMembership) {
-            membershipModel.destroy({ where: { groupId: req.params.groupId,
+            _index2.default.Membership.destroy({ where: { groupId: req.params.groupId,
                 memberId: req.params.userId } }).then(function () {
               res.status(200).json({ message: 'Member deleted from group successfully!' });
             });

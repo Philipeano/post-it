@@ -18,9 +18,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var groupModel = _index2.default.Group;
-var membershipModel = _index2.default.Membership;
-var userModel = _index2.default.User;
 var errorMessage = void 0;
 
 /**
@@ -37,9 +34,9 @@ var GroupController = function () {
   function GroupController() {
     _classCallCheck(this, GroupController);
 
-    this.group = groupModel;
-    this.membership = membershipModel;
-    this.user = userModel;
+    this.group = _index2.default.Group;
+    this.membership = _index2.default.Membership;
+    this.user = _index2.default.User;
   }
 
   /**
@@ -53,21 +50,23 @@ var GroupController = function () {
   _createClass(GroupController, [{
     key: 'createGroup',
     value: function createGroup(req, res) {
+      var _this = this;
+
       errorMessage = '';
       if (_validator2.default.isEmpty('Title', req.body.title)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (_validator2.default.isEmpty('Purpose', req.body.purpose)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        groupModel.findOne({ where: { title: req.body.title } }).then(function (matchingGroup) {
+        this.group.findOne({ where: { title: req.body.title } }).then(function (matchingGroup) {
           if (matchingGroup) res.status(409).json({ message: 'Group Title is already taken!' });else {
-            groupModel.sync().then(function () {
-              groupModel.create({
+            _this.group.sync().then(function () {
+              _this.group.create({
                 title: req.body.title,
                 purpose: req.body.purpose,
                 creatorId: req.session.user.id
               }).then(function (newGroup) {
-                membershipModel.sync().then(function () {
-                  membershipModel.create({
+                _this.membership.sync().then(function () {
+                  _this.membership.create({
                     userRole: 'admin',
                     groupId: newGroup.id,
                     memberId: req.session.user.id
@@ -97,9 +96,8 @@ var GroupController = function () {
   }, {
     key: 'getAllGroups',
     value: function getAllGroups(req, res) {
-      groupModel.findAll({
-        // include: [{ model: 'User', as: 'Creator' },
-        //   { model: 'Message', as: 'messages' }]
+      this.group.findAll({
+        include: [{ model: this.user, as: 'creator' }, { model: this.message, as: 'messages' }, { model: this.user, as: 'members' }]
       }).then(function (allGroups) {
         res.status(200).json({ 'Available groups': allGroups });
       }).catch(function (err) {
@@ -120,7 +118,10 @@ var GroupController = function () {
       errorMessage = '';
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        groupModel.findOne({ where: { id: req.params.groupId } }).then(function (matchingGroup) {
+        this.group.findOne({
+          where: { id: req.params.groupId },
+          include: [{ model: this.user, as: 'creator' }, { model: this.message, as: 'messages' }, { model: this.user, as: 'members' }]
+        }).then(function (matchingGroup) {
           if (matchingGroup) {
             res.status(200).json({ 'Specified group': matchingGroup });
           } else {
@@ -142,12 +143,14 @@ var GroupController = function () {
   }, {
     key: 'deleteGroup',
     value: function deleteGroup(req, res) {
+      var _this2 = this;
+
       errorMessage = '';
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        groupModel.findOne({ where: { id: req.params.groupId } }).then(function (matchingGroup) {
+        this.group.findOne({ where: { id: req.params.groupId } }).then(function (matchingGroup) {
           if (matchingGroup) {
-            groupModel.destroy({ where: { id: req.params.groupId } }).then(function () {
+            _this2.group.destroy({ where: { id: req.params.groupId } }).then(function () {
               res.status(200).json({ message: 'Group deleted successfully!' });
             }).catch(function (err) {
               res.status(500).json({ message: err.message });

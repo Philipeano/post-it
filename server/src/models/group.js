@@ -22,15 +22,20 @@ export default (sequelize, DataTypes) => {
 
   Group.associate = (models) => {
     Group.belongsTo(models.User, {
+      as: 'creator',
       foreignKey: 'creatorId',
       onDelete: 'CASCADE'
     });
+
     Group.belongsToMany(models.User, {
+      as: 'members',
       through: models.Membership,
       foreignKey: 'groupId',
       otherKey: 'memberId'
     });
+
     Group.hasMany(models.Message, {
+      as: 'messages',
       foreignKey: 'groupId'
     });
   };

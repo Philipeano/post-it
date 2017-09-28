@@ -18,10 +18,10 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var groupModel = _index2.default.Group;
-var membershipModel = _index2.default.Membership;
-var messageModel = _index2.default.Message;
-var notificationModel = _index2.default.Notification;
+// const db.Group = db.Group;
+// const db.Membership = db.Membership;
+// const db.Message = db.Message;
+// const db.Notification = db.Notification;
 var errorMessage = void 0;
 
 /**
@@ -38,9 +38,9 @@ var MessageController = function () {
   function MessageController() {
     _classCallCheck(this, MessageController);
 
-    this.group = groupModel;
-    this.membership = membershipModel;
-    this.message = messageModel;
+    this.group = _index2.default.Group;
+    this.membership = _index2.default.Membership;
+    this.message = _index2.default.Message;
   }
 
   /**
@@ -61,17 +61,17 @@ var MessageController = function () {
       if (_validator2.default.isEmpty('Content', req.body.content)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        groupModel.findById(req.params.groupId).then(function (matchingGroup) {
+        _index2.default.Group.findById(req.params.groupId).then(function (matchingGroup) {
           if (matchingGroup) {
-            membershipModel.findOne({
+            _index2.default.Membership.findOne({
               where: {
                 groupId: req.params.groupId,
                 memberId: req.session.user.id
               }
             }).then(function (membership) {
               if (membership) {
-                messageModel.sync().then(function () {
-                  messageModel.create({
+                _index2.default.Message.sync().then(function () {
+                  _index2.default.Message.create({
                     groupId: req.params.groupId,
                     senderId: req.session.user.id,
                     content: req.body.content
@@ -111,7 +111,7 @@ var MessageController = function () {
   }, {
     key: 'sendNotifications',
     value: function sendNotifications(req, res, postedMessage) {
-      membershipModel.findAll({
+      _index2.default.Membership.findAll({
         where: {
           groupId: req.params.groupId,
           memberId: { $ne: req.session.user.id }
@@ -129,8 +129,8 @@ var MessageController = function () {
             };
             notificationsList.push(notificationItem);
           }
-          notificationModel.sync().then(function () {
-            notificationModel.bulkCreate(notificationsList).then(function () {
+          _index2.default.Notification.sync().then(function () {
+            _index2.default.Notification.bulkCreate(notificationsList).then(function () {
               res.status(201).json({
                 message: 'Message posted to group successfully!',
                 'posted message': postedMessage,
@@ -159,11 +159,11 @@ var MessageController = function () {
       errorMessage = '';
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        membershipModel.findOne({
+        _index2.default.Membership.findOne({
           where: { groupId: req.params.groupId,
             memberId: req.session.user.id } }).then(function (membership) {
           if (membership) {
-            messageModel.findAll({ where: { groupId: req.params.groupId } }).then(function (messages) {
+            _index2.default.Message.findAll({ where: { groupId: req.params.groupId } }).then(function (messages) {
               res.status(200).json({ Messages: messages });
             }).catch(function (err) {
               res.status(500).json({ message: err.message });
@@ -193,15 +193,15 @@ var MessageController = function () {
       if (_validator2.default.isEmpty('Content', req.body.content)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        membershipModel.findOne({
+        _index2.default.Membership.findOne({
           where: { groupId: req.params.groupId,
             memberId: req.session.user.id } }).then(function (membership) {
           if (membership) {
-            messageModel.findOne({ where: { groupId: req.params.groupId,
+            _index2.default.Message.findOne({ where: { groupId: req.params.groupId,
                 id: req.params.messageId,
                 senderId: req.session.user.id } }).then(function (message) {
               if (message) {
-                messageModel.update({ content: req.body.content }, { where: { id: req.params.messageId },
+                _index2.default.Message.update({ content: req.body.content }, { where: { id: req.params.messageId },
                   returning: true,
                   plain: true
                 }).then(function (result) {
@@ -240,15 +240,15 @@ var MessageController = function () {
       if (_validator2.default.isEmpty('Message ID', req.params.messageId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        membershipModel.findOne({
+        _index2.default.Membership.findOne({
           where: { groupId: req.params.groupId,
             memberId: req.session.user.id } }).then(function (membership) {
           if (membership) {
-            messageModel.findAll({ where: { groupId: req.params.groupId,
+            _index2.default.Message.findAll({ where: { groupId: req.params.groupId,
                 id: req.params.messageId,
                 senderId: req.session.user.id } }).then(function (messages) {
               if (messages) {
-                messageModel.destroy({ where: { id: req.params.messageId } }).then(function () {
+                _index2.default.Message.destroy({ where: { id: req.params.messageId } }).then(function () {
                   res.status(200).json({ message: 'Message deleted successfully!' });
                 });
               } else {

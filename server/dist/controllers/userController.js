@@ -18,7 +18,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var userModel = _index2.default.User;
 var reqPasswordHash = void 0;
 var errorMessage = void 0;
 
@@ -35,7 +34,7 @@ var UserController = function () {
   function UserController() {
     _classCallCheck(this, UserController);
 
-    this.user = userModel;
+    this.user = _index2.default.User;
   }
 
   /**
@@ -73,21 +72,21 @@ var UserController = function () {
         errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
         res.status(400).json({ message: errorMessage });
       } else {
-        userModel.findOne({ where: { username: req.body.username } }).then(function (matchingUsers) {
+        _index2.default.User.findOne({ where: { username: req.body.username } }).then(function (matchingUsers) {
           if (matchingUsers) {
             return res.status(409).json({ message: 'Username is already in use!' });
             // res.end();
           }
         });
-        userModel.findOne({ where: { email: req.body.email } }).then(function (matchingUsers) {
+        _index2.default.User.findOne({ where: { email: req.body.email } }).then(function (matchingUsers) {
           if (matchingUsers) {
             return res.status(409).json({ message: 'Email Address already exists!' });
             // res.end();
           }
         });
         reqPasswordHash = _validator2.default.generateHash(req.body.password);
-        return userModel.sync().then(function () {
-          userModel.create({
+        return _index2.default.User.sync().then(function () {
+          _index2.default.User.create({
             username: req.body.username,
             email: req.body.email,
             password: reqPasswordHash
@@ -118,7 +117,7 @@ var UserController = function () {
       if (_validator2.default.isEmpty('Password', req.body.password)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        userModel.findOne({ where: { username: req.body.username } }).then(function (matchingUser) {
+        _index2.default.User.findOne({ where: { username: req.body.username } }).then(function (matchingUser) {
           if (matchingUser) {
             if (_validator2.default.verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
@@ -175,7 +174,7 @@ var UserController = function () {
   }, {
     key: 'getAllUsers',
     value: function getAllUsers(req, res) {
-      userModel.findAll().then(function (allUsers) {
+      _index2.default.User.findAll().then(function (allUsers) {
         res.status(200).json({ 'Registered users': allUsers });
       }).catch(function (err) {
         res.status(500).json({ message: err.message });
@@ -195,7 +194,7 @@ var UserController = function () {
       errorMessage = '';
       if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        userModel.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
+        _index2.default.User.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
           if (matchingUser) {
             res.status(200).json({ 'Specified user': matchingUser });
           } else {
@@ -220,9 +219,9 @@ var UserController = function () {
       errorMessage = '';
       if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        userModel.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
+        _index2.default.User.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
           if (matchingUser) {
-            userModel.destroy({ where: { id: req.params.userId } }).then(function () {
+            _index2.default.User.destroy({ where: { id: req.params.userId } }).then(function () {
               res.status(200).json({ message: 'User deleted successfully!' });
             }).catch(function (err) {
               res.status(500).json({ message: err.message });

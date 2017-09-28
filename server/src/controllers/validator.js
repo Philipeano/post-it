@@ -64,7 +64,7 @@ class Validator {
    * @description: Checks for matching passwords
    * @param {String} password1
    * @param {String} password2
-   * @return {Object} isValid
+   * @return {Boolean} result
    */
   static passwordsMatch(password1, password2) {
     let result = true;
@@ -89,7 +89,7 @@ class Validator {
    * @description: Verifies plain password against hashed DB password
    * @param {String} plainText
    * @param {String} hashFromDB
-   * @return {Boolean} res
+   * @return {Boolean} result
    */
   static verifyPassword(plainText, hashFromDB) {
     const result = bcrypt.compareSync(plainText, hashFromDB);

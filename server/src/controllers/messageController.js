@@ -1,10 +1,6 @@
 import db from '../models/index';
 import Validator from './validator';
 
-const groupModel = db.Group;
-const membershipModel = db.Membership;
-const messageModel = db.Message;
-const notificationModel = db.Notification;
 let errorMessage;
 
 /**
@@ -13,14 +9,15 @@ let errorMessage;
  */
 class MessageController {
   /**
-   * @description: Initializes instance with 'message', 'membership' and
-   * 'notification' as local properties
+   * @description: Initializes instance with 'group', 'message', 'membership'
+   * and 'notification' as local properties
    * @constructor
    */
   constructor() {
-    this.group = groupModel;
-    this.membership = membershipModel;
-    this.message = messageModel;
+    this.group = db.Group;
+    this.membership = db.Membership;
+    this.message = db.Message;
+    this.notification = db.Notification;
   }
 
   /**
@@ -39,9 +36,9 @@ class MessageController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      groupModel.findById(req.params.groupId).then((matchingGroup) => {
+      this.group.findById(req.params.groupId).then((matchingGroup) => {
         if (matchingGroup) {
-          membershipModel.findOne({
+          this.membership.findOne({
             where: {
               groupId: req.params.groupId,
               memberId: req.session.user.id
@@ -49,17 +46,13 @@ class MessageController {
           })
             .then((membership) => {
               if (membership) {
-                messageModel.sync().then(() => {
-                  messageModel.create({
+                this.message.sync().then(() => {
+                  this.message.create({
                     groupId: req.params.groupId,
                     senderId: req.session.user.id,
                     content: req.body.content
                   }).then((newMessage) => {
                     return this.sendNotifications(req, res, newMessage);
-                    // res.status(201).json({
-                    //   message: 'Message posted to group successfully!',
-                    //   'posted message': newMessage
-                    // });
                   }).catch((err) => {
                     res.status(500).json({ message: err.message });
                   });
@@ -89,7 +82,7 @@ class MessageController {
    * @return {Object} newNotification
    */
   sendNotifications(req, res, postedMessage) {
-    membershipModel.findAll({
+    this.membership.findAll({
       where: {
         groupId: req.params.groupId,
         memberId: { $ne: req.session.user.id }
@@ -108,8 +101,8 @@ class MessageController {
             }
             notificationsList.push(notificationItem);
           }
-          notificationModel.sync().then(() => {
-            notificationModel
+          this.notification.sync().then(() => {
+            this.notification
               .bulkCreate(notificationsList)
               .then(() => {
                 res.status(201).json({
@@ -140,12 +133,12 @@ class MessageController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModel.findOne({
+      this.membership.findOne({
         where: { groupId: req.params.groupId,
           memberId: req.session.user.id } })
         .then((membership) => {
           if (membership) {
-            messageModel
+            this.message
               .findAll({ where: { groupId: req.params.groupId } })
               .then((messages) => {
                 res.status(200).json({ Messages: messages });
@@ -180,18 +173,18 @@ class MessageController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModel.findOne({
+      this.membership.findOne({
         where: { groupId: req.params.groupId,
           memberId: req.session.user.id } })
         .then((membership) => {
           if (membership) {
-            messageModel
+            this.message
               .findOne({ where: { groupId: req.params.groupId,
                 id: req.params.messageId,
                 senderId: req.session.user.id } })
               .then((message) => {
                 if (message) {
-                  messageModel
+                  this.message
                     .update({ content: req.body.content },
                     { where: { id: req.params.messageId },
                       returning: true,
@@ -238,18 +231,18 @@ class MessageController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModel.findOne({
+      this.membership.findOne({
         where: { groupId: req.params.groupId,
           memberId: req.session.user.id } })
         .then((membership) => {
           if (membership) {
-            messageModel
+            this.message
               .findAll({ where: { groupId: req.params.groupId,
                 id: req.params.messageId,
                 senderId: req.session.user.id } })
               .then((messages) => {
                 if (messages) {
-                  messageModel
+                  this.message
                     .destroy({ where: { id: req.params.messageId } })
                     .then(() => {
                       res.status(200)
