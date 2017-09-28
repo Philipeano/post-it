@@ -1,3 +1,4 @@
+<<<<<<< HEAD:server/models/group.js
 <<<<<<< HEAD
 module.exports = (sequelize, DataTypes) => {
   const Group = sequelize.define('Group', {
@@ -5,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
 import DataTypes from 'sequelize/lib/data-types';
 
 export default (sequelize) => {
+=======
+export default (sequelize, DataTypes) => {
+>>>>>>> server:server/src/models/group.js
   const Group = sequelize.define('Group', {
     id: {
       type: DataTypes.UUID,
@@ -62,17 +66,21 @@ export default (sequelize) => {
 
   Group.associate = (models) => {
     Group.belongsTo(models.User, {
-      foreignKey: 'creatorId',
       as: 'creator',
-      onDelete: 'CASCADE',
+      foreignKey: 'creatorId',
+      onDelete: 'CASCADE'
     });
+
     Group.belongsToMany(models.User, {
+      as: 'members',
       through: models.Membership,
-      foreignKey: 'memberId',
-      as: 'member',
-    });
-    Group.hasMany(models.Message, {
       foreignKey: 'groupId',
+      otherKey: 'memberId'
+    });
+
+    Group.hasMany(models.Message, {
+      as: 'messages',
+      foreignKey: 'groupId'
     });
   };
 

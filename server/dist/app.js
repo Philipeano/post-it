@@ -3,34 +3,65 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-require('babel-register');
-var express = require('express');
-var dotenv = require('dotenv');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var session = require('express-session');
-var cookieParser = require('cookie-parser');
-var userRouter = require('../routes/userRouter');
-var groupRouter = require('../routes/groupRouter');
-var membershipRouter = require('../routes/membershipRouter');
-var messageRouter = require('../routes/messageRouter');
-// const notificationRouter = require('../routes/notificationRouter');
-// const path = require('path');
+
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _dotenv = require('dotenv');
+
+var _dotenv2 = _interopRequireDefault(_dotenv);
+
+var _morgan = require('morgan');
+
+var _morgan2 = _interopRequireDefault(_morgan);
+
+var _bodyParser = require('body-parser');
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
+var _expressSession = require('express-session');
+
+var _expressSession2 = _interopRequireDefault(_expressSession);
+
+var _cookieParser = require('cookie-parser');
+
+var _cookieParser2 = _interopRequireDefault(_cookieParser);
+
+var _userRouter = require('./routes/userRouter');
+
+var _userRouter2 = _interopRequireDefault(_userRouter);
+
+var _groupRouter = require('./routes/groupRouter');
+
+var _groupRouter2 = _interopRequireDefault(_groupRouter);
+
+var _membershipRouter = require('./routes/membershipRouter');
+
+var _membershipRouter2 = _interopRequireDefault(_membershipRouter);
+
+var _messageRouter = require('./routes/messageRouter');
+
+var _messageRouter2 = _interopRequireDefault(_messageRouter);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import notificationRouter from '../routes/notificationRouter';
 
 // Configure environment settings
-dotenv.config();
+_dotenv2.default.config();
 
 // Set up server express
-var app = express();
+var app = (0, _express2.default)();
 
 // Log requests to the console
-app.use(logger('dev'));
+app.use((0, _morgan2.default)('dev'));
 
 // Parse incoming requests data
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(session({ secret: 'PostItMessagingSystemByPhilipeano' }));
+app.use(_bodyParser2.default.json());
+app.use(_bodyParser2.default.urlencoded({ extended: true }));
+app.use((0, _cookieParser2.default)());
+app.use((0, _expressSession2.default)({ secret: 'PostItMessagingSystemByPhilipeano' }));
 
 /**
  * @description: Checks if user is authenticated
@@ -48,16 +79,16 @@ var checkSignIn = function checkSignIn(req, res, next) {
 };
 
 // User route
-app.use('/api/users', userRouter);
+app.use('/api/users', _userRouter2.default);
 
 // Protected routes
 app.use('/api/groups', checkSignIn, function (req, res, next) {
   next();
 });
 
-app.use('/api/groups', groupRouter);
-app.use('/api/groups/:groupId/users', membershipRouter);
-app.use('/api/groups/:groupId/messages', messageRouter);
+app.use('/api/groups', _groupRouter2.default);
+app.use('/api/groups/:groupId/users', _membershipRouter2.default);
+app.use('/api/groups/:groupId/messages', _messageRouter2.default);
 
 // Default API request
 app.get('/api/', function (req, res) {
@@ -79,5 +110,4 @@ var server = app.listen(port, function () {
   console.log('Listening at port ' + port);
 });
 
-// Export server
 exports.default = server;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD:server/models/index.js
 <<<<<<< HEAD
 <<<<<<< HEAD
 const fs = require('fs');
@@ -21,6 +22,15 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 
 >>>>>>> server
+=======
+import fs from 'fs';
+import path from 'path';
+import Sequelize from 'sequelize';
+
+const basename = path.basename(module.filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(`${__dirname}/../../config/config.json`)[env];
+>>>>>>> server:server/src/models/index.js
 const db = {};
 
 let sequelize;

@@ -1,8 +1,6 @@
 import db from '../models/index';
-import Validator from '../controllers/validator';
+import Validator from './validator';
 
-const groupModel = db.Group;
-const membershipModel = db.Membership;
 let errorMessage;
 
 /**
@@ -15,8 +13,8 @@ class MembershipController {
    * @constructor
    */
   constructor() {
-    this.group = groupModel;
-    this.membership = membershipModel;
+    this.group = db.Group;
+    this.membership = db.Membership;
   }
 
   /**
@@ -35,9 +33,9 @@ class MembershipController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      groupModel.findById(req.params.groupId).then((matchingGroup) => {
+      this.group.findById(req.params.groupId).then((matchingGroup) => {
         if (matchingGroup) {
-          membershipModel.findOne({
+          this.membership.findOne({
             where: {
               groupId: req.params.groupId,
               memberId: req.body.userId
@@ -48,8 +46,8 @@ class MembershipController {
                 res.status(409)
                   .json({ message: 'User is already in the group!' });
               else {
-                membershipModel.sync().then(() => {
-                  membershipModel.create({
+                this.membership.sync().then(() => {
+                  this.membership.create({
                     groupId: req.params.groupId,
                     memberId: req.body.userId,
                     userRole: 'member'
@@ -89,7 +87,7 @@ class MembershipController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModel
+      this.membership
         .findAll({ where: { groupId: req.params.groupId } })
         .then((memberships) => {
           res.status(200).json({ Memberships: memberships });
@@ -115,11 +113,11 @@ class MembershipController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      membershipModel.findOne({ where: { groupId: req.params.groupId,
+      this.membership.findOne({ where: { groupId: req.params.groupId,
         memberId: req.params.userId } })
         .then((matchingMembership) => {
           if (matchingMembership) {
-            membershipModel
+            this.membership
               .destroy({ where: { groupId: req.params.groupId,
                 memberId: req.params.userId } })
               .then(() => {

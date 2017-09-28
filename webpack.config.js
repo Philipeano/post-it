@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import webpack from 'webpack';
 import path from 'path';
 
@@ -6,10 +7,10 @@ export default {
 =======
 // import webpack from 'webpack';
 // import path from 'path';
+=======
+>>>>>>> server
 const path = require('path');
-const webpack = require('webpack');
 
-// export default {
 module.exports = {
 >>>>>>> server
   entry: './template/js/index.js',

@@ -1,3 +1,4 @@
+<<<<<<< HEAD:server/models/notification.js
 <<<<<<< HEAD
 module.exports = (sequelize, DataTypes) => {
   const Notification = sequelize.define('Notification', {
@@ -5,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
 import DataTypes from 'sequelize/lib/data-types';
 
 export default (sequelize) => {
+=======
+export default (sequelize, DataTypes) => {
+>>>>>>> server:server/src/models/notification.js
   const Notification = sequelize.define('Notification', {
     id: {
       type: DataTypes.UUID,

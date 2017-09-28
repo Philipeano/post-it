@@ -1,6 +1,4 @@
-import DataTypes from 'sequelize/lib/data-types';
-
-export default (sequelize) => {
+export default (sequelize, DataTypes) => {
   const Membership = sequelize.define('Membership', {
     id: {
       type: DataTypes.UUID,
@@ -22,18 +20,15 @@ export default (sequelize) => {
     },
   });
 
-  // Membership.associate = (models) => {
-  //   Membership.belongsTo(models.User, {
-  //     foreignKey: 'memberId',
-  //     as: 'member',
-  //     onDelete: 'CASCADE',
-  //   });
-  //
-  //   Membership.belongsTo(models.Group, {
-  //     foreignKey: 'groupId',
-  //     as: 'group',
-  //     onDelete: 'CASCADE',
-  //   });
-  // };
+  Membership.associate = (models) => {
+    Membership.belongsTo(models.User, {
+      foreignKey: 'memberId',
+    });
+
+    Membership.belongsTo(models.Group, {
+      foreignKey: 'groupId',
+    });
+  };
+
   return Membership;
 };

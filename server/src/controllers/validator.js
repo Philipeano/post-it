@@ -24,7 +24,7 @@ class Validator {
     if (fieldValue === undefined || fieldValue === null
       || fieldValue.trim() === '') {
       result = true;
-      this.validationMessage = ` - ${fieldName} cannot be null or empty.`;
+      this.validationMessage = `${fieldName} cannot be null or empty.`;
     }
     return result;
   }
@@ -39,7 +39,7 @@ class Validator {
     const pattern = /\S+@\S+\.\S+/;
     if (!pattern.test(testEmail)) {
       result = false;
-      this.validationMessage = ` - ${testEmail} is not a valid email address.`;
+      this.validationMessage = `${testEmail} is not a valid email address.`;
     }
     return result;
   }
@@ -55,7 +55,7 @@ class Validator {
       '(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})');
     if (!strongRegex.test(testPassword)) {
       result = false;
-      this.validationMessage = ` - ${testPassword} is not a valid password.`;
+      this.validationMessage = `${testPassword} is not a valid password.`;
     }
     return result;
   }
@@ -64,13 +64,13 @@ class Validator {
    * @description: Checks for matching passwords
    * @param {String} password1
    * @param {String} password2
-   * @return {Object} isValid
+   * @return {Boolean} result
    */
   static passwordsMatch(password1, password2) {
     let result = true;
     if (password1 !== password2) {
       result = false;
-      this.validationMessage = ' - The two passwords do not match.';
+      this.validationMessage = 'The two passwords do not match.';
     }
     return result;
   }
@@ -89,7 +89,7 @@ class Validator {
    * @description: Verifies plain password against hashed DB password
    * @param {String} plainText
    * @param {String} hashFromDB
-   * @return {Boolean} res
+   * @return {Boolean} result
    */
   static verifyPassword(plainText, hashFromDB) {
     const result = bcrypt.compareSync(plainText, hashFromDB);

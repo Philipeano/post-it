@@ -1,7 +1,6 @@
 import db from '../models/index';
-import Validator from '../controllers/validator';
+import Validator from './validator';
 
-const userModel = db.User;
 let reqPasswordHash;
 let errorMessage;
 
@@ -15,7 +14,7 @@ class UserController {
    * @constructor
    */
   constructor() {
-    this.user = userModel;
+    this.user = db.User;
   }
 
   /**
@@ -51,25 +50,25 @@ class UserController {
       res.status(400).json({ message: errorMessage });
     }
     else {
-      userModel.findOne({ where: { username: req.body.username } })
+      this.user.findOne({ where: { username: req.body.username } })
         .then((matchingUsers) => {
           if (matchingUsers) {
-            res.status(409)
+            return res.status(409)
               .json({ message: 'Username is already in use!' });
-            res.end();
+            // res.end();
           }
         });
-      userModel.findOne({ where: { email: req.body.email } })
+      this.user.findOne({ where: { email: req.body.email } })
         .then((matchingUsers) => {
           if (matchingUsers) {
-            res.status(409)
+            return res.status(409)
               .json({ message: 'Email Address already exists!' });
-            res.end();
+            // res.end();
           }
         });
       reqPasswordHash = Validator.generateHash(req.body.password);
-      return userModel.sync().then(() => {
-        userModel.create({
+      return this.user.sync().then(() => {
+        this.user.create({
           username: req.body.username,
           email: req.body.email,
           password: reqPasswordHash
@@ -101,7 +100,7 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      userModel.findOne({ where: { username: req.body.username } })
+      this.user.findOne({ where: { username: req.body.username } })
         .then((matchingUser) => {
           if (matchingUser) {
             if (Validator
@@ -152,7 +151,7 @@ class UserController {
    * @return {Object} allUsers
    */
   getAllUsers(req, res) {
-    userModel.findAll().then((allUsers) => {
+    this.user.findAll().then((allUsers) => {
       res.status(200).json({ 'Registered users': allUsers });
     }).catch((err) => {
       res.status(500).json({ message: err.message });
@@ -172,7 +171,7 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      userModel.findOne({ where: { id: req.params.userId } })
+      this.user.findOne({ where: { id: req.params.userId } })
         .then((matchingUser) => {
           if (matchingUser) {
             res.status(200).json({ 'Specified user': matchingUser });
@@ -198,10 +197,10 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      userModel.findOne({ where: { id: req.params.userId } })
+      this.user.findOne({ where: { id: req.params.userId } })
         .then((matchingUser) => {
           if (matchingUser) {
-            userModel.destroy({ where: { id: req.params.userId } })
+            this.user.destroy({ where: { id: req.params.userId } })
               .then(() => {
                 res.status(200).json({ message: 'User deleted successfully!' });
               }).catch((err) => {

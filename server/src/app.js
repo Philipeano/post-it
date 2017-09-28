@@ -1,16 +1,14 @@
-require('babel-register');
-const express = require('express');
-const dotenv = require('dotenv');
-const logger = require('morgan');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const userRouter = require('../routes/userRouter');
-const groupRouter = require('../routes/groupRouter');
-const membershipRouter = require('../routes/membershipRouter');
-const messageRouter = require('../routes/messageRouter');
-// const notificationRouter = require('../routes/notificationRouter');
-// const path = require('path');
+import express from 'express';
+import dotenv from 'dotenv';
+import logger from 'morgan';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import userRouter from './routes/userRouter';
+import groupRouter from './routes/groupRouter';
+import membershipRouter from './routes/membershipRouter';
+import messageRouter from './routes/messageRouter';
+// import notificationRouter from '../routes/notificationRouter';
 
 // Configure environment settings
 dotenv.config();
@@ -54,7 +52,6 @@ app.use('/api/groups', groupRouter);
 app.use('/api/groups/:groupId/users', membershipRouter);
 app.use('/api/groups/:groupId/messages', messageRouter);
 
-
 // Default API request
 app.get('/api/', (req, res) => {
   res.set('Content-Type', 'application/json');
@@ -75,6 +72,4 @@ const server = app.listen(port, () => {
   console.log(`Listening at port ${port}`);
 });
 
-// Export server
 export default server;
-

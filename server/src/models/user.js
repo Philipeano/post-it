@@ -1,3 +1,4 @@
+<<<<<<< HEAD:server/models/user.js
 <<<<<<< HEAD
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
@@ -6,6 +7,9 @@ module.exports = (sequelize, DataTypes) => {
 import DataTypes from 'sequelize/lib/data-types';
 
 export default (sequelize) => {
+=======
+export default (sequelize, DataTypes) => {
+>>>>>>> server:server/src/models/user.js
   const User = sequelize.define('User', {
     id: {
       type: DataTypes.UUID,
@@ -71,18 +75,18 @@ export default (sequelize) => {
   User.associate = (models) => {
     User.hasMany(models.Group, {
       foreignKey: 'creatorId',
-      as: 'creator',
+      as: 'creator'
     });
 >>>>>>> server
 
     User.hasMany(models.Message, {
       foreignKey: 'senderId',
-      as: 'sender',
+      as: 'sender'
     });
 
     User.hasMany(models.Notification, {
       foreignKey: 'recipientId',
-      as: 'recipient',
+      as: 'recipient'
     });
 
 <<<<<<< HEAD
@@ -114,9 +118,11 @@ export default (sequelize) => {
 =======
     User.belongsToMany(models.Group, {
       through: models.Membership,
-      foreignKey: 'groupId',
+      foreignKey: 'memberId',
+      otherKey: 'groupId'
     });
   };
+<<<<<<< HEAD:server/models/user.js
   /*
   generateHash: (plainText) => {
     // Create hash from new password
@@ -133,5 +139,7 @@ export default (sequelize) => {
   },
   */
 >>>>>>> server
+=======
+>>>>>>> server:server/src/models/user.js
   return User;
 };

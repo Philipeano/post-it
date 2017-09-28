@@ -1,3 +1,4 @@
+<<<<<<< HEAD:server/models/message.js
 <<<<<<< HEAD
 module.exports = (sequelize, DataTypes) => {
   const Message = sequelize.define('Message', {
@@ -5,6 +6,9 @@ module.exports = (sequelize, DataTypes) => {
 import DataTypes from 'sequelize/lib/data-types';
 
 export default (sequelize) => {
+=======
+export default (sequelize, DataTypes) => {
+>>>>>>> server:server/src/models/message.js
   const Message = sequelize.define('Message', {
     id: {
       type: DataTypes.UUID,
@@ -26,6 +30,7 @@ export default (sequelize) => {
       values: ['normal', 'urgent', 'critical'],
       defaultValue: 'normal'
     }
+<<<<<<< HEAD:server/models/message.js
     /*
 <<<<<<< HEAD
     id: {
@@ -44,18 +49,20 @@ export default (sequelize) => {
       allowNull: false
        },
     */
+=======
+>>>>>>> server:server/src/models/message.js
   });
 
   Message.associate = (models) => {
     Message.belongsTo(models.User, {
-      foreignKey: 'senderId',
       as: 'sender',
+      foreignKey: 'senderId',
       onDelete: 'CASCADE',
     });
 
     Message.belongsTo(models.Group, {
-      foreignKey: 'groupId',
       as: 'group',
+      foreignKey: 'groupId',
       onDelete: 'CASCADE',
     });
   };
