@@ -1,19 +1,9 @@
 const path = require('path');
+process.env.NODE_ENV = 'test';
 
 module.exports = {
   "config": path.resolve('./server/config', 'config.json'),
-  "models-path": path.resolve('./server/models'),
-  "seeders-path": path.resolve('./server/seeders'),
-  "migrations-path": path.resolve('./server/migrations')
+  "models-path": path.resolve('./server/src/models'),
+  "seeders-path": path.resolve('./server/src/seeders'),
+  "migrations-path": path.resolve('./server/src/migrations')
 };
-
-/*
-import path from 'path';
-
-export default {
-  "config": path.resolve('./server/config', 'config.json'),
-  "models-path": path.resolve('./server/models'),
-  "seeders-path": path.resolve('./server/seeders'),
-  "migrations-path": path.resolve('./server/migrations')
-};
-*/

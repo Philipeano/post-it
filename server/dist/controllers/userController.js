@@ -48,6 +48,8 @@ var UserController = function () {
   _createClass(UserController, [{
     key: 'signUpUser',
     value: function signUpUser(req, res) {
+      var _this = this;
+
       errorMessage = '';
       if (_validator2.default.isEmpty('Username', req.body.username)) {
         errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
@@ -72,21 +74,21 @@ var UserController = function () {
         errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
         res.status(400).json({ message: errorMessage });
       } else {
-        _index2.default.User.findOne({ where: { username: req.body.username } }).then(function (matchingUsers) {
+        this.user.findOne({ where: { username: req.body.username } }).then(function (matchingUsers) {
           if (matchingUsers) {
             return res.status(409).json({ message: 'Username is already in use!' });
             // res.end();
           }
         });
-        _index2.default.User.findOne({ where: { email: req.body.email } }).then(function (matchingUsers) {
+        this.user.findOne({ where: { email: req.body.email } }).then(function (matchingUsers) {
           if (matchingUsers) {
             return res.status(409).json({ message: 'Email Address already exists!' });
             // res.end();
           }
         });
         reqPasswordHash = _validator2.default.generateHash(req.body.password);
-        return _index2.default.User.sync().then(function () {
-          _index2.default.User.create({
+        return this.user.sync().then(function () {
+          _this.user.create({
             username: req.body.username,
             email: req.body.email,
             password: reqPasswordHash
@@ -117,7 +119,7 @@ var UserController = function () {
       if (_validator2.default.isEmpty('Password', req.body.password)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.User.findOne({ where: { username: req.body.username } }).then(function (matchingUser) {
+        this.user.findOne({ where: { username: req.body.username } }).then(function (matchingUser) {
           if (matchingUser) {
             if (_validator2.default.verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
@@ -174,7 +176,7 @@ var UserController = function () {
   }, {
     key: 'getAllUsers',
     value: function getAllUsers(req, res) {
-      _index2.default.User.findAll().then(function (allUsers) {
+      this.user.findAll().then(function (allUsers) {
         res.status(200).json({ 'Registered users': allUsers });
       }).catch(function (err) {
         res.status(500).json({ message: err.message });
@@ -194,7 +196,7 @@ var UserController = function () {
       errorMessage = '';
       if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.User.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
+        this.user.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
           if (matchingUser) {
             res.status(200).json({ 'Specified user': matchingUser });
           } else {
@@ -216,12 +218,14 @@ var UserController = function () {
   }, {
     key: 'deleteUser',
     value: function deleteUser(req, res) {
+      var _this2 = this;
+
       errorMessage = '';
       if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.User.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
+        this.user.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
           if (matchingUser) {
-            _index2.default.User.destroy({ where: { id: req.params.userId } }).then(function () {
+            _this2.user.destroy({ where: { id: req.params.userId } }).then(function () {
               res.status(200).json({ message: 'User deleted successfully!' });
             }).catch(function (err) {
               res.status(500).json({ message: err.message });

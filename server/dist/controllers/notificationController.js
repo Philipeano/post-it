@@ -1,9 +1,6 @@
 // import db from '../models/index';
 // import Validator from '../controllers/validator';
 //
-// const db.Notification = db.Notification;
-// const db.Membership = db.Membership;
-// const db.Message = db.Message;
 // let errorMessage;
 //
 // /**
@@ -55,8 +52,8 @@
 //               }
 //               notificationsList.push(notificationItem);
 //             }
-//             db.Notification.sync().then(() => {
-//               db.Notification
+//             this.notification.sync().then(() => {
+//               this.notification
 //                 .bulkCreate(notificationsList)
 //                 .then(() => {
 //                   res.status(201).json({
