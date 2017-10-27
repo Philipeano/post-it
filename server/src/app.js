@@ -38,9 +38,9 @@ const checkSignIn = (req, res, next) => {
   } else {
     res.status(401).json({ message: 'Access denied! Please sign in first.' });
   }
-}
+};
 
-// User route
+// Unprotected route
 app.use('/api/users', userRouter);
 
 // Protected routes

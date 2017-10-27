@@ -78,7 +78,7 @@ var checkSignIn = function checkSignIn(req, res, next) {
   }
 };
 
-// User route
+// Unprotected route
 app.use('/api/users', _userRouter2.default);
 
 // Protected routes

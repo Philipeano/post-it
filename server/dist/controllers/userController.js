@@ -74,32 +74,33 @@ var UserController = function () {
         errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
         res.status(400).json({ message: errorMessage });
       } else {
-        this.user.findOne({ where: { username: req.body.username } }).then(function (matchingUsers) {
-          if (matchingUsers) {
-            return res.status(409).json({ message: 'Username is already in use!' });
-            // res.end();
+        this.user.findOne({ where: { username: req.body.username } }).then(function (matchingUser1) {
+          if (matchingUser1) {
+            res.status(409).json({ message: 'Username is already in use!' });
+          } else {
+            _this.user.findOne({ where: { email: req.body.email } }).then(function (matchingUser2) {
+              if (matchingUser2) {
+                res.status(409).json({ message: 'Email Address already exists!' });
+              } else {
+                reqPasswordHash = _validator2.default.generateHash(req.body.password);
+                return _this.user.sync().then(function () {
+                  _this.user.create({
+                    username: req.body.username,
+                    email: req.body.email,
+                    password: reqPasswordHash
+                  }).then(function (newUser) {
+                    req.session.user = newUser;
+                    return res.status(201).json({
+                      message: 'You signed up successfully!',
+                      user: newUser
+                    });
+                  }).catch(function (err) {
+                    return res.status(500).json({ message: err.message });
+                  });
+                });
+              }
+            });
           }
-        });
-        this.user.findOne({ where: { email: req.body.email } }).then(function (matchingUsers) {
-          if (matchingUsers) {
-            return res.status(409).json({ message: 'Email Address already exists!' });
-            // res.end();
-          }
-        });
-        reqPasswordHash = _validator2.default.generateHash(req.body.password);
-        return this.user.sync().then(function () {
-          _this.user.create({
-            username: req.body.username,
-            email: req.body.email,
-            password: reqPasswordHash
-          }).then(function (newUser) {
-            req.session.user = newUser;
-            // res.redirect('/protected_page');
-            res.status(201).json({ message: 'You signed up successfully!',
-              user: newUser });
-          }).catch(function (err) {
-            res.status(500).json({ message: err.message });
-          });
         });
       }
     }
@@ -126,7 +127,7 @@ var UserController = function () {
               res.status(200).json({ message: 'You signed in successfully!',
                 user: matchingUser });
             } else {
-              res.status(400).json({ message: 'Password is invalid!' });
+              res.status(400).json({ message: 'Password is wrong!' });
             }
           } else {
             res.status(400).json({ message: 'Username does not exist!' });
@@ -148,7 +149,6 @@ var UserController = function () {
     key: 'signOutUser',
     value: function signOutUser(req, res) {
       req.session.destroy(function () {
-        // res.redirect('/signin');
         res.status(200).json({ message: 'You have been logged out.' });
       });
     }
@@ -200,7 +200,7 @@ var UserController = function () {
           if (matchingUser) {
             res.status(200).json({ 'Specified user': matchingUser });
           } else {
-            res.status(404).json({ message: 'Specified user does not exist' });
+            res.status(404).json({ message: 'Specified user does not exist!' });
           }
         }).catch(function (err) {
           res.status(500).json({ message: err.message });
@@ -231,7 +231,7 @@ var UserController = function () {
               res.status(500).json({ message: err.message });
             });
           } else {
-            res.status(404).json({ message: 'Specified user does not exist' });
+            res.status(404).json({ message: 'Specified user does not exist!' });
           }
         }).catch(function (err) {
           res.status(500).json({ message: err.message });
