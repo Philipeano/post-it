@@ -69,7 +69,7 @@ class UserController {
                       req.session.user = newUser;
                       return res.status(201).json({
                         message: 'You signed up successfully!',
-                        user: newUser
+                        user: Validator.trimFields(newUser)
                       });
                     }).catch((err) => {
                       return res.status(500).json({ message: err.message });
@@ -105,7 +105,7 @@ class UserController {
                 .verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
               res.status(200).json({ message: 'You signed in successfully!',
-                user: matchingUser });
+                user: Validator.trimFields(matchingUser) });
             } else {
               res.status(400).json({ message: 'Password is wrong!' });
             }
@@ -148,7 +148,9 @@ class UserController {
    * @return {Object} allUsers
    */
   getAllUsers(req, res) {
-    this.user.findAll().then((allUsers) => {
+    this.user.findAll({
+      attributes: ['id', 'username', 'email']
+    }).then((allUsers) => {
       res.status(200).json({ 'Registered users': allUsers });
     }).catch((err) => {
       res.status(500).json({ message: err.message });
@@ -168,7 +170,10 @@ class UserController {
     if (errorMessage.trim() !== '')
       res.status(400).json({ message: errorMessage });
     else {
-      this.user.findOne({ where: { id: req.params.userId } })
+      this.user.findOne({
+        attributes: ['id', 'username', 'email'],
+        where: { id: req.params.userId }
+      })
         .then((matchingUser) => {
           if (matchingUser) {
             res.status(200).json({ 'Specified user': matchingUser });

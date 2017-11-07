@@ -29,7 +29,7 @@ messageRouter.get('/', (req, res) => {
 });
 
 /**
- * @description: Update a message sent to a group
+ * @description: Update a message previously sent to a group
  * @param {Object} req
  * @param {Object} res
  */
@@ -38,7 +38,7 @@ messageRouter.patch('/:messageId', (req, res) => {
 });
 
 /**
- * @description: Delete a message sent to a group
+ * @description: Delete a message previously sent to a group
  * @param {Object} req
  * @param {Object} res
  */

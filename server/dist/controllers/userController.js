@@ -92,7 +92,7 @@ var UserController = function () {
                     req.session.user = newUser;
                     return res.status(201).json({
                       message: 'You signed up successfully!',
-                      user: newUser
+                      user: _validator2.default.trimFields(newUser)
                     });
                   }).catch(function (err) {
                     return res.status(500).json({ message: err.message });
@@ -125,7 +125,7 @@ var UserController = function () {
             if (_validator2.default.verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
               res.status(200).json({ message: 'You signed in successfully!',
-                user: matchingUser });
+                user: _validator2.default.trimFields(matchingUser) });
             } else {
               res.status(400).json({ message: 'Password is wrong!' });
             }
@@ -176,7 +176,9 @@ var UserController = function () {
   }, {
     key: 'getAllUsers',
     value: function getAllUsers(req, res) {
-      this.user.findAll().then(function (allUsers) {
+      this.user.findAll({
+        attributes: ['id', 'username', 'email']
+      }).then(function (allUsers) {
         res.status(200).json({ 'Registered users': allUsers });
       }).catch(function (err) {
         res.status(500).json({ message: err.message });
@@ -196,7 +198,10 @@ var UserController = function () {
       errorMessage = '';
       if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        this.user.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
+        this.user.findOne({
+          attributes: ['id', 'username', 'email'],
+          where: { id: req.params.userId }
+        }).then(function (matchingUser) {
           if (matchingUser) {
             res.status(200).json({ 'Specified user': matchingUser });
           } else {

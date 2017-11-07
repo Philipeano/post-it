@@ -20,7 +20,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var Validator = function () {
   /**
-   * @description: Initializes validator object with no error
+   * @description: Initializes validator object
    * @constructor
    */
   function Validator() {
@@ -127,6 +127,26 @@ var Validator = function () {
     value: function verifyPassword(plainText, hashFromDB) {
       var result = _bcrypt2.default.compareSync(plainText, hashFromDB);
       return result;
+    }
+
+    /**
+     * @description: Shrinks given object by removing unnecessary properties
+     * @param {Object} originalValue
+     * @return {Object} trimmedValue
+     */
+
+  }, {
+    key: 'trimFields',
+    value: function trimFields(originalValue) {
+      var originalKeys = Object.keys(originalValue.toJSON());
+      var unwantedKeys = ['password', 'createdAt', 'updatedAt', 'isActive'];
+      var trimmedValue = {};
+      for (var i = 0; i < originalKeys.length; i += 1) {
+        if (!unwantedKeys.includes(originalKeys[i])) {
+          trimmedValue[originalKeys[i]] = originalValue[originalKeys[i]];
+        }
+      }
+      return trimmedValue;
     }
   }]);
 

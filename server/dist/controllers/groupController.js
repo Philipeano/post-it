@@ -27,8 +27,8 @@ var errorMessage = void 0;
 
 var GroupController = function () {
   /**
-   * @description: Initializes instance with 'group' and 'membership' models
-   * as local properties
+   * @description: Initializes instance with 'group', 'user' and 'membership'
+   * models as local properties
    * @constructor
    */
   function GroupController() {
@@ -73,7 +73,7 @@ var GroupController = function () {
                   }).then(function () {
                     res.status(201).json({
                       message: 'Group created successfully!',
-                      group: newGroup
+                      group: _validator2.default.trimFields(newGroup)
                     });
                   });
                 }).catch(function (err) {
@@ -97,7 +97,17 @@ var GroupController = function () {
     key: 'getAllGroups',
     value: function getAllGroups(req, res) {
       this.group.findAll({
-        include: [{ model: this.user, as: 'creator' }, { model: this.message, as: 'messages' }, { model: this.user, as: 'members' }]
+        attributes: ['id', 'title', 'purpose'],
+        include: [{
+          model: this.user,
+          as: 'creator',
+          attributes: ['id', 'username', 'email']
+        }, {
+          model: this.user,
+          as: 'members',
+          attributes: ['id', 'username', 'email'],
+          through: { attributes: ['userRole'] }
+        }]
       }).then(function (allGroups) {
         res.status(200).json({ 'Available groups': allGroups });
       }).catch(function (err) {
@@ -119,13 +129,23 @@ var GroupController = function () {
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
         this.group.findOne({
+          attributes: ['id', 'title', 'purpose'],
           where: { id: req.params.groupId },
-          include: [{ model: this.user, as: 'creator' }, { model: this.message, as: 'messages' }, { model: this.user, as: 'members' }]
+          include: [{
+            model: this.user,
+            as: 'creator',
+            attributes: ['id', 'username', 'email']
+          }, {
+            model: this.user,
+            as: 'members',
+            attributes: ['id', 'username', 'email'],
+            through: { attributes: ['userRole'] }
+          }]
         }).then(function (matchingGroup) {
           if (matchingGroup) {
-            res.status(200).json({ 'Specified group': matchingGroup });
+            res.status(200).json({ 'Requested group': matchingGroup });
           } else {
-            res.status(404).json({ message: 'Specified group does not exist' });
+            res.status(404).json({ message: 'Requested group does not exist' });
           }
         }).catch(function (err) {
           res.status(500).json({ message: err.message });
@@ -148,15 +168,24 @@ var GroupController = function () {
       errorMessage = '';
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        this.group.findOne({ where: { id: req.params.groupId } }).then(function (matchingGroup) {
-          if (matchingGroup) {
-            _this2.group.destroy({ where: { id: req.params.groupId } }).then(function () {
-              res.status(200).json({ message: 'Group deleted successfully!' });
-            }).catch(function (err) {
-              res.status(500).json({ message: err.message });
-            });
+        // Check if the specified group ID is valid
+        this.group.findById(req.params.groupId).then(function (matchingGroup) {
+          if (!matchingGroup) {
+            res.status(404).json({ message: 'Specified group does not exist!' });
           } else {
-            res.status(404).json({ message: 'Specified group does not exist' });
+            /* Allow the current user delete the group only if he is
+            the original creator */
+            if (matchingGroup.creatorId === req.session.user.id) {
+              _this2.group.destroy({ where: { id: req.params.groupId } }).then(function () {
+                res.status(200).json({ message: 'Group deleted successfully!' });
+              }).catch(function (err) {
+                res.status(500).json({ message: err.message });
+              });
+            } else {
+              res.status(403).json({
+                message: 'You do not have the right to delete this group.'
+              });
+            }
           }
         }).catch(function (err) {
           res.status(500).json({ message: err.message });

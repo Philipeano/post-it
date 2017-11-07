@@ -9,8 +9,8 @@ let errorMessage;
  */
 class GroupController {
   /**
-   * @description: Initializes instance with 'group' and 'membership' models
-   * as local properties
+   * @description: Initializes instance with 'group', 'user' and 'membership'
+   * models as local properties
    * @constructor
    */
   constructor() {
@@ -54,7 +54,7 @@ class GroupController {
                   }).then(() => {
                     res.status(201).json({
                       message: 'Group created successfully!',
-                      group: newGroup
+                      group: Validator.trimFields(newGroup)
                     });
                   });
                 }).catch((err) => {
@@ -75,11 +75,18 @@ class GroupController {
    */
   getAllGroups(req, res) {
     this.group.findAll({
-      include: [
-        { model: this.user, as: 'creator' },
-        { model: this.message, as: 'messages' },
-        { model: this.user, as: 'members' }
-      ]
+      attributes: ['id', 'title', 'purpose'],
+      include: [{
+        model: this.user,
+        as: 'creator',
+        attributes: ['id', 'username', 'email']
+      },
+      {
+        model: this.user,
+        as: 'members',
+        attributes: ['id', 'username', 'email'],
+        through: { attributes: ['userRole'] }
+      }]
     })
       .then((allGroups) => {
         res.status(200).json({ 'Available groups': allGroups });
@@ -102,18 +109,25 @@ class GroupController {
       res.status(400).json({ message: errorMessage });
     else {
       this.group.findOne({
+        attributes: ['id', 'title', 'purpose'],
         where: { id: req.params.groupId },
-        include: [
-          { model: this.user, as: 'creator' },
-          { model: this.message, as: 'messages' },
-          { model: this.user, as: 'members' }
-        ]
+        include: [{
+          model: this.user,
+          as: 'creator',
+          attributes: ['id', 'username', 'email']
+        },
+        {
+          model: this.user,
+          as: 'members',
+          attributes: ['id', 'username', 'email'],
+          through: { attributes: ['userRole'] }
+        }]
       })
         .then((matchingGroup) => {
           if (matchingGroup) {
-            res.status(200).json({ 'Specified group': matchingGroup });
+            res.status(200).json({ 'Requested group': matchingGroup });
           } else {
-            res.status(404).json({ message: 'Specified group does not exist' });
+            res.status(404).json({ message: 'Requested group does not exist' });
           }
         }).catch((err) => {
           res.status(500).json({ message: err.message });
@@ -132,24 +146,33 @@ class GroupController {
     if (Validator.isEmpty('Group ID', req.params.groupId))
       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
     if (errorMessage.trim() !== '')
-      res.status(400).json({ message: errorMessage });
+      res.status(400).json({message: errorMessage});
     else {
-      this.group.findOne({ where: { id: req.params.groupId } })
-        .then((matchingGroup) => {
-          if (matchingGroup) {
-            this.group.destroy({ where: { id: req.params.groupId } })
+      // Check if the specified group ID is valid
+      this.group.findById(req.params.groupId).then((matchingGroup) => {
+        if (!matchingGroup) {
+          res.status(404)
+            .json({message: 'Specified group does not exist!'});
+        } else {
+          /* Allow the current user delete the group only if he is
+          the original creator */
+          if (matchingGroup.creatorId === req.session.user.id) {
+            this.group.destroy({where: {id: req.params.groupId}})
               .then(() => {
                 res.status(200)
-                  .json({ message: 'Group deleted successfully!' });
+                  .json({message: 'Group deleted successfully!'});
               }).catch((err) => {
-                res.status(500).json({ message: err.message });
+                res.status(500).json({message: err.message});
               });
           } else {
-            res.status(404).json({ message: 'Specified group does not exist' });
+            res.status(403).json({
+              message: 'You do not have the right to delete this group.'
+            });
           }
-        }).catch((err) => {
-          res.status(500).json({ message: err.message });
-        });
+        }
+      }).catch((err) => {
+        res.status(500).json({message: err.message});
+      });
     }
   }
 
