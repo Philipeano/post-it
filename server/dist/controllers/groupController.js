@@ -27,8 +27,8 @@ var errorMessage = void 0;
 
 var GroupController = function () {
   /**
-   * @description: Initializes instance with 'group', 'user' and 'membership'
-   * models as local properties
+   * @description: Initializes instance with necessary database models
+   * as a local properties
    * @constructor
    */
   function GroupController() {
@@ -58,13 +58,17 @@ var GroupController = function () {
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
         this.group.findOne({ where: { title: req.body.title } }).then(function (matchingGroup) {
-          if (matchingGroup) res.status(409).json({ message: 'Group Title is already taken!' });else {
+          if (matchingGroup) {
+            res.status(409).json({ message: 'Group Title is already taken!' });
+          } else {
+            // Create the new group with the title, purpose and creator ID
             _this.group.sync().then(function () {
               _this.group.create({
                 title: req.body.title,
                 purpose: req.body.purpose,
                 creatorId: req.session.user.id
               }).then(function (newGroup) {
+                // Add the creator as the first member of the group
                 _this.membership.sync().then(function () {
                   _this.membership.create({
                     userRole: 'admin',
@@ -145,7 +149,9 @@ var GroupController = function () {
           if (matchingGroup) {
             res.status(200).json({ 'Requested group': matchingGroup });
           } else {
-            res.status(404).json({ message: 'Requested group does not exist' });
+            res.status(404).json({
+              message: 'Requested group does not exist!'
+            });
           }
         }).catch(function (err) {
           res.status(500).json({ message: err.message });
@@ -183,7 +189,7 @@ var GroupController = function () {
               });
             } else {
               res.status(403).json({
-                message: 'You do not have the right to delete this group.'
+                message: 'You do not have the right to delete this group!'
               });
             }
           }

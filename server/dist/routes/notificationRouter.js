@@ -9,16 +9,16 @@
 //  */
 //
 // const notificationController = new NotificationController();
-// // baseURL /api/groups/:groupId/messages/:messageId/notifications
+// // baseURL /api/users/:userId/notifications
 //
 // // Create notifications from a new group message
-// notificationRouter.post('/', (req, res) => {
-//   notificationController.createNotification(req, res);
+// notificationRouter.post('/api/users/:userId/notifications', (req, res) => {
+//   notificationController.createNotifications(req, res);
 // });
 //
 // // Fetch all notifications for a user, from a particular group
 // notificationRouter.get('/', (req, res) => {
-//   notificationController.getMessagesFromGroup(req, res);
+//   notificationController.getNotificationsFromGroup(req, res);
 // });
 //
 // // Fetch all notifications created for a particular message

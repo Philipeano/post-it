@@ -77,7 +77,7 @@ describe('PostIT API', () => {
             res.should.have.status(201);
             res.body.should.be.a('object');
             res.body.should.have.property('group');
-            // res.body.group.members[0].username.should.eql('username');
+            // res.body.group.members[0].username.should.eql('philnewman');
             res.body.should.have.property('message');
             res.body.message.trim().should.be
               .eql('Group created successfully!');
@@ -109,24 +109,24 @@ describe('PostIT API', () => {
           .end((err, res) => {
             res.should.have.status(404);
             res.body.should.be.a('object');
-            res.body.should.not.have.property('Specified group');
+            res.body.should.not.have.property('Requested group');
             res.body.should.have.property('message');
             res.body.message.trim().should.be
-              .eql('Specified group does not exist');
+              .eql('Requested group does not exist!');
             done();
           });
       });
     });
 
-    it('should fetch a particular user if supplied user ID exists', (done) => {
+    it('should fetch a particular group given a valid group ID', (done) => {
       validGroupRoute = `/api/groups/${createdGroupId}`;
       agent.post('/api/users/signin').send(validCredentials).then(() => {
         agent.get(validGroupRoute).send()
           .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('object');
-            res.body.should.have.property('Specified group');
-            res.body['Specified group'].title.should.be.eql('Dummy Group');
+            res.body.should.have.property('Requested group');
+            res.body['Requested group'].title.should.be.eql('Dummy Group');
             done();
           });
       });
@@ -142,7 +142,7 @@ describe('PostIT API', () => {
             res.body.should.be.a('object');
             res.body.should.have.property('message');
             res.body.message.trim().should.be
-              .eql('Specified group does not exist');
+              .eql('Specified group does not exist!');
             done();
           });
       });

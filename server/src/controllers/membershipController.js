@@ -9,7 +9,8 @@ let errorMessage;
  */
 class MembershipController {
   /**
-   * @description: Initializes instance with 'membership' as local property
+   * @description: Initializes instance with necessary database models
+   * as a local properties
    * @constructor
    */
   constructor() {

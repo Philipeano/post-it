@@ -27,7 +27,8 @@ var errorMessage = void 0;
 
 var MembershipController = function () {
   /**
-   * @description: Initializes instance with 'membership' as local property
+   * @description: Initializes instance with necessary database models
+   * as a local properties
    * @constructor
    */
   function MembershipController() {
@@ -120,7 +121,6 @@ var MembershipController = function () {
           where: { groupId: req.params.groupId },
           include: [{
             model: this.user,
-            // as: 'member',
             attributes: ['id', 'username', 'email']
           }]
         }).then(function (memberships) {

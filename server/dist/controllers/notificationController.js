@@ -9,15 +9,21 @@
 //  */
 // class NotificationController {
 //   /**
-//    * @description: Initializes instance with 'notification' as a local property
+//    * @description: Initializes instance with necessary database models
+//    * as a local properties
 //    * @constructor
 //    */
 //   constructor() {
+//     this.group = db.Group;
+//     this.message = db.Message;
+//     this.user = db.User;
+//     this.membership = db.Membership;
 //     this.notification = db.Notification;
 //   }
 //
 //   /**
 //    * @description: Creates a notification for each group member
+//    * from newly-posted message
 //    * @param {Object} req
 //    * @param {Object} res
 //    * @param {Object} postedMessage newly posted message for the group
@@ -33,7 +39,7 @@
 //     if (errorMessage.trim() !== '')
 //       res.status(400).json({ message: errorMessage });
 //     else {
-//       db.Membership.findAll({
+//       this.membership.findAll({
 //         where: {
 //           groupId: req.params.groupId,
 //           memberId: { $ne: req.session.user.id }
@@ -87,12 +93,12 @@
 //     if (errorMessage.trim() !== '')
 //       res.status(400).json({ message: errorMessage });
 //     else {
-//       db.Membership.findOne({
+//       this.membership.findOne({
 //         where: { groupId: req.params.groupId,
 //           memberId: req.session.user.id } })
 //         .then((membership) => {
 //           if (membership) {
-//             db.Message
+//             this.message
 //               .findAll({ where: { groupId: req.params.groupId } })
 //               .then((messages) => {
 //                 res.status(200).json({ Messages: messages });
@@ -127,18 +133,18 @@
 //     if (errorMessage.trim() !== '')
 //       res.status(400).json({ message: errorMessage });
 //     else {
-//       db.Membership.findOne({
+//       this.membership.findOne({
 //         where: { groupId: req.params.groupId,
 //           memberId: req.session.user.id } })
 //         .then((membership) => {
 //           if (membership) {
-//             db.Message
+//             this.message
 //               .findOne({ where: { groupId: req.params.groupId,
 //                 id: req.params.messageId,
 //                 senderId: req.session.user.id } })
 //               .then((message) => {
 //                 if (message) {
-//                   db.Message
+//                   this.message
 //                     .update({ content: req.body.content },
 //                       { where: { id: req.params.messageId },
 //                         returning: true,
@@ -185,18 +191,18 @@
 //     if (errorMessage.trim() !== '')
 //       res.status(400).json({ message: errorMessage });
 //     else {
-//       db.Membership.findOne({
+//       this.membership.findOne({
 //         where: { groupId: req.params.groupId,
 //           memberId: req.session.user.id } })
 //         .then((membership) => {
 //           if (membership) {
-//             db.Message
+//             this.message
 //               .findAll({ where: { groupId: req.params.groupId,
 //                 id: req.params.messageId,
 //                 senderId: req.session.user.id } })
 //               .then((messages) => {
 //                 if (messages) {
-//                   db.Message
+//                   this.message
 //                     .destroy({ where: { id: req.params.messageId } })
 //                     .then(() => {
 //                       res.status(200)

@@ -27,8 +27,8 @@ var errorMessage = void 0;
 
 var MessageController = function () {
   /**
-   * @description: Initializes instance with 'group', 'message', 'user',
-   * 'membership' and 'notification' as local properties
+   * @description: Initializes instance with necessary database models
+   * as a local properties
    * @constructor
    */
   function MessageController() {
@@ -248,7 +248,7 @@ var MessageController = function () {
                         }).then(function (updatedMessage) {
                           res.status(200).json({
                             message: 'Message updated successfully!',
-                            'Updated Message': _validator2.default.trimFields(updatedMessage[1])
+                            'Updated Message': _validator2.default.trimFields(updatedMessage)
                           });
                         });
                       } else {
