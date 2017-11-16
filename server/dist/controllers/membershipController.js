@@ -99,6 +99,8 @@ var MembershipController = function () {
               res.status(500).json({ message: err.message });
             });
           }
+        }).catch(function (err) {
+          res.status(500).json({ message: err.message });
         });
       }
     }
@@ -182,7 +184,7 @@ var MembershipController = function () {
                       });
                     } else {
                       res.status(404).json({
-                        message: 'Specified membership does not exist.'
+                        message: 'Specified membership does not exist!'
                       });
                     }
                   }).catch(function (err) {

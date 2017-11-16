@@ -248,7 +248,9 @@ var MessageController = function () {
                         }).then(function (updatedMessage) {
                           res.status(200).json({
                             message: 'Message updated successfully!',
-                            'Updated Message': _validator2.default.trimFields(updatedMessage)
+                            'Updated Message': updatedMessage
+                            // 'Updated Message': Validator
+                            //   .trimFields(updatedMessage)
                           });
                         });
                       } else {

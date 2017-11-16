@@ -240,8 +240,9 @@ class MessageController {
                                 res.status(200)
                                   .json({
                                     message: 'Message updated successfully!',
-                                    'Updated Message': Validator
-                                      .trimFields(updatedMessage)
+                                    'Updated Message': updatedMessage
+                                    // 'Updated Message': Validator
+                                    //   .trimFields(updatedMessage)
                                   });
                               });
                           } else {

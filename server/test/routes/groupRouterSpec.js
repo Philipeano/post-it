@@ -11,11 +11,8 @@ const validGroup = {
   title: 'Demo Group',
   purpose: 'This is a sample broadcast group for testing the app.'
 };
-
-let testGroup;
-let createdGroupId;
-let validGroupRoute;
 const invalidGroupRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6';
+let createdGroupId, validGroupRoute, testGroup;
 
 describe('PostIT API', () => {
   describe('/POST api/groups', () => {

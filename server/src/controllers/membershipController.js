@@ -69,7 +69,7 @@ class MembershipController {
                           membership: newMembership
                         });
                       }).catch((err) => {
-                        res.status(500).json({ message: err.message });
+                        res.status(500).json({message: err.message});
                       });
                     });
                   }
@@ -81,6 +81,8 @@ class MembershipController {
             res.status(500).json({ message: err.message });
           });
         }
+      }).catch((err) => {
+        res.status(500).json({ message: err.message });
       });
     }
   }
@@ -173,7 +175,7 @@ class MembershipController {
                     } else {
                       res.status(404)
                         .json({
-                          message: 'Specified membership does not exist.'
+                          message: 'Specified membership does not exist!'
                         });
                     }
                   }).catch((err) => {
