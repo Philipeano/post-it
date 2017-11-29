@@ -19,8 +19,8 @@ class UserController {
 
   /**
    * @description: Registers a new user
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newUser
    */
   signUpUser(req, res) {
@@ -84,8 +84,8 @@ class UserController {
 
   /**
    * @description: Logs in a user
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} user
    */
   signInUser(req, res) {
@@ -120,8 +120,8 @@ class UserController {
 
   /**
    * @description: Logs out a user
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {void}
    */
   signOutUser(req, res) {
@@ -132,7 +132,7 @@ class UserController {
 
   /**
    * @description: Checks if user is signed in
-   * @param {Object} req
+   * @param {Object} req The incoming request from the client
    * @return {Boolean} true/false
    */
   isSignedIn(req) {
@@ -143,77 +143,92 @@ class UserController {
 
   /**
    * @description: Fetches all available users
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} allUsers
    */
   getAllUsers(req, res) {
-    this.user.findAll({
-      attributes: ['id', 'username', 'email']
-    }).then((allUsers) => {
-      res.status(200).json({ 'Registered users': allUsers });
-    }).catch((err) => {
-      res.status(500).json({ message: err.message });
-    });
+    if (req.session.user) {
+      this.user.findAll({
+        attributes: ['id', 'username', 'email']
+      }).then((allUsers) => {
+        res.status(200).json({ 'Registered users': allUsers });
+      }).catch((err) => {
+        res.status(500).json({ message: err.message });
+      });
+    } else {
+      res.status(401).json({ message: 'Access denied! Please sign in first.' });
+    }
   }
 
   /**
    * @description: Fetches a user matching specified userKey
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} matchingUser
    */
   getUserByKey(req, res) {
-    errorMessage = '';
-    if (Validator.isEmpty('User ID', req.params.userId))
-      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
-    if (errorMessage.trim() !== '')
-      res.status(400).json({ message: errorMessage });
-    else {
-      this.user.findOne({
-        attributes: ['id', 'username', 'email'],
-        where: { id: req.params.userId }
-      })
-        .then((matchingUser) => {
-          if (matchingUser) {
-            res.status(200).json({ 'Specified user': matchingUser });
-          } else {
-            res.status(404).json({ message: 'Specified user does not exist!' });
-          }
-        }).catch((err) => {
-          res.status(500).json({ message: err.message });
-        });
+    if (req.session.user) {
+      errorMessage = '';
+      if (Validator.isEmpty('User ID', req.params.userId))
+        errorMessage = `${errorMessage} ${Validator.validationMessage}`;
+      if (errorMessage.trim() !== '')
+        res.status(400).json({ message: errorMessage });
+      else {
+        this.user.findOne({
+          attributes: ['id', 'username', 'email'],
+          where: { id: req.params.userId }
+        })
+          .then((matchingUser) => {
+            if (matchingUser) {
+              res.status(200).json({ 'Specified user': matchingUser });
+            } else {
+              res.status(404)
+                .json({ message: 'Specified user does not exist!' });
+            }
+          }).catch((err) => {
+            res.status(500).json({ message: err.message });
+          });
+      }
+    } else {
+      res.status(401).json({ message: 'Access denied! Please sign in first.' });
     }
   }
 
   /**
    * @description: Deletes a user matching specified userKey
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} null
    */
   deleteUser(req, res) {
-    errorMessage = '';
-    if (Validator.isEmpty('User ID', req.params.userId))
-      errorMessage = `${errorMessage} ${Validator.validationMessage}`;
-    if (errorMessage.trim() !== '')
-      res.status(400).json({ message: errorMessage });
-    else {
-      this.user.findOne({ where: { id: req.params.userId } })
-        .then((matchingUser) => {
-          if (matchingUser) {
-            this.user.destroy({ where: { id: req.params.userId } })
-              .then(() => {
-                res.status(200).json({ message: 'User deleted successfully!' });
-              }).catch((err) => {
-                res.status(500).json({ message: err.message });
-              });
-          } else {
-            res.status(404).json({ message: 'Specified user does not exist!' });
-          }
-        }).catch((err) => {
-          res.status(500).json({ message: err.message });
-        });
+    if (req.session.user) {
+      errorMessage = '';
+      if (Validator.isEmpty('User ID', req.params.userId))
+        errorMessage = `${errorMessage} ${Validator.validationMessage}`;
+      if (errorMessage.trim() !== '')
+        res.status(400).json({ message: errorMessage });
+      else {
+        this.user.findOne({ where: { id: req.params.userId } })
+          .then((matchingUser) => {
+            if (matchingUser) {
+              this.user.destroy({ where: { id: req.params.userId } })
+                .then(() => {
+                  res.status(200)
+                    .json({ message: 'User deleted successfully!' });
+                }).catch((err) => {
+                  res.status(500).json({ message: err.message });
+                });
+            } else {
+              res.status(404)
+                .json({ message: 'Specified user does not exist!' });
+            }
+          }).catch((err) => {
+            res.status(500).json({ message: err.message });
+          });
+      }
+    } else {
+      res.status(401).json({ message: 'Access denied! Please sign in first.' });
     }
   }
 

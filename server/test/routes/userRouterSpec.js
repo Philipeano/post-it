@@ -5,6 +5,7 @@ import server from '../../src/app';
 chai.use(chaiHttp);
 const should = chai.should();
 const app = server;
+const agent = chai.request.agent(app);
 const validUser = {
   username: 'philnewman',
   email: 'philnewman@gmail.com',
@@ -251,75 +252,85 @@ describe('PostIT API', () => {
 
   describe('/GET api/users', () => {
     it('should fetch all registered users', (done) => {
-      chai.request(app).get('/api/users').send()
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          res.body.should.have.property('Registered users');
-          done();
-        });
+      agent.post('/api/users/signin').send(validUser).then(() => {
+        agent.get('/api/users').send()
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('Registered users');
+            done();
+          });
+      });
     });
   });
 
   describe('/GET api/users/:userId', () => {
     it('should return an error if supplied user ID does not exist', (done) => {
-      chai.request(app).get(invalidUserRoute)
-        .send()
-        .end((err, res) => {
-          res.should.have.status(404);
-          res.body.should.be.a('object');
-          res.body.should.not.have.property('Specified user');
-          res.body.should.have.property('message');
-          res.body.message.trim().should.be
-            .eql('Specified user does not exist!');
-          done();
-        });
+      agent.post('/api/users/signin').send(validUser).then(() => {
+        agent.get(invalidUserRoute)
+          .send()
+          .end((err, res) => {
+            res.should.have.status(404);
+            res.body.should.be.a('object');
+            res.body.should.not.have.property('Specified user');
+            res.body.should.have.property('message');
+            res.body.message.trim().should.be
+              .eql('Specified user does not exist!');
+            done();
+          });
+      });
     });
 
     it('should fetch a particular user if supplied user ID exists', (done) => {
       validUserRoute = `/api/users/${createdUserId}`;
-      chai.request(app).get(validUserRoute)
-        .send()
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          res.body.should.have.property('Specified user');
-          res.body['Specified user'].username.should.be.eql('philnewman1');
-          res.body['Specified user'].email.should.be
-            .eql('philnewman1@gmail.com');
-          done();
-        });
+      agent.post('/api/users/signin').send(validUser).then(() => {
+        agent.get(validUserRoute)
+          .send()
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('Specified user');
+            res.body['Specified user'].username.should.be.eql('philnewman1');
+            res.body['Specified user'].email.should.be
+              .eql('philnewman1@gmail.com');
+            done();
+          });
+      });
     });
   });
 
   describe('/DELETE api/users/:userId', () => {
     it('should return an error if supplied user ID does not exist', (done) => {
-      chai.request(app)
-        .delete(invalidUserRoute)
-        .send()
-        .end((err, res) => {
-          res.should.have.status(404);
-          res.body.should.be.a('object');
-          res.body.should.have.property('message');
-          res.body.message.trim().should.be
-            .eql('Specified user does not exist!');
-          done();
-        });
+      agent.post('/api/users/signin').send(validUser).then(() => {
+        agent
+          .delete(invalidUserRoute)
+          .send()
+          .end((err, res) => {
+            res.should.have.status(404);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message');
+            res.body.message.trim().should.be
+              .eql('Specified user does not exist!');
+            done();
+          });
+      });
     });
 
     it('should delete a particular user if supplied user ID exists', (done) => {
       validUserRoute = `/api/users/${createdUserId}`;
-      chai.request(app)
-        .delete(validUserRoute)
-        .send()
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.be.a('object');
-          res.body.should.have.property('message');
-          res.body.message.trim().should.be
-            .eql('User deleted successfully!');
-          done();
-        });
+      agent.post('/api/users/signin').send(validUser).then(() => {
+        agent
+          .delete(validUserRoute)
+          .send()
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message');
+            res.body.message.trim().should.be
+              .eql('User deleted successfully!');
+            done();
+          });
+      });
     });
   });
 });

@@ -25,8 +25,8 @@ var membershipController = new _membershipController2.default();
 
 /**
  * @description: Add a user to a group
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 membershipRouter.post('/', function (req, res) {
   membershipController.addOtherMemberToGroup(req, res);
@@ -34,8 +34,8 @@ membershipRouter.post('/', function (req, res) {
 
 /**
  * @description: Fetch all members in a group
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 membershipRouter.get('/', function (req, res) {
   membershipController.getMembersInGroup(req, res);
@@ -43,8 +43,8 @@ membershipRouter.get('/', function (req, res) {
 
 /**
  * @description: Remove a member from a group
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 membershipRouter.delete('/:userId', function (req, res) {
   membershipController.deleteMemberFromGroup(req, res);

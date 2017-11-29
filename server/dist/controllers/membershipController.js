@@ -41,8 +41,8 @@ var MembershipController = function () {
 
   /**
    * @description: Adds another user as member of a group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newMembership
    */
 
@@ -107,8 +107,8 @@ var MembershipController = function () {
 
     /**
      * @description: Fetches all members in a group
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} memberships
      */
 
@@ -135,8 +135,8 @@ var MembershipController = function () {
 
     /**
      * @description: Deletes a specified member from a group
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} null
      */
 

@@ -1,5 +1,6 @@
 import db from '../models/index';
 import Validator from './validator';
+// import NotificationController from './notificationController';
 
 let errorMessage;
 
@@ -19,12 +20,13 @@ class MessageController {
     this.user = db.User;
     this.membership = db.Membership;
     this.notification = db.Notification;
+    // this.notificationController = new NotificationController();
   }
 
   /**
    * @description: Posts a message from current user to a specified group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newMessage
    */
   postMessageToGroup(req, res) {
@@ -40,32 +42,51 @@ class MessageController {
       // Check if the specified group ID is valid
       this.group.findById(req.params.groupId).then((matchingGroup) => {
         if (matchingGroup) {
+          // Check if the user belongs to this group
           this.membership.findOne({
             where: {
               groupId: req.params.groupId,
               memberId: req.session.user.id
             }
-          })
-            .then((membership) => {
-              if (membership) {
-                this.message.sync().then(() => {
-                  this.message.create({
-                    groupId: req.params.groupId,
-                    senderId: req.session.user.id,
-                    content: req.body.content
-                  }).then((newMessage) => {
-                    return this.sendNotifications(req, res, newMessage);
-                  }).catch((err) => {
-                    res.status(500).json({ message: err.message });
+          }).then((membership) => {
+            if (!membership) {
+              res.status(403)
+                .json({ message: 'You do not belong to this group!' });
+            } else {
+              // Check if there are members in the group, other than the sender
+              this.membership.findAll({
+                where: {
+                  groupId: req.params.groupId,
+                  memberId: { $ne: req.session.user.id }
+                }
+              }).then((memberships) => {
+                if (!memberships) {
+                  res.status(403).json({
+                    message: 'Please add members to the group first!'
                   });
-                });
-              } else {
-                res.status(403)
-                  .json({ message: 'You do not belong to this group!' });
-              }
-            }).catch((err) => {
-              res.status(500).json({ message: err.message });
-            });
+                } else {
+                  // Post the message and send notifications to members
+                  this.message.sync().then(() => {
+                    this.message.create({
+                      groupId: req.params.groupId,
+                      senderId: req.session.user.id,
+                      content: req.body.content
+                    }).then((newMessage) => {
+                      return this.sendNotifications(req, res, newMessage)
+                      // return this.notificationController
+                      //  .createNotifications(req, res, newMessage);
+                    }).catch((err) => {
+                      res.status(500).json({message: err.message});
+                    });
+                  });
+                }
+              }).catch((err) => {
+                res.status(500).json({message: err.message});
+              });
+            }
+          }).catch((err) => {
+            res.status(500).json({ message: err.message });
+          });
         } else {
           res.status(404)
             .json({ message: 'Specified group does not exist!' });
@@ -78,8 +99,8 @@ class MessageController {
 
   /**
    * @description: Creates a message notification for each group member
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @param {Object} postedMessage newly posted message for the group
    * @return {Object} newNotification
    */
@@ -124,8 +145,8 @@ class MessageController {
 
   /**
    * @description: Fetches all messages for a specified group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} messages
    */
   getMessagesFromGroup(req, res) {
@@ -179,8 +200,8 @@ class MessageController {
 
   /**
    * @description: Updates a specified message previously sent to a group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} null
    */
   updatePostedMessage(req, res) {
@@ -273,8 +294,8 @@ class MessageController {
 
   /**
    * @description: Deletes a specified message from a group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} null
    */
   deletePostedMessage(req, res) {

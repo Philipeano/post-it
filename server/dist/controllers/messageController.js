@@ -18,6 +18,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+// import NotificationController from './notificationController';
+
 var errorMessage = void 0;
 
 /**
@@ -39,12 +41,13 @@ var MessageController = function () {
     this.user = _index2.default.User;
     this.membership = _index2.default.Membership;
     this.notification = _index2.default.Notification;
+    // this.notificationController = new NotificationController();
   }
 
   /**
    * @description: Posts a message from current user to a specified group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newMessage
    */
 
@@ -62,26 +65,46 @@ var MessageController = function () {
         // Check if the specified group ID is valid
         this.group.findById(req.params.groupId).then(function (matchingGroup) {
           if (matchingGroup) {
+            // Check if the user belongs to this group
             _this.membership.findOne({
               where: {
                 groupId: req.params.groupId,
                 memberId: req.session.user.id
               }
             }).then(function (membership) {
-              if (membership) {
-                _this.message.sync().then(function () {
-                  _this.message.create({
-                    groupId: req.params.groupId,
-                    senderId: req.session.user.id,
-                    content: req.body.content
-                  }).then(function (newMessage) {
-                    return _this.sendNotifications(req, res, newMessage);
-                  }).catch(function (err) {
-                    res.status(500).json({ message: err.message });
-                  });
-                });
-              } else {
+              if (!membership) {
                 res.status(403).json({ message: 'You do not belong to this group!' });
+              } else {
+                // Check if there are members in the group, other than the sender
+                _this.membership.findAll({
+                  where: {
+                    groupId: req.params.groupId,
+                    memberId: { $ne: req.session.user.id }
+                  }
+                }).then(function (memberships) {
+                  if (!memberships) {
+                    res.status(403).json({
+                      message: 'Please add members to the group first!'
+                    });
+                  } else {
+                    // Post the message and send notifications to members
+                    _this.message.sync().then(function () {
+                      _this.message.create({
+                        groupId: req.params.groupId,
+                        senderId: req.session.user.id,
+                        content: req.body.content
+                      }).then(function (newMessage) {
+                        return _this.sendNotifications(req, res, newMessage);
+                        // return this.notificationController
+                        //  .createNotifications(req, res, newMessage);
+                      }).catch(function (err) {
+                        res.status(500).json({ message: err.message });
+                      });
+                    });
+                  }
+                }).catch(function (err) {
+                  res.status(500).json({ message: err.message });
+                });
               }
             }).catch(function (err) {
               res.status(500).json({ message: err.message });
@@ -97,8 +120,8 @@ var MessageController = function () {
 
     /**
      * @description: Creates a message notification for each group member
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @param {Object} postedMessage newly posted message for the group
      * @return {Object} newNotification
      */
@@ -145,8 +168,8 @@ var MessageController = function () {
 
     /**
      * @description: Fetches all messages for a specified group
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} messages
      */
 
@@ -197,8 +220,8 @@ var MessageController = function () {
 
     /**
      * @description: Updates a specified message previously sent to a group
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} null
      */
 
@@ -278,8 +301,8 @@ var MessageController = function () {
 
     /**
      * @description: Deletes a specified message from a group
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} null
      */
 

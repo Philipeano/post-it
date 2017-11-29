@@ -10,7 +10,7 @@
 // class NotificationController {
 //   /**
 //    * @description: Initializes instance with necessary database models
-//    * as a local properties
+//    * as local properties
 //    * @constructor
 //    */
 //   constructor() {
@@ -24,55 +24,93 @@
 //   /**
 //    * @description: Creates a notification for each group member
 //    * from newly-posted message
-//    * @param {Object} req
-//    * @param {Object} res
+//    * @param {Object} req The incoming request from the client
+//    * @param {Object} res The outgoing response from the server
 //    * @param {Object} postedMessage newly posted message for the group
-//    * @return {Object} newNotification
+//    * @return {Object} postedMessage
 //    */
 //   createNotifications(req, res, postedMessage) {
+//     // errorMessage = '';
+//     // if (Validator.isEmpty('Group ID', req.params.groupId))
+//     //   errorMessage = `${errorMessage} ${Validator.validationMessage}`;
+//     // if (Validator.isEmpty('Message', postedMessage))
+//     //   errorMessage = `${errorMessage} ${Validator.validationMessage}`;
+//     //
+//     // if (errorMessage.trim() !== '')
+//     //   res.status(400).json({ message: errorMessage });
+//     // else {
+//     this.membership.findAll({
+//       where: {
+//         groupId: req.params.groupId,
+//         memberId: { $ne: req.session.user.id }
+//       }
+//     })
+//       .then((memberships) => {
+//         if (memberships) {
+//           const notificationsList = [];
+//           let notificationItem;
+//           for (let i = 0; i < memberships.length; i += 1) {
+//             notificationItem = {
+//               messageId: postedMessage.id,
+//               recipientId: memberships[i].memberId,
+//               notificationType: 'in-app',
+//               status: 'unread'
+//             }
+//             notificationsList.push(notificationItem);
+//           }
+//           this.notification.sync().then(() => {
+//             this.notification
+//               .bulkCreate(notificationsList)
+//               .then(() => {
+//                 res.status(201).json({
+//                   message: 'Message posted to group successfully!',
+//                   'Posted Message': postedMessage,
+//                   recipients: notificationsList.length
+//                   // message: 'Notifications created successfully!',
+//                   // 'No. of Recipients': notificationsList.length
+//                 });
+//               }).catch((err) => {
+//                 res.status(500).json({ message: err.message });
+//               });
+//           });
+//         } else {
+//           res.status(403)
+//             .json({ message: 'Please add members to the group first!' });
+//         }
+//       }).catch((err) => {
+//         res.status(500).json({ message: err.message });
+//       });
+//     // }
+//   }
+//
+//   /**
+//    * @description: Fetches all notifications for current user
+//    * @param {Object} req The incoming request from the client
+//    * @param {Object} res The outgoing response from the server
+//    * @return {Object} notifications
+//    */
+//   getAllNotifications(req, res) {
 //     errorMessage = '';
 //     if (Validator.isEmpty('Group ID', req.params.groupId))
 //       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
-//     if (Validator.isEmpty('Message', postedMessage))
-//       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
-//
 //     if (errorMessage.trim() !== '')
 //       res.status(400).json({ message: errorMessage });
 //     else {
-//       this.membership.findAll({
-//         where: {
-//           groupId: req.params.groupId,
-//           memberId: { $ne: req.session.user.id }
-//         }
-//       })
-//         .then((memberships) => {
-//           if (memberships) {
-//             const notificationsList = [];
-//             let notificationItem;
-//             for (let i = 0; i < memberships.length; i += 1) {
-//               notificationItem = {
-//                 messageId: postedMessage.id,
-//                 recipientId: memberships[i].memberId,
-//                 notificationType: 'in-app',
-//                 status: 'unread'
-//               }
-//               notificationsList.push(notificationItem);
-//             }
-//             this.notification.sync().then(() => {
-//               this.notification
-//                 .bulkCreate(notificationsList)
-//                 .then(() => {
-//                   res.status(201).json({
-//                     message: 'Notifications created successfully!',
-//                     'No. of Recipients': notificationsList.length
-//                   });
-//                 }).catch((err) => {
-//                   res.status(500).json({ message: err.message });
-//                 });
+//       this.membership.findOne({
+//         where: { groupId: req.params.groupId,
+//           memberId: req.session.user.id } })
+//         .then((membership) => {
+//           if (membership) {
+//             this.message
+//               .findAll({ where: { groupId: req.params.groupId } })
+//               .then((messages) => {
+//                 res.status(200).json({ Messages: messages });
+//               }).catch((err) => {
+//               res.status(500).json({ message: err.message });
 //             });
 //           } else {
 //             res.status(403)
-//               .json({ message: 'Please add members to the group first!' });
+//               .json({ message: 'You do not belong to this group!' });
 //           }
 //         }).catch((err) => {
 //           res.status(500).json({ message: err.message });
@@ -80,13 +118,42 @@
 //     }
 //   }
 //
+//   // getAllNotifications(req, res) {
+//   //   errorMessage = '';
+//   //   if (Validator.isEmpty('Group ID', req.params.groupId))
+//   //     errorMessage = `${errorMessage} ${Validator.validationMessage}`;
+//   //   if (errorMessage.trim() !== '')
+//   //     res.status(400).json({ message: errorMessage });
+//   //   else {
+//   //     this.membership.findOne({
+//   //       where: { groupId: req.params.groupId,
+//   //         memberId: req.session.user.id } })
+//   //       .then((membership) => {
+//   //         if (membership) {
+//   //           this.message
+//   //             .findAll({ where: { groupId: req.params.groupId } })
+//   //             .then((messages) => {
+//   //               res.status(200).json({ Messages: messages });
+//   //             }).catch((err) => {
+//   //             res.status(500).json({ message: err.message });
+//   //           });
+//   //         } else {
+//   //           res.status(403)
+//   //             .json({ message: 'You do not belong to this group!' });
+//   //         }
+//   //       }).catch((err) => {
+//   //       res.status(500).json({ message: err.message });
+//   //     });
+//   //   }
+//   // }
+//
 //   /**
-//    * @description: Fetches all notifications for a user
-//    * @param {Object} req
-//    * @param {Object} res
+//    * @description: Fetches a notification matching specified notificationKey
+//    * @param {Object} req The incoming request from the client
+//    * @param {Object} res The outgoing response from the server
 //    * @return {Object} messages
 //    */
-//   getNotifications(req, res) {
+//   getNotificationByKey(req, res) {
 //     errorMessage = '';
 //     if (Validator.isEmpty('Group ID', req.params.groupId))
 //       errorMessage = `${errorMessage} ${Validator.validationMessage}`;
@@ -117,8 +184,8 @@
 //
 //   /**
 //    * @description: Updates a specified message previously sent to a group
-//    * @param {Object} req
-//    * @param {Object} res
+//    * @param {Object} req The incoming request from the client
+//    * @param {Object} res The outgoing response from the server
 //    * @return {Object} null
 //    */
 //   updateNotification(req, res) {
@@ -177,8 +244,8 @@
 //
 //   /**
 //    * @description: Deletes a specified message from a group
-//    * @param {Object} req
-//    * @param {Object} res
+//    * @param {Object} req The incoming request from the client
+//    * @param {Object} res The outgoing response from the server
 //    * @return {Object} null
 //    */
 //   deleteNotification(req, res) {

@@ -21,8 +21,8 @@ class MembershipController {
 
   /**
    * @description: Adds another user as member of a group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newMembership
    */
   addOtherMemberToGroup(req, res) {
@@ -89,8 +89,8 @@ class MembershipController {
 
   /**
    * @description: Fetches all members in a group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} memberships
    */
   getMembersInGroup(req, res) {
@@ -119,8 +119,8 @@ class MembershipController {
 
   /**
    * @description: Deletes a specified member from a group
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} null
    */
   deleteMemberFromGroup(req, res) {

@@ -21,8 +21,8 @@ class GroupController {
 
   /**
    * @description: Creates a new group and adds creator as member
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newGroup
    */
   createGroup(req, res) {
@@ -71,8 +71,8 @@ class GroupController {
 
   /**
    * @description: Fetches all available groups
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} allGroups
    */
   getAllGroups(req, res) {
@@ -99,8 +99,8 @@ class GroupController {
 
   /**
    * @description: Fetches a group matching specified groupKey
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} matchingGroup
    */
   getGroupByKey(req, res) {
@@ -141,8 +141,8 @@ class GroupController {
 
   /**
    * @description: Deletes a group matching specified groupKey
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} null
    */
   deleteGroup(req, res) {

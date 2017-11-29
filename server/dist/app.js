@@ -46,7 +46,7 @@ var _messageRouter2 = _interopRequireDefault(_messageRouter);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import notificationRouter from '../routes/notificationRouter';
+// import notificationRouter from './routes/notificationRouter';
 
 // Configure environment settings
 _dotenv2.default.config();
@@ -65,8 +65,8 @@ app.use((0, _expressSession2.default)({ secret: 'PostItMessagingSystemByPhilipea
 
 /**
  * @description: Checks if user is authenticated
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  * @param {Function} next
  * @return {void}
  */
@@ -78,14 +78,18 @@ var checkSignIn = function checkSignIn(req, res, next) {
   }
 };
 
-// Unprotected route
+// Unprotected routes
 app.use('/api/users', _userRouter2.default);
 
 // Protected routes
+// app.use('/api/users/:userId/notifications', checkSignIn, (req, res, next) =>{
+//   next();
+// });
+// app.use('/api/users/:userId/notifications', notificationRouter);
+
 app.use('/api/groups', checkSignIn, function (req, res, next) {
   next();
 });
-
 app.use('/api/groups', _groupRouter2.default);
 app.use('/api/groups/:groupId/users', _membershipRouter2.default);
 app.use('/api/groups/:groupId/messages', _messageRouter2.default);

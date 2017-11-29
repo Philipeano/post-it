@@ -39,8 +39,8 @@ var UserController = function () {
 
   /**
    * @description: Registers a new user
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newUser
    */
 
@@ -107,8 +107,8 @@ var UserController = function () {
 
     /**
      * @description: Logs in a user
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} user
      */
 
@@ -140,8 +140,8 @@ var UserController = function () {
 
     /**
      * @description: Logs out a user
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {void}
      */
 
@@ -155,7 +155,7 @@ var UserController = function () {
 
     /**
      * @description: Checks if user is signed in
-     * @param {Object} req
+     * @param {Object} req The incoming request from the client
      * @return {Boolean} true/false
      */
 
@@ -168,55 +168,63 @@ var UserController = function () {
 
     /**
      * @description: Fetches all available users
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} allUsers
      */
 
   }, {
     key: 'getAllUsers',
     value: function getAllUsers(req, res) {
-      this.user.findAll({
-        attributes: ['id', 'username', 'email']
-      }).then(function (allUsers) {
-        res.status(200).json({ 'Registered users': allUsers });
-      }).catch(function (err) {
-        res.status(500).json({ message: err.message });
-      });
+      if (req.session.user) {
+        this.user.findAll({
+          attributes: ['id', 'username', 'email']
+        }).then(function (allUsers) {
+          res.status(200).json({ 'Registered users': allUsers });
+        }).catch(function (err) {
+          res.status(500).json({ message: err.message });
+        });
+      } else {
+        res.status(401).json({ message: 'Access denied! Please sign in first.' });
+      }
     }
 
     /**
      * @description: Fetches a user matching specified userKey
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} matchingUser
      */
 
   }, {
     key: 'getUserByKey',
     value: function getUserByKey(req, res) {
-      errorMessage = '';
-      if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
-      if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        this.user.findOne({
-          attributes: ['id', 'username', 'email'],
-          where: { id: req.params.userId }
-        }).then(function (matchingUser) {
-          if (matchingUser) {
-            res.status(200).json({ 'Specified user': matchingUser });
-          } else {
-            res.status(404).json({ message: 'Specified user does not exist!' });
-          }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
-        });
+      if (req.session.user) {
+        errorMessage = '';
+        if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
+        if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
+          this.user.findOne({
+            attributes: ['id', 'username', 'email'],
+            where: { id: req.params.userId }
+          }).then(function (matchingUser) {
+            if (matchingUser) {
+              res.status(200).json({ 'Specified user': matchingUser });
+            } else {
+              res.status(404).json({ message: 'Specified user does not exist!' });
+            }
+          }).catch(function (err) {
+            res.status(500).json({ message: err.message });
+          });
+        }
+      } else {
+        res.status(401).json({ message: 'Access denied! Please sign in first.' });
       }
     }
 
     /**
      * @description: Deletes a user matching specified userKey
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} null
      */
 
@@ -225,22 +233,26 @@ var UserController = function () {
     value: function deleteUser(req, res) {
       var _this2 = this;
 
-      errorMessage = '';
-      if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
-      if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        this.user.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
-          if (matchingUser) {
-            _this2.user.destroy({ where: { id: req.params.userId } }).then(function () {
-              res.status(200).json({ message: 'User deleted successfully!' });
-            }).catch(function (err) {
-              res.status(500).json({ message: err.message });
-            });
-          } else {
-            res.status(404).json({ message: 'Specified user does not exist!' });
-          }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
-        });
+      if (req.session.user) {
+        errorMessage = '';
+        if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
+        if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
+          this.user.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
+            if (matchingUser) {
+              _this2.user.destroy({ where: { id: req.params.userId } }).then(function () {
+                res.status(200).json({ message: 'User deleted successfully!' });
+              }).catch(function (err) {
+                res.status(500).json({ message: err.message });
+              });
+            } else {
+              res.status(404).json({ message: 'Specified user does not exist!' });
+            }
+          }).catch(function (err) {
+            res.status(500).json({ message: err.message });
+          });
+        }
+      } else {
+        res.status(401).json({ message: 'Access denied! Please sign in first.' });
       }
     }
   }]);

@@ -41,8 +41,8 @@ var GroupController = function () {
 
   /**
    * @description: Creates a new group and adds creator as member
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newGroup
    */
 
@@ -92,8 +92,8 @@ var GroupController = function () {
 
     /**
      * @description: Fetches all available groups
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} allGroups
      */
 
@@ -121,8 +121,8 @@ var GroupController = function () {
 
     /**
      * @description: Fetches a group matching specified groupKey
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} matchingGroup
      */
 
@@ -161,8 +161,8 @@ var GroupController = function () {
 
     /**
      * @description: Deletes a group matching specified groupKey
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} null
      */
 

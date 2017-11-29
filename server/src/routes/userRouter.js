@@ -12,8 +12,8 @@ const userController = new UserController();
 
 /**
  * @description: Register new user
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 userRouter.post('/signup', (req, res) => {
   userController.signUpUser(req, res);
@@ -21,8 +21,8 @@ userRouter.post('/signup', (req, res) => {
 
 /**
  * @description: Log in user
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 userRouter.post('/signin', (req, res) => {
   userController.signInUser(req, res);
@@ -30,8 +30,8 @@ userRouter.post('/signin', (req, res) => {
 
 /**
  * @description: Log out user
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 userRouter.post('/signout', (req, res) => {
   userController.signOutUser(req, res);
@@ -39,8 +39,8 @@ userRouter.post('/signout', (req, res) => {
 
 /**
  * @description: Fetch all users
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 userRouter.get('/', (req, res) => {
   userController.getAllUsers(req, res);
@@ -48,8 +48,8 @@ userRouter.get('/', (req, res) => {
 
 /**
  * @description: Fetch user with specified key
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 userRouter.get('/:userId', (req, res) => {
   userController.getUserByKey(req, res);
@@ -57,8 +57,8 @@ userRouter.get('/:userId', (req, res) => {
 
 /**
  * @description: Delete user with specified key
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 userRouter.delete('/:userId', (req, res) => {
   userController.deleteUser(req, res);
