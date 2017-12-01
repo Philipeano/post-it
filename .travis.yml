@@ -7,7 +7,7 @@ services:
 env:
 - NODE_ENV=test
 before_script:
-- psql -c 'create database postit-db-test;' -U postgres
+- psql -c 'create database postit_db_test;' -U postgres
 - psql -c "CREATE USER Newman WITH PASSWORD 'andela2017';" -U postgres
 - npm run build
 - sequelize db:migrate
