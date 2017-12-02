@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
  */
 class Validator {
   /**
-   * @description: Initializes validator object with no error
+   * @description: Initializes validator object
    * @constructor
    */
   constructor() {
@@ -95,6 +95,24 @@ class Validator {
     const result = bcrypt.compareSync(plainText, hashFromDB);
     return result;
   }
+
+  /**
+   * @description: Shrinks given object by removing unnecessary properties
+   * @param {Object} originalValue
+   * @return {Object} trimmedValue
+   */
+  static trimFields(originalValue) {
+    const originalKeys = Object.keys(originalValue.toJSON());
+    const unwantedKeys = ['password', 'createdAt', 'updatedAt', 'isActive'];
+    const trimmedValue = {};
+    for (let i = 0; i < originalKeys.length; i += 1) {
+      if (!unwantedKeys.includes(originalKeys[i])) {
+        trimmedValue[originalKeys[i]] = originalValue[originalKeys[i]];
+      }
+    }
+    return trimmedValue;
+  }
+
 
 }
 export default Validator;

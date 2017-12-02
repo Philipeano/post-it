@@ -8,7 +8,7 @@ import userRouter from './routes/userRouter';
 import groupRouter from './routes/groupRouter';
 import membershipRouter from './routes/membershipRouter';
 import messageRouter from './routes/messageRouter';
-// import notificationRouter from '../routes/notificationRouter';
+// import notificationRouter from './routes/notificationRouter';
 
 // Configure environment settings
 dotenv.config();
@@ -27,8 +27,8 @@ app.use(session({ secret: 'PostItMessagingSystemByPhilipeano' }));
 
 /**
  * @description: Checks if user is authenticated
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  * @param {Function} next
  * @return {void}
  */
@@ -38,16 +38,20 @@ const checkSignIn = (req, res, next) => {
   } else {
     res.status(401).json({ message: 'Access denied! Please sign in first.' });
   }
-}
+};
 
-// User route
+// Unprotected routes
 app.use('/api/users', userRouter);
 
 // Protected routes
+// app.use('/api/users/:userId/notifications', checkSignIn, (req, res, next) =>{
+//   next();
+// });
+// app.use('/api/users/:userId/notifications', notificationRouter);
+
 app.use('/api/groups', checkSignIn, (req, res, next) => {
   next();
 });
-
 app.use('/api/groups', groupRouter);
 app.use('/api/groups/:groupId/users', membershipRouter);
 app.use('/api/groups/:groupId/messages', messageRouter);

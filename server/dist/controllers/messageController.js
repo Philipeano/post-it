@@ -18,10 +18,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-// const db.Group = db.Group;
-// const db.Membership = db.Membership;
-// const db.Message = db.Message;
-// const db.Notification = db.Notification;
+// import NotificationController from './notificationController';
+
 var errorMessage = void 0;
 
 /**
@@ -31,22 +29,25 @@ var errorMessage = void 0;
 
 var MessageController = function () {
   /**
-   * @description: Initializes instance with 'message', 'membership' and
-   * 'notification' as local properties
+   * @description: Initializes instance with necessary database models
+   * as a local properties
    * @constructor
    */
   function MessageController() {
     _classCallCheck(this, MessageController);
 
     this.group = _index2.default.Group;
-    this.membership = _index2.default.Membership;
     this.message = _index2.default.Message;
+    this.user = _index2.default.User;
+    this.membership = _index2.default.Membership;
+    this.notification = _index2.default.Notification;
+    // this.notificationController = new NotificationController();
   }
 
   /**
-   * @description: Posts a message from current user to a group
-   * @param {Object} req
-   * @param {Object} res
+   * @description: Posts a message from current user to a specified group
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newMessage
    */
 
@@ -61,32 +62,49 @@ var MessageController = function () {
       if (_validator2.default.isEmpty('Content', req.body.content)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.Group.findById(req.params.groupId).then(function (matchingGroup) {
+        // Check if the specified group ID is valid
+        this.group.findById(req.params.groupId).then(function (matchingGroup) {
           if (matchingGroup) {
-            _index2.default.Membership.findOne({
+            // Check if the user belongs to this group
+            _this.membership.findOne({
               where: {
                 groupId: req.params.groupId,
                 memberId: req.session.user.id
               }
             }).then(function (membership) {
-              if (membership) {
-                _index2.default.Message.sync().then(function () {
-                  _index2.default.Message.create({
-                    groupId: req.params.groupId,
-                    senderId: req.session.user.id,
-                    content: req.body.content
-                  }).then(function (newMessage) {
-                    return _this.sendNotifications(req, res, newMessage);
-                    // res.status(201).json({
-                    //   message: 'Message posted to group successfully!',
-                    //   'posted message': newMessage
-                    // });
-                  }).catch(function (err) {
-                    res.status(500).json({ message: err.message });
-                  });
-                });
-              } else {
+              if (!membership) {
                 res.status(403).json({ message: 'You do not belong to this group!' });
+              } else {
+                // Check if there are members in the group, other than the sender
+                _this.membership.findAll({
+                  where: {
+                    groupId: req.params.groupId,
+                    memberId: { $ne: req.session.user.id }
+                  }
+                }).then(function (memberships) {
+                  if (!memberships) {
+                    res.status(403).json({
+                      message: 'Please add members to the group first!'
+                    });
+                  } else {
+                    // Post the message and send notifications to members
+                    _this.message.sync().then(function () {
+                      _this.message.create({
+                        groupId: req.params.groupId,
+                        senderId: req.session.user.id,
+                        content: req.body.content
+                      }).then(function (newMessage) {
+                        return _this.sendNotifications(req, res, newMessage);
+                        // return this.notificationController
+                        //  .createNotifications(req, res, newMessage);
+                      }).catch(function (err) {
+                        res.status(500).json({ message: err.message });
+                      });
+                    });
+                  }
+                }).catch(function (err) {
+                  res.status(500).json({ message: err.message });
+                });
               }
             }).catch(function (err) {
               res.status(500).json({ message: err.message });
@@ -101,9 +119,9 @@ var MessageController = function () {
     }
 
     /**
-     * @description: Creates a notification for each group member
-     * @param {Object} req
-     * @param {Object} res
+     * @description: Creates a message notification for each group member
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @param {Object} postedMessage newly posted message for the group
      * @return {Object} newNotification
      */
@@ -111,7 +129,9 @@ var MessageController = function () {
   }, {
     key: 'sendNotifications',
     value: function sendNotifications(req, res, postedMessage) {
-      _index2.default.Membership.findAll({
+      var _this2 = this;
+
+      this.membership.findAll({
         where: {
           groupId: req.params.groupId,
           memberId: { $ne: req.session.user.id }
@@ -120,20 +140,20 @@ var MessageController = function () {
         if (memberships) {
           var notificationsList = [];
           var notificationItem = void 0;
-          for (var i = 0; i < memberships.length; i += 1) {
+          memberships.forEach(function (membership) {
             notificationItem = {
               messageId: postedMessage.id,
-              recipientId: memberships[i].memberId,
+              recipientId: membership.memberId,
               notificationType: 'in-app',
               status: 'unread'
             };
             notificationsList.push(notificationItem);
-          }
-          _index2.default.Notification.sync().then(function () {
-            _index2.default.Notification.bulkCreate(notificationsList).then(function () {
+          });
+          _this2.notification.sync().then(function () {
+            _this2.notification.bulkCreate(notificationsList).then(function () {
               res.status(201).json({
                 message: 'Message posted to group successfully!',
-                'posted message': postedMessage,
+                'Posted Message': postedMessage,
                 recipients: notificationsList.length
               });
             }).catch(function (err) {
@@ -147,121 +167,205 @@ var MessageController = function () {
     }
 
     /**
-     * @description: Fetches all messages in a group
-     * @param {Object} req
-     * @param {Object} res
+     * @description: Fetches all messages for a specified group
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} messages
      */
 
   }, {
     key: 'getMessagesFromGroup',
     value: function getMessagesFromGroup(req, res) {
+      var _this3 = this;
+
       errorMessage = '';
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.Membership.findOne({
-          where: { groupId: req.params.groupId,
-            memberId: req.session.user.id } }).then(function (membership) {
-          if (membership) {
-            _index2.default.Message.findAll({ where: { groupId: req.params.groupId } }).then(function (messages) {
-              res.status(200).json({ Messages: messages });
+        // Check if the specified group ID is valid
+        this.group.findById(req.params.groupId).then(function (matchingGroup) {
+          if (!matchingGroup) {
+            res.status(404).json({ message: 'Specified group does not exist!' });
+          } else {
+            // Check if the current user is a member of this group
+            _this3.membership.findOne({
+              where: {
+                groupId: req.params.groupId,
+                memberId: req.session.user.id
+              }
+            }).then(function (membership) {
+              if (membership) {
+                _this3.message.findAll({
+                  attributes: ['id', 'content', 'priority', 'createdAt'],
+                  where: { groupId: req.params.groupId },
+                  include: [{
+                    model: _this3.user,
+                    as: 'sender',
+                    attributes: ['id', 'username', 'email']
+                  }]
+                }).then(function (messages) {
+                  res.status(200).json({ Messages: messages });
+                }).catch(function (err) {
+                  res.status(500).json({ message: err.message });
+                });
+              } else {
+                res.status(403).json({ message: 'You do not belong to this group!' });
+              }
             }).catch(function (err) {
               res.status(500).json({ message: err.message });
             });
-          } else {
-            res.status(403).json({ message: 'You do not belong to this group!' });
           }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
         });
       }
     }
 
     /**
      * @description: Updates a specified message previously sent to a group
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} null
      */
 
   }, {
     key: 'updatePostedMessage',
     value: function updatePostedMessage(req, res) {
+      var _this4 = this;
+
       errorMessage = '';
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (_validator2.default.isEmpty('Message ID', req.params.messageId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (_validator2.default.isEmpty('Content', req.body.content)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.Membership.findOne({
-          where: { groupId: req.params.groupId,
-            memberId: req.session.user.id } }).then(function (membership) {
-          if (membership) {
-            _index2.default.Message.findOne({ where: { groupId: req.params.groupId,
-                id: req.params.messageId,
-                senderId: req.session.user.id } }).then(function (message) {
-              if (message) {
-                _index2.default.Message.update({ content: req.body.content }, { where: { id: req.params.messageId },
-                  returning: true,
-                  plain: true
-                }).then(function (result) {
-                  res.status(200).json({
-                    message: 'Message updated successfully!',
-                    'Updated Message': result[1]
-                  });
-                });
+        // Check if the specified group ID is valid
+        this.group.findById(req.params.groupId).then(function (matchingGroup) {
+          if (!matchingGroup) {
+            res.status(404).json({ message: 'Specified group does not exist!' });
+          } else {
+            // Check if the specified message ID is valid
+            _this4.message.findById(req.params.messageId).then(function (matchingMessage) {
+              if (!matchingMessage) {
+                res.status(404).json({ message: 'Specified message does not exist!' });
               } else {
-                res.status(403).json({ message: 'You are not the sender of this message!' });
+                // Check if the current user belongs to the specified group
+                _this4.membership.findOne({
+                  where: {
+                    groupId: req.params.groupId,
+                    memberId: req.session.user.id
+                  }
+                }).then(function (membership) {
+                  if (membership) {
+                    /* Allow the current user modify the message only if
+                    he is the original sender */
+                    _this4.message.findOne({
+                      where: {
+                        groupId: req.params.groupId,
+                        id: req.params.messageId,
+                        senderId: req.session.user.id
+                      }
+                    }).then(function (message) {
+                      if (message) {
+                        _this4.message.update({ content: req.body.content }, {
+                          where: { id: req.params.messageId },
+                          returning: true,
+                          plain: true
+                        }).then(function (updatedMessage) {
+                          res.status(200).json({
+                            message: 'Message updated successfully!',
+                            'Updated Message': updatedMessage
+                            // 'Updated Message': Validator
+                            //   .trimFields(updatedMessage)
+                          });
+                        });
+                      } else {
+                        res.status(403).json({
+                          message: 'You are not the sender of this message!'
+                        });
+                      }
+                    }).catch(function (err) {
+                      res.status(500).json({ message: err.message });
+                    });
+                  } else {
+                    res.status(403).json({ message: 'You do not belong to this group!' });
+                  }
+                }).catch(function (err) {
+                  res.status(500).json({ message: err.message });
+                });
               }
             }).catch(function (err) {
               res.status(500).json({ message: err.message });
             });
-          } else {
-            res.status(403).json({ message: 'You do not belong to this group!' });
           }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
         });
       }
     }
 
     /**
      * @description: Deletes a specified message from a group
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} null
      */
 
   }, {
     key: 'deletePostedMessage',
     value: function deletePostedMessage(req, res) {
+      var _this5 = this;
+
       errorMessage = '';
       if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
       if (_validator2.default.isEmpty('Message ID', req.params.messageId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.Membership.findOne({
-          where: { groupId: req.params.groupId,
-            memberId: req.session.user.id } }).then(function (membership) {
-          if (membership) {
-            _index2.default.Message.findAll({ where: { groupId: req.params.groupId,
-                id: req.params.messageId,
-                senderId: req.session.user.id } }).then(function (messages) {
-              if (messages) {
-                _index2.default.Message.destroy({ where: { id: req.params.messageId } }).then(function () {
-                  res.status(200).json({ message: 'Message deleted successfully!' });
-                });
-              } else {
-                res.status(403).json({ message: 'You are not the sender of this message!' });
-              }
-            }).catch(function (err) {
-              res.status(500).json({ message: err.message });
-            });
+        // Check if the specified group ID is valid
+        this.group.findById(req.params.groupId).then(function (matchingGroup) {
+          if (!matchingGroup) {
+            res.status(404).json({ message: 'Specified group does not exist!' });
           } else {
-            res.status(403).json({ message: 'You do not belong to this group!' });
+            // Check if the specified message ID is valid
+            _this5.message.findById(req.params.messageId).then(function (matchingMessage) {
+              if (!matchingMessage) {
+                res.status(404).json({ message: 'Specified message does not exist!' });
+              } else {
+                // Check if the current user belongs to the specified group
+                _this5.membership.findOne({
+                  where: {
+                    groupId: req.params.groupId,
+                    memberId: req.session.user.id
+                  }
+                }).then(function (membership) {
+                  if (membership) {
+                    /* Allow the current user delete the message only if
+                    he is the original sender */
+                    _this5.message.findOne({
+                      where: {
+                        groupId: req.params.groupId,
+                        id: req.params.messageId,
+                        senderId: req.session.user.id
+                      }
+                    }).then(function (originalMessage) {
+                      if (originalMessage) {
+                        _this5.message.destroy({ where: { id: req.params.messageId } }).then(function () {
+                          res.status(200).json({
+                            message: 'Message deleted successfully!'
+                          });
+                        });
+                      } else {
+                        res.status(403).json({
+                          message: 'You are not the sender of this message!'
+                        });
+                      }
+                    }).catch(function (err) {
+                      res.status(500).json({ message: err.message });
+                    });
+                  } else {
+                    res.status(403).json({ message: 'You do not belong to this group!' });
+                  }
+                }).catch(function (err) {
+                  res.status(500).json({ message: err.message });
+                });
+              }
+            });
           }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
         });
       }
     }

@@ -24,14 +24,14 @@ exports.default = function (sequelize, DataTypes) {
 
   Notification.associate = function (models) {
     Notification.belongsTo(models.User, {
-      foreignKey: 'recipientId',
       as: 'recipient',
+      foreignKey: 'recipientId',
       onDelete: 'CASCADE'
     });
 
     Notification.belongsTo(models.Message, {
-      foreignKey: 'messageId',
       as: 'originalMessage',
+      foreignKey: 'messageId',
       onDelete: 'CASCADE'
     });
   };

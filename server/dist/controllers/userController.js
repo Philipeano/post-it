@@ -39,8 +39,8 @@ var UserController = function () {
 
   /**
    * @description: Registers a new user
-   * @param {Object} req
-   * @param {Object} res
+   * @param {Object} req The incoming request from the client
+   * @param {Object} res The outgoing response from the server
    * @return {Object} newUser
    */
 
@@ -48,6 +48,8 @@ var UserController = function () {
   _createClass(UserController, [{
     key: 'signUpUser',
     value: function signUpUser(req, res) {
+      var _this = this;
+
       errorMessage = '';
       if (_validator2.default.isEmpty('Username', req.body.username)) {
         errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
@@ -72,40 +74,41 @@ var UserController = function () {
         errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
         res.status(400).json({ message: errorMessage });
       } else {
-        _index2.default.User.findOne({ where: { username: req.body.username } }).then(function (matchingUsers) {
-          if (matchingUsers) {
-            return res.status(409).json({ message: 'Username is already in use!' });
-            // res.end();
+        this.user.findOne({ where: { username: req.body.username } }).then(function (matchingUser1) {
+          if (matchingUser1) {
+            res.status(409).json({ message: 'Username is already in use!' });
+          } else {
+            _this.user.findOne({ where: { email: req.body.email } }).then(function (matchingUser2) {
+              if (matchingUser2) {
+                res.status(409).json({ message: 'Email Address already exists!' });
+              } else {
+                reqPasswordHash = _validator2.default.generateHash(req.body.password);
+                return _this.user.sync().then(function () {
+                  _this.user.create({
+                    username: req.body.username,
+                    email: req.body.email,
+                    password: reqPasswordHash
+                  }).then(function (newUser) {
+                    req.session.user = newUser;
+                    return res.status(201).json({
+                      message: 'You signed up successfully!',
+                      user: _validator2.default.trimFields(newUser)
+                    });
+                  }).catch(function (err) {
+                    return res.status(500).json({ message: err.message });
+                  });
+                });
+              }
+            });
           }
-        });
-        _index2.default.User.findOne({ where: { email: req.body.email } }).then(function (matchingUsers) {
-          if (matchingUsers) {
-            return res.status(409).json({ message: 'Email Address already exists!' });
-            // res.end();
-          }
-        });
-        reqPasswordHash = _validator2.default.generateHash(req.body.password);
-        return _index2.default.User.sync().then(function () {
-          _index2.default.User.create({
-            username: req.body.username,
-            email: req.body.email,
-            password: reqPasswordHash
-          }).then(function (newUser) {
-            req.session.user = newUser;
-            // res.redirect('/protected_page');
-            res.status(201).json({ message: 'You signed up successfully!',
-              user: newUser });
-          }).catch(function (err) {
-            res.status(500).json({ message: err.message });
-          });
         });
       }
     }
 
     /**
      * @description: Logs in a user
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} user
      */
 
@@ -117,14 +120,14 @@ var UserController = function () {
       if (_validator2.default.isEmpty('Password', req.body.password)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
 
       if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.User.findOne({ where: { username: req.body.username } }).then(function (matchingUser) {
+        this.user.findOne({ where: { username: req.body.username } }).then(function (matchingUser) {
           if (matchingUser) {
             if (_validator2.default.verifyPassword(req.body.password, matchingUser.password)) {
               req.session.user = matchingUser;
               res.status(200).json({ message: 'You signed in successfully!',
-                user: matchingUser });
+                user: _validator2.default.trimFields(matchingUser) });
             } else {
-              res.status(400).json({ message: 'Password is invalid!' });
+              res.status(400).json({ message: 'Password is wrong!' });
             }
           } else {
             res.status(400).json({ message: 'Username does not exist!' });
@@ -137,8 +140,8 @@ var UserController = function () {
 
     /**
      * @description: Logs out a user
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {void}
      */
 
@@ -146,14 +149,13 @@ var UserController = function () {
     key: 'signOutUser',
     value: function signOutUser(req, res) {
       req.session.destroy(function () {
-        // res.redirect('/signin');
         res.status(200).json({ message: 'You have been logged out.' });
       });
     }
 
     /**
      * @description: Checks if user is signed in
-     * @param {Object} req
+     * @param {Object} req The incoming request from the client
      * @return {Boolean} true/false
      */
 
@@ -166,72 +168,91 @@ var UserController = function () {
 
     /**
      * @description: Fetches all available users
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} allUsers
      */
 
   }, {
     key: 'getAllUsers',
     value: function getAllUsers(req, res) {
-      _index2.default.User.findAll().then(function (allUsers) {
-        res.status(200).json({ 'Registered users': allUsers });
-      }).catch(function (err) {
-        res.status(500).json({ message: err.message });
-      });
+      if (req.session.user) {
+        this.user.findAll({
+          attributes: ['id', 'username', 'email']
+        }).then(function (allUsers) {
+          res.status(200).json({ 'Registered users': allUsers });
+        }).catch(function (err) {
+          res.status(500).json({ message: err.message });
+        });
+      } else {
+        res.status(401).json({ message: 'Access denied! Please sign in first.' });
+      }
     }
 
     /**
      * @description: Fetches a user matching specified userKey
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} matchingUser
      */
 
   }, {
     key: 'getUserByKey',
     value: function getUserByKey(req, res) {
-      errorMessage = '';
-      if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
-      if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.User.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
-          if (matchingUser) {
-            res.status(200).json({ 'Specified user': matchingUser });
-          } else {
-            res.status(404).json({ message: 'Specified user does not exist' });
-          }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
-        });
+      if (req.session.user) {
+        errorMessage = '';
+        if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
+        if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
+          this.user.findOne({
+            attributes: ['id', 'username', 'email'],
+            where: { id: req.params.userId }
+          }).then(function (matchingUser) {
+            if (matchingUser) {
+              res.status(200).json({ 'Specified user': matchingUser });
+            } else {
+              res.status(404).json({ message: 'Specified user does not exist!' });
+            }
+          }).catch(function (err) {
+            res.status(500).json({ message: err.message });
+          });
+        }
+      } else {
+        res.status(401).json({ message: 'Access denied! Please sign in first.' });
       }
     }
 
     /**
      * @description: Deletes a user matching specified userKey
-     * @param {Object} req
-     * @param {Object} res
+     * @param {Object} req The incoming request from the client
+     * @param {Object} res The outgoing response from the server
      * @return {Object} null
      */
 
   }, {
     key: 'deleteUser',
     value: function deleteUser(req, res) {
-      errorMessage = '';
-      if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
-      if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        _index2.default.User.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
-          if (matchingUser) {
-            _index2.default.User.destroy({ where: { id: req.params.userId } }).then(function () {
-              res.status(200).json({ message: 'User deleted successfully!' });
-            }).catch(function (err) {
-              res.status(500).json({ message: err.message });
-            });
-          } else {
-            res.status(404).json({ message: 'Specified user does not exist' });
-          }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
-        });
+      var _this2 = this;
+
+      if (req.session.user) {
+        errorMessage = '';
+        if (_validator2.default.isEmpty('User ID', req.params.userId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
+        if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
+          this.user.findOne({ where: { id: req.params.userId } }).then(function (matchingUser) {
+            if (matchingUser) {
+              _this2.user.destroy({ where: { id: req.params.userId } }).then(function () {
+                res.status(200).json({ message: 'User deleted successfully!' });
+              }).catch(function (err) {
+                res.status(500).json({ message: err.message });
+              });
+            } else {
+              res.status(404).json({ message: 'Specified user does not exist!' });
+            }
+          }).catch(function (err) {
+            res.status(500).json({ message: err.message });
+          });
+        }
+      } else {
+        res.status(401).json({ message: 'Access denied! Please sign in first.' });
       }
     }
   }]);

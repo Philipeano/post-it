@@ -9,30 +9,34 @@
 //  */
 //
 // const notificationController = new NotificationController();
-// // baseURL /api/groups/:groupId/messages/:messageId/notifications
 //
-// // Create notifications from a new group message
-// notificationRouter.post('/', (req, res) => {
-//   notificationController.createNotification(req, res);
+// // // Create notifications from a new group message
+// // notificationRouter.post('/', (req, res) => {
+// //   notificationController.createNotifications(req, res);
+// // });
+//
+// // Fetch all notifications for a user
+// notificationRouter.get('/', (req, res) => {
+//   notificationController.getAllNotifications(req, res);
 // });
 //
-// // Fetch all notifications for a user, from a particular group
-// notificationRouter.get('/', (req, res) => {
-//   notificationController.getMessagesFromGroup(req, res);
+// // Fetch all notifications for a user from a specified group
+// notificationRouter.get('/filter?groupId=groupIdValue', (req, res) => {
+//   notificationController.getAllNotifications(req, res);
 // });
 //
-// // Fetch all notifications created for a particular message
-// notificationRouter.get('/', (req, res) => {
-//   notificationController.getMessagesFromGroup(req, res);
+// // Fetch a specific notification for a user
+// notificationRouter.get('/:notificationId', (req, res) => {
+//   notificationController.getNotificationByKey(req, res);
 // });
 //
 // // Update a specific notification
-// notificationRouter.patch('/:messageId', (req, res) => {
+// notificationRouter.patch('/:notificationId', (req, res) => {
 //   notificationController.updateNotification(req, res);
 // });
 //
 // // Delete a specific notification
-// notificationRouter.delete('/:messageId', (req, res) => {
+// notificationRouter.delete('/:notificationId', (req, res) => {
 //   notificationController.deleteNotification(req, res);
 // });
 //

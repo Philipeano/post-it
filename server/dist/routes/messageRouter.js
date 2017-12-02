@@ -25,8 +25,8 @@ var messageController = new _messageController2.default();
 
 /**
  * @description: Post a message to a group
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 messageRouter.post('/', function (req, res) {
   messageController.postMessageToGroup(req, res);
@@ -34,26 +34,26 @@ messageRouter.post('/', function (req, res) {
 
 /**
  * @description: Fetch all messages available to a group
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 messageRouter.get('/', function (req, res) {
   messageController.getMessagesFromGroup(req, res);
 });
 
 /**
- * @description: Update a message sent to a group
- * @param {Object} req
- * @param {Object} res
+ * @description: Update a message previously sent to a group
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 messageRouter.patch('/:messageId', function (req, res) {
   messageController.updatePostedMessage(req, res);
 });
 
 /**
- * @description: Delete a message sent to a group
- * @param {Object} req
- * @param {Object} res
+ * @description: Delete a message previously sent to a group
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 messageRouter.delete('/:messageId', function (req, res) {
   messageController.deletePostedMessage(req, res);

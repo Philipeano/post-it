@@ -12,8 +12,8 @@ const groupController = new GroupController();
 
 /**
  * @description: Create new group
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 groupRouter.post('/', (req, res) => {
   groupController.createGroup(req, res);
@@ -21,8 +21,8 @@ groupRouter.post('/', (req, res) => {
 
 /**
  * @description: Fetch all groups
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 groupRouter.get('/', (req, res) => {
   groupController.getAllGroups(req, res);
@@ -30,8 +30,8 @@ groupRouter.get('/', (req, res) => {
 
 /**
  * @description: Fetch group with specified key
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 groupRouter.get('/:groupId', (req, res) => {
   groupController.getGroupByKey(req, res);
@@ -39,8 +39,8 @@ groupRouter.get('/:groupId', (req, res) => {
 
 /**
  * @description: Delete group with specified key
- * @param {Object} req
- * @param {Object} res
+ * @param {Object} req The incoming request from the client
+ * @param {Object} res The outgoing response from the server
  */
 groupRouter.delete('/:groupId', (req, res) => {
   groupController.deleteGroup(req, res);

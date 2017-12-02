@@ -35,7 +35,7 @@ export default (sequelize, DataTypes) => {
     });
 
     Group.hasMany(models.Message, {
-      as: 'messages',
+      // as: 'messages',
       foreignKey: 'groupId'
     });
   };

@@ -41,7 +41,7 @@ exports.default = function (sequelize, DataTypes) {
     });
 
     Group.hasMany(models.Message, {
-      as: 'messages',
+      // as: 'messages',
       foreignKey: 'groupId'
     });
   };
