@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-export default {
+module.exports = {
   development: {
     username: 'Newman',
     password: 'andela2017',
