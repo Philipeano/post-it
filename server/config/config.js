@@ -1,3 +1,7 @@
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 export default {
   development: {
     username: 'Newman',
