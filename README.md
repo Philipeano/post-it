@@ -1,7 +1,7 @@
 # PostIT
 
-[![Build Status](https://travis-ci.org/Philipeano/post-it.svg?branch=server-tests)](https://travis-ci.org/Philipeano/post-it?branch=server-tests)
-[![Coverage Status](https://coveralls.io/repos/github/Philipeano/post-it/badge.svg?branch=server-tests)](https://coveralls.io/github/Philipeano/post-it?branch=server-tests)
+[![Build Status](https://travis-ci.org/Philipeano/post-it.svg?branch=travis-deploy1)](https://travis-ci.org/Philipeano/post-it?branch=travis-deploy1)
+[![Coverage Status](https://coveralls.io/repos/github/Philipeano/post-it/badge.svg?branch=travis-deploy1)](https://coveralls.io/github/Philipeano/post-it?branch=travis-deploy1)
 [![Maintainability](https://api.codeclimate.com/v1/badges/6181b0bf9a72a2fe2429/maintainability)](https://codeclimate.com/github/Philipeano/post-it/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/6181b0bf9a72a2fe2429/test_coverage)](https://codeclimate.com/github/Philipeano/post-it/test_coverage)
 ## Overview
@@ -11,6 +11,7 @@ You can access the hosted API here: https://postit-phil.herokuapp.com/api.
 
 ## Development Tools
 
+- NodeJS
 - NodeJS
 - ExpressJS
 - Postgresql
