@@ -74,7 +74,6 @@ describe('PostIT API', () => {
             res.should.have.status(201);
             res.body.should.be.a('object');
             res.body.should.have.property('group');
-            // res.body.group.members[0].username.should.eql('philnewman');
             res.body.should.have.property('message');
             res.body.message.trim().should.be
               .eql('Group created successfully!');
