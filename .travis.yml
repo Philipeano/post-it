@@ -1,3 +1,6 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=be4cc7b052d350cf958e504fc3f546d2a356cf8bae8b6d5848e55b74caf5e13f
 language: node_js
 node_js:
 - "stable"
@@ -7,7 +10,10 @@ services:
 env:
 - NODE_ENV=test
 before_script:
-- npm install codeclimate-test-reporter istanbul -g
+- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+- chmod +x ./cc-test-reporter
+- ./cc-test-reporter before-build
+#- npm install codeclimate-test-reporter istanbul -g
 - psql -c 'create database postit_db_test;' -U postgres
 - npm run build-server
 - sequelize db:migrate
@@ -17,7 +23,11 @@ after_script:
 - sudo service postgresql stop
 after_success: 
 - npm run coverage
-- codeclimate-test-reporter < ./coverage/lcov.info
+- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+#- codeclimate-test-reporter < ./coverage/lcov.info
 cache:
   directories:
     - "node_modules"
+
+
+# CODECLIMATE_REPO_TOKEN=be4cc7b052d350cf958e504fc3f546d2a356cf8bae8b6d5848e55b74caf5e13f codeclimate-test-reporter < ./coverage/lcov.info
