@@ -12,7 +12,8 @@
     "start": "node server/dist/app.js",
     "start:dev": "export NODE_ENV=development && npm run build-server && webpack && nodemon server/dist/app.js",
     "start:test": "export NODE_ENV=test && npm run build-server && npm run test",
-    "test": "echo \"Running tests...\" && nyc mocha --recursive server/test --compilers js:babel-core/register"
+    "test": "echo \"Running tests...\" && nyc mocha --recursive server/test --compilers js:babel-core/register",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",

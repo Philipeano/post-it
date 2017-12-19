@@ -8,12 +8,11 @@ env:
 - NODE_ENV=test
 before_script:
 - psql -c 'create database postit_db_test;' -U postgres
-# - psql -c "CREATE USER Newman WITH PASSWORD 'andela2017';" -U postgres
 - npm run build-server
 - sequelize db:migrate
 - sequelize db:seed:all
 script: npm test
-# after_success: npm run coverage
+after_success: npm run coverage
 cache:
   directories:
     - "node_modules"
