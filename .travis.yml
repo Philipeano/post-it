@@ -23,7 +23,7 @@ after_script:
 - sudo service postgresql stop
 after_success: 
 - npm run coverage
-- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+- ./cc-test-reporter after-build --exit-code 0
 #- codeclimate-test-reporter < ./coverage/lcov.info
 cache:
   directories:
