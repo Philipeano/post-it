@@ -16,12 +16,15 @@ var _sequelize = require('sequelize');
 
 var _sequelize2 = _interopRequireDefault(_sequelize);
 
+var _config = require('../../config/config');
+
+var _config2 = _interopRequireDefault(_config);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var basename = _path2.default.basename(module.filename);
-// const env = 'test';
 var env = process.env.NODE_ENV || 'development';
-var config = require(__dirname + '/../../config/config.js')[env];
+var config = _config2.default[env];
 var db = {};
 
 var sequelize = void 0;
