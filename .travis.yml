@@ -12,6 +12,7 @@ before_script:
 - sequelize db:migrate
 - sequelize db:seed:all
 script: npm test
+after_script: sudo service postgresql stop
 after_success: npm run coverage
 cache:
   directories:
