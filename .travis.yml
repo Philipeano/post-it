@@ -1,6 +1,6 @@
 env:
-  global:
-    - CC_TEST_REPORTER_ID=be4cc7b052d350cf958e504fc3f546d2a356cf8bae8b6d5848e55b74caf5e13f
+#  global:
+#    - CC_TEST_REPORTER_ID=be4cc7b052d350cf958e504fc3f546d2a356cf8bae8b6d5848e55b74caf5e13f
 language: node_js
 node_js:
 - "stable"
@@ -22,7 +22,7 @@ after_script:
 - sudo service postgresql stop
 after_success: 
 - npm run coverage
-#- ./cc-test-reporter after-build --exit-code 0
+#- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 cache:
   directories:
     - "node_modules"
