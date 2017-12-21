@@ -1,10 +1,10 @@
 # PostIT
 
 [![Build Status](https://travis-ci.org/Philipeano/post-it.svg)](https://travis-ci.org/Philipeano/post-it)
-[![Coverage Status](https://coveralls.io/repos/github/Philipeano/post-it/badge.svg)](https://coveralls.io/github/Philipeano/post-it)
+[![Coverage Status](https://coveralls.io/repos/github/Philipeano/post-it/badge.svg?branch=houndci-integration)](https://coveralls.io/github/Philipeano/post-it?branch=houndci-integration)
 [![Maintainability](https://api.codeclimate.com/v1/badges/cce4bd525b5ba150b8b0/maintainability)](https://codeclimate.com/github/Philipeano/post-it/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/cce4bd525b5ba150b8b0/test_coverage)](https://codeclimate.com/github/Philipeano/post-it/test_coverage)
-[![Code Quality](https://img.shields.io/badge/Protected%20by-Hound-blue.svg)](https://houndci.com/Philipeano/post-it)
+[![Code Quality](https://img.shields.io/badge/Protected%20by-Hound-blue.svg)](https://houndci.com)
 
 ## Overview
 PostIT is a simple web application that enables friends and colleagues create groups for notifications. It is a multi-purpose system built for group-wide messaging.  

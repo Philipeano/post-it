@@ -13,7 +13,6 @@ before_script:
 - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
 - ./cc-test-reporter before-build
-- npm install codeclimate-test-reporter istanbul -g
 - psql -c 'create database postit_db_test;' -U postgres
 - npm run build-server
 - sequelize db:migrate
@@ -23,8 +22,7 @@ after_script:
 - sudo service postgresql stop
 after_success: 
 - npm run coverage
-- ./cc-test-reporter after-build --exit-code 0
-- codeclimate-test-reporter < ./coverage/lcov.info
+- ./cc-test-reporter after-build --coverage-input-type lcov --exit-code $TRAVIS_TEST_RESULT
 cache:
   directories:
     - "node_modules"
