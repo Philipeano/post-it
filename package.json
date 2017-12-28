@@ -11,9 +11,10 @@
     "postinstall": "NODE_ENV=production && npm run build-server && webpack",
     "start": "node server/dist/app.js",
     "start:dev": "export NODE_ENV=development && npm run build-server && webpack && nodemon server/dist/app.js",
-    "start:test": "export NODE_ENV=test && npm run build-server && npm run test",
     "test": "echo \"Running tests...\" && nyc mocha --recursive server/test --compilers js:babel-core/register --exit",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "start:test": "export NODE_ENV=test && npm run build-server && npm run test-local",
+    "test-local": "echo \"Running tests...\" && mocha --recursive server/test --compilers js:babel-core/register --exit"
   },
   "repository": {
     "type": "git",
