@@ -2,8 +2,7 @@
 
 var bcrypt = require('bcrypt');
 
-var salt = bcrypt.genSaltSync(3);
-var hashedPassword = bcrypt.hashSync('P@55w0rd', salt);
+var hashedPassword = bcrypt.hashSync('P@55w0rd', bcrypt.genSaltSync(3));
 
 module.exports = {
   up: function up(queryInterface) {
