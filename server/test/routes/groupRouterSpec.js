@@ -66,7 +66,7 @@ describe('PostIT API', () => {
     });
 
     it('should create a new group if both fields are valid', (done) => {
-      testGroup.title = 'Dummy Group';
+      testGroup.title = 'Demo Group 2';
       testGroup.purpose = 'Yet another sample group';
       agent.post('/api/users/signin').send(validCredentials).then(() => {
         agent.post('/api/groups').send(testGroup)
@@ -122,7 +122,7 @@ describe('PostIT API', () => {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('Requested group');
-            res.body['Requested group'].title.should.be.eql('Dummy Group');
+            res.body['Requested group'].title.should.be.eql('Demo Group 2');
             done();
           });
       });

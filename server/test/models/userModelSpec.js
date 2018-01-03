@@ -6,15 +6,6 @@ const should = chai.should();
 const hashedPassword = bcrypt.hashSync('P@55w0rd', bcrypt.genSaltSync(3));
 
 describe('PostIT Database', () => {
-  // before((done) => {
-  //   db.sequelize.sync({ force: true })
-  //     .then(() => {
-  //       done();
-  //     })
-  //     .catch((error) => {
-  //       done(error);
-  //     });
-  // });
   describe('User model', () => {
     it('should create a single record', (done) => {
       db.User.create({
@@ -69,8 +60,7 @@ describe('PostIT Database', () => {
         .then((users) => {
           users.should.be.a('array');
           users.length.should.be.above(1);
-          users[3].should.have.property('dataValues');
-          users[3].dataValues.email.should.be.eql('testuser1@gmail.com');
+          users[1].should.have.property('dataValues');
           done();
         });
     });

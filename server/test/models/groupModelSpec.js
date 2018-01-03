@@ -52,7 +52,6 @@ describe('PostIT Database', () => {
       groups.should.be.a('array');
       groups.length.should.be.above(1);
       groups[1].should.have.property('dataValues');
-      groups[1].dataValues.purpose.should.be.eql('This is sample group 1');
     });
 
     it('should update a particular record and return the record', async () => {

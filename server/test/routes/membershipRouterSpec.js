@@ -1,174 +1,174 @@
-// import chai from 'chai';
-// import chaiHttp from 'chai-http';
-// import server from '../../src/app';
-//
-// chai.use(chaiHttp);
-// const should = chai.should();
-// const app = server;
-// const agent = chai.request.agent(app);
-// const validCredentials = { username: 'philnewman', password: 'P@55w0rd' };
-// const validRoute = '/api/groups/c46ebe90-bd68-11e7-922f-4d48c5331440/users/';
-// const invalidRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6/users/';
-// const validMemberId = '50bd1190-a116-11e7-8614-2b874e7804bc';
-// const invalidMemberId = '9c75f270-a15f-11e7-9bb0-b7bf1c74a69d';
-// const existingMemberId = '75b936c0-ba72-11e7-84e1-058ffffd96c5';
-// let testMember, testRoute;
-//
-// describe('PostIT API', () => {
-//   describe('/POST api/groups/:groupId/users', () => {
-//
-//     it('should return an error for missing user ID', (done) => {
-//       testRoute = validRoute;
-//       testMember = {};
-//       agent.post('/api/users/signin').send(validCredentials).then(() => {
-//         agent.post(testRoute).send(testMember).end((err, res) => {
-//           res.should.have.status(400);
-//           res.body.should.be.a('object');
-//           res.body.should.have.property('message');
-//           res.body.message.trim().should.be
-//             .eql('User ID cannot be null or empty.');
-//           done();
-//         });
-//       });
-//     });
-//
-//     it('should return an error for invalid group ID', (done) => {
-//       testRoute = invalidRoute;
-//       testMember = { userId: validMemberId };
-//       agent.post('/api/users/signin').send(validCredentials).then(() => {
-//         agent.post(testRoute).send(testMember).end((err, res) => {
-//           res.should.have.status(404);
-//           res.body.should.be.a('object');
-//           res.body.should.have.property('message');
-//           res.body.message.trim().should.be
-//             .eql('Specified group does not exist!');
-//           done();
-//         });
-//       });
-//     });
-//
-//     it('should return an error for invalid user ID', (done) => {
-//       testRoute = validRoute;
-//       testMember = { userId: invalidMemberId };
-//       agent.post('/api/users/signin').send(validCredentials).then(() => {
-//         agent.post(testRoute).send(testMember).end((err, res) => {
-//           res.should.have.status(404);
-//           res.body.should.be.a('object');
-//           res.body.should.have.property('message');
-//           res.body.message.trim().should.be
-//             .eql('Specified user does not exist!');
-//           done();
-//         });
-//       });
-//     });
-//
-//     it('should return an error if the user is already in the group', (done) => {
-//       testRoute = validRoute;
-//       testMember = { userId: existingMemberId };
-//       agent.post('/api/users/signin').send(validCredentials).then(() => {
-//         agent.post(testRoute).send(testMember).end((err, res) => {
-//           res.should.have.status(409);
-//           res.body.should.be.a('object');
-//           res.body.should.have.property('message');
-//           res.body.message.trim().should.be
-//             .eql('User is already in the group!');
-//           done();
-//         });
-//       });
-//     });
-//
-//     it('should add the user to the group if both IDs are valid', (done) => {
-//       testRoute = validRoute;
-//       testMember = { userId: validMemberId };
-//       agent.post('/api/users/signin').send(validCredentials).then(() => {
-//         agent.post(testRoute).send(testMember).end((err, res) => {
-//           res.should.have.status(201);
-//           res.body.should.be.a('object');
-//           res.body.should.have.property('membership');
-//           res.body.should.have.property('message');
-//           res.body.message.trim().should.be
-//             .eql('User added to group successfully!');
-//           done();
-//         });
-//       });
-//     });
-//   });
-//
-//   describe('/GET api/groups/:groupId/users', () => {
-//     it('should fetch all members of the group', (done) => {
-//       testRoute = validRoute;
-//       agent.post('/api/users/signin').send(validCredentials).then(() => {
-//         agent.get(testRoute).send().end((err, res) => {
-//           res.should.have.status(200);
-//           res.body.should.be.a('object');
-//           res.body.should.have.property('Memberships');
-//           done();
-//         });
-//       });
-//     });
-//   });
-//
-//   describe('/DELETE api/groups/:groupId/users/:userId', () => {
-//     it('should return an error if supplied group ID does not exist', (done) => {
-//       testRoute = `${invalidRoute}${validMemberId}`;
-//       agent.post('/api/users/signin').send(validCredentials).then(() => {
-//         agent.delete(testRoute).send()
-//           .end((err, res) => {
-//             res.should.have.status(404);
-//             res.body.should.be.a('object');
-//             res.body.should.have.property('message');
-//             res.body.message.trim().should.be
-//               .eql('Specified group does not exist!');
-//             done();
-//           });
-//       });
-//     });
-//
-//     it('should return an error if supplied user ID does not exist', (done) => {
-//       testRoute = `${validRoute}${invalidMemberId}`;
-//       agent.post('/api/users/signin').send(validCredentials).then(() => {
-//         agent.delete(testRoute).send()
-//           .end((err, res) => {
-//             res.should.have.status(404);
-//             res.body.should.be.a('object');
-//             res.body.should.have.property('message');
-//             res.body.message.trim().should.be
-//               .eql('Specified user does not exist!');
-//             done();
-//           });
-//       });
-//     });
-//
-//     it('should delete the user from the group if supplied IDs are valid',
-//       (done) => {
-//         testRoute = `${validRoute}${validMemberId}`;
-//         agent.post('/api/users/signin').send(validCredentials).then(() => {
-//           agent.delete(testRoute).send()
-//             .end((err, res) => {
-//               // res.should.have.status(200);
-//               res.body.should.be.a('object');
-//               res.body.should.have.property('message');
-//               // res.body.message.trim().should.be
-//               //   .eql('Member deleted from group successfully!');
-//               done();
-//             });
-//         });
-//       });
-//
-//     it('should return an error if the user is not a member of the group',
-//       (done) => {
-//         testRoute = `${validRoute}${validMemberId}`;
-//         agent.post('/api/users/signin').send(validCredentials).then(() => {
-//           agent.delete(testRoute).send()
-//             .end((err, res) => {
-//               // res.should.have.status(404);
-//               res.body.should.be.a('object');
-//               res.body.should.have.property('message');
-//               // res.body.message.trim().should.be
-//               //   .eql('Specified membership does not exist!');
-//               done();
-//             });
-//         });
-//       });
-//   });
-// });
+import chai from 'chai';
+import chaiHttp from 'chai-http';
+import server from '../../src/app';
+
+chai.use(chaiHttp);
+const should = chai.should();
+const app = server;
+const agent = chai.request.agent(app);
+const validCredentials = { username: 'philnewman', password: 'P@55w0rd' };
+const validRoute = '/api/groups/c46ebe90-bd68-11e7-922f-4d48c5331440/users/';
+const invalidRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6/users/';
+const validMemberId = '50bd1190-a116-11e7-8614-2b874e7804bc';
+const invalidMemberId = '9c75f270-a15f-11e7-9bb0-b7bf1c74a69d';
+const existingMemberId = '75b936c0-ba72-11e7-84e1-058ffffd96c5';
+let testMember, testRoute;
+
+describe('PostIT API', () => {
+  describe('/POST api/groups/:groupId/users', () => {
+
+    it('should return an error for missing user ID', (done) => {
+      testRoute = validRoute;
+      testMember = {};
+      agent.post('/api/users/signin').send(validCredentials).then(() => {
+        agent.post(testRoute).send(testMember).end((err, res) => {
+          res.should.have.status(400);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('User ID cannot be null or empty.');
+          done();
+        });
+      });
+    });
+
+    it('should return an error for invalid group ID', (done) => {
+      testRoute = invalidRoute;
+      testMember = { userId: validMemberId };
+      agent.post('/api/users/signin').send(validCredentials).then(() => {
+        agent.post(testRoute).send(testMember).end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('Specified group does not exist!');
+          done();
+        });
+      });
+    });
+
+    it('should return an error for invalid user ID', (done) => {
+      testRoute = validRoute;
+      testMember = { userId: invalidMemberId };
+      agent.post('/api/users/signin').send(validCredentials).then(() => {
+        agent.post(testRoute).send(testMember).end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('Specified user does not exist!');
+          done();
+        });
+      });
+    });
+
+    it('should return an error if the user is already in the group', (done) => {
+      testRoute = validRoute;
+      testMember = { userId: existingMemberId };
+      agent.post('/api/users/signin').send(validCredentials).then(() => {
+        agent.post(testRoute).send(testMember).end((err, res) => {
+          res.should.have.status(409);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('User is already in the group!');
+          done();
+        });
+      });
+    });
+
+    it('should add the user to the group if both IDs are valid', (done) => {
+      testRoute = validRoute;
+      testMember = { userId: validMemberId };
+      agent.post('/api/users/signin').send(validCredentials).then(() => {
+        agent.post(testRoute).send(testMember).end((err, res) => {
+          res.should.have.status(201);
+          res.body.should.be.a('object');
+          res.body.should.have.property('membership');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('User added to group successfully!');
+          done();
+        });
+      });
+    });
+  });
+
+  describe('/GET api/groups/:groupId/users', () => {
+    it('should fetch all members of the group', (done) => {
+      testRoute = validRoute;
+      agent.post('/api/users/signin').send(validCredentials).then(() => {
+        agent.get(testRoute).send().end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('Memberships');
+          done();
+        });
+      });
+    });
+  });
+
+  describe('/DELETE api/groups/:groupId/users/:userId', () => {
+    it('should return an error if supplied group ID does not exist', (done) => {
+      testRoute = `${invalidRoute}${validMemberId}`;
+      agent.post('/api/users/signin').send(validCredentials).then(() => {
+        agent.delete(testRoute).send()
+          .end((err, res) => {
+            res.should.have.status(404);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message');
+            res.body.message.trim().should.be
+              .eql('Specified group does not exist!');
+            done();
+          });
+      });
+    });
+
+    it('should return an error if supplied user ID does not exist', (done) => {
+      testRoute = `${validRoute}${invalidMemberId}`;
+      agent.post('/api/users/signin').send(validCredentials).then(() => {
+        agent.delete(testRoute).send()
+          .end((err, res) => {
+            res.should.have.status(404);
+            res.body.should.be.a('object');
+            res.body.should.have.property('message');
+            res.body.message.trim().should.be
+              .eql('Specified user does not exist!');
+            done();
+          });
+      });
+    });
+
+    it('should delete the user from the group if supplied IDs are valid',
+      (done) => {
+        testRoute = `${validRoute}${validMemberId}`;
+        agent.post('/api/users/signin').send(validCredentials).then(() => {
+          agent.delete(testRoute).send()
+            .end((err, res) => {
+              // res.should.have.status(200);
+              res.body.should.be.a('object');
+              res.body.should.have.property('message');
+              // res.body.message.trim().should.be
+              //   .eql('Member deleted from group successfully!');
+              done();
+            });
+        });
+      });
+
+    it('should return an error if the user is not a member of the group',
+      (done) => {
+        testRoute = `${validRoute}${validMemberId}`;
+        agent.post('/api/users/signin').send(validCredentials).then(() => {
+          agent.delete(testRoute).send()
+            .end((err, res) => {
+              // res.should.have.status(404);
+              res.body.should.be.a('object');
+              res.body.should.have.property('message');
+              // res.body.message.trim().should.be
+              //   .eql('Specified membership does not exist!');
+              done();
+            });
+        });
+      });
+  });
+});
