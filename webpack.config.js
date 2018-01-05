@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  // entry: ['babel-polyfill', './server/app/js', './template/js/index.js'],
   entry: './template/js/index.js',
   output: {
     path: path.resolve(__dirname, './template/bundle'),

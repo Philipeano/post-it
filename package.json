@@ -11,9 +11,11 @@
     "postinstall": "NODE_ENV=production && npm run build-server && webpack",
     "start": "node server/dist/app.js",
     "start:dev": "export NODE_ENV=development && npm run build-server && webpack && nodemon server/dist/app.js",
-    "start:test": "export NODE_ENV=test && npm run build-server && npm run test",
-    "test": "echo \"Running tests...\" && nyc mocha --recursive server/test --compilers js:babel-core/register --exit",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "test": "echo \"Running tests...\" && nyc mocha --recursive server/test --require babel-core/register --exit",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "start:test": "export NODE_ENV=test && npm run build-server && webpack && npm run pre-test-local && npm run test-local",
+    "pre-test-local": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",
+    "test-local": "echo \"Running tests...\" && mocha --recursive server/test --require babel-core/register --exit"
   },
   "repository": {
     "type": "git",
@@ -32,11 +34,13 @@
   },
   "homepage": "https://github.com/Philipeano/post-it#readme",
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "babel-register": "^6.24.1",
     "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
     "dotenv": "^4.0.0",
+    "esutils": "^2.0.2",
     "express": "^4.15.3",
     "express-session": "^1.15.4",
     "pg": "^6.4.1",
@@ -49,6 +53,7 @@
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
+    "babel-plugin-transform-regenerator": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
