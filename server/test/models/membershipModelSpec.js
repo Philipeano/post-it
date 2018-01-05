@@ -9,35 +9,35 @@ let dummyGroup;
 let dummyMember1, dummyMember2, dummyMember3, dummyMember4;
 
 describe('PostIT Database', () => {
-  describe('Membership model', () => {
-    before(async () => {
-      dummyMember1 = await db.User.create({
-        username: 'DummyUser1',
-        email: 'dummyuser1@gmail.com',
-        password: hashedPassword
-      });
-      dummyMember2 = await db.User.create({
-        username: 'DummyUser2',
-        email: 'dummyuser2@gmail.com',
-        password: hashedPassword
-      });
-      dummyMember3 = await db.User.create({
-        username: 'DummyUser3',
-        email: 'dummyuser3@gmail.com',
-        password: hashedPassword
-      });
-      dummyMember4 = await db.User.create({
-        username: 'DummyUser4',
-        email: 'dummyuser4@gmail.com',
-        password: hashedPassword
-      });
-      dummyGroup = await db.Group.create({
-        title: 'Dummy Group',
-        purpose: 'Dummy group for membership test',
-        creatorId: dummyMember1.id
-      });
+  before(async () => {
+    dummyMember1 = await db.User.create({
+      username: 'DummyUser1',
+      email: 'dummyuser1@gmail.com',
+      password: hashedPassword
     });
+    dummyMember2 = await db.User.create({
+      username: 'DummyUser2',
+      email: 'dummyuser2@gmail.com',
+      password: hashedPassword
+    });
+    dummyMember3 = await db.User.create({
+      username: 'DummyUser3',
+      email: 'dummyuser3@gmail.com',
+      password: hashedPassword
+    });
+    dummyMember4 = await db.User.create({
+      username: 'DummyUser4',
+      email: 'dummyuser4@gmail.com',
+      password: hashedPassword
+    });
+    dummyGroup = await db.Group.create({
+      title: 'Dummy Group',
+      purpose: 'Dummy group for membership test',
+      creatorId: dummyMember1.id
+    });
+  });
 
+  describe('Membership model', () => {
     it('should add a single member to the group', async () => {
       const newMembership = await db.Membership.create({
         groupId: dummyGroup.id,
