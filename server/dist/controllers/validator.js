@@ -30,22 +30,26 @@ var Validator = function () {
   }
 
   /**
-   * @description: Checks for null/empty entry
-   * @param {String} fieldName
-   * @param {String} fieldValue
-   * @return {Boolean} result
+   * @description: Checks for null/empty entries
+   * @param {Array} entries Array of key/value pairs to check
+   * @return {String} errorMessage Concatenated validation error messages
    */
 
 
   _createClass(Validator, null, [{
-    key: 'isEmpty',
-    value: function isEmpty(fieldName, fieldValue) {
-      var result = false;
-      if (fieldValue === undefined || fieldValue === null || fieldValue.trim() === '') {
-        result = true;
-        this.validationMessage = fieldName + ' cannot be null or empty.';
-      }
-      return result;
+    key: 'checkEmpty',
+    value: function checkEmpty(entries) {
+      var entryName = void 0,
+          entryValue = void 0,
+          errorMessage = '';
+      entries.forEach(function (entry) {
+        entryName = Object.keys(entry)[0];
+        entryValue = Object.values(entry)[0];
+        if (entryValue === undefined || entryValue === null || entryValue.trim() === '') {
+          errorMessage = errorMessage + ' ' + entryName + ' cannot be null or empty.';
+        }
+      });
+      return errorMessage;
     }
 
     /**
