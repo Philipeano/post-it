@@ -14,19 +14,21 @@ class Validator {
   }
 
   /**
-   * @description: Checks for null/empty entry
-   * @param {String} fieldName
-   * @param {String} fieldValue
-   * @return {Boolean} result
+   * @description: Checks for null/empty entries
+   * @param {Array} entries Array of key/value pairs to check
+   * @return {String} errorMessage Concatenated validation error messages
    */
-  static isEmpty(fieldName, fieldValue) {
-    let result = false;
-    if (fieldValue === undefined || fieldValue === null
-      || fieldValue.trim() === '') {
-      result = true;
-      this.validationMessage = `${fieldName} cannot be null or empty.`;
-    }
-    return result;
+  static checkEmpty(entries) {
+    let entryName, entryValue, errorMessage = '';
+    entries.forEach((entry) => {
+      entryName = Object.keys(entry)[0];
+      entryValue = Object.values(entry)[0];
+      if (entryValue === undefined || entryValue === null
+        || entryValue.trim() === '') {
+        errorMessage = `${errorMessage} ${entryName} cannot be null or empty.`;
+      }
+    });
+    return errorMessage;
   }
 
   /**
@@ -112,7 +114,6 @@ class Validator {
     }
     return trimmedValue;
   }
-
 
 }
 export default Validator;

@@ -16,6 +16,8 @@ var _validator2 = _interopRequireDefault(_validator);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var errorMessage = void 0;
@@ -28,7 +30,7 @@ var errorMessage = void 0;
 var GroupController = function () {
   /**
    * @description: Initializes instance with necessary database models
-   * as a local properties
+   * as local properties
    * @constructor
    */
   function GroupController() {
@@ -49,46 +51,88 @@ var GroupController = function () {
 
   _createClass(GroupController, [{
     key: 'createGroup',
-    value: function createGroup(req, res) {
-      var _this = this;
+    value: function () {
+      var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee(req, res) {
+        var matchingGroup, newGroup;
+        return regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                errorMessage = _validator2.default.checkEmpty([{ Title: req.body.title }, { Purpose: req.body.purpose }]);
 
-      errorMessage = '';
-      if (_validator2.default.isEmpty('Title', req.body.title)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
-      if (_validator2.default.isEmpty('Purpose', req.body.purpose)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
+                if (!(errorMessage.trim() !== '')) {
+                  _context.next = 3;
+                  break;
+                }
 
-      if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        this.group.findOne({ where: { title: req.body.title } }).then(function (matchingGroup) {
-          if (matchingGroup) {
-            res.status(409).json({ message: 'Group Title is already taken!' });
-          } else {
-            // Create the new group with the title, purpose and creator ID
-            _this.group.sync().then(function () {
-              _this.group.create({
-                title: req.body.title,
-                purpose: req.body.purpose,
-                creatorId: req.session.user.id
-              }).then(function (newGroup) {
-                // Add the creator as the first member of the group
-                _this.membership.sync().then(function () {
-                  _this.membership.create({
-                    userRole: 'admin',
-                    groupId: newGroup.id,
-                    memberId: req.session.user.id
-                  }).then(function () {
-                    res.status(201).json({
-                      message: 'Group created successfully!',
-                      group: _validator2.default.trimFields(newGroup)
-                    });
-                  });
-                }).catch(function (err) {
-                  res.status(500).json({ message: err.message });
+                return _context.abrupt('return', res.status(400).json({ message: errorMessage }));
+
+              case 3:
+                _context.prev = 3;
+                _context.next = 6;
+                return this.group.findOne({ where: { title: req.body.title } });
+
+              case 6:
+                matchingGroup = _context.sent;
+
+                if (!matchingGroup) {
+                  _context.next = 9;
+                  break;
+                }
+
+                return _context.abrupt('return', res.status(409).json({ message: 'Group Title is already taken!' }));
+
+              case 9:
+                _context.next = 11;
+                return this.group.sync();
+
+              case 11:
+                _context.next = 13;
+                return this.group.create({
+                  title: req.body.title,
+                  purpose: req.body.purpose,
+                  creatorId: req.session.user.id
                 });
-              });
-            });
+
+              case 13:
+                newGroup = _context.sent;
+                _context.next = 16;
+                return this.membership.sync();
+
+              case 16:
+                _context.next = 18;
+                return this.membership.create({
+                  userRole: 'admin',
+                  groupId: newGroup.id,
+                  memberId: req.session.user.id
+                });
+
+              case 18:
+                return _context.abrupt('return', res.status(201).json({
+                  message: 'Group created successfully!',
+                  group: _validator2.default.trimFields(newGroup)
+                }));
+
+              case 21:
+                _context.prev = 21;
+                _context.t0 = _context['catch'](3);
+
+                res.status(500).json({ message: _context.t0.message });
+
+              case 24:
+              case 'end':
+                return _context.stop();
+            }
           }
-        });
+        }, _callee, this, [[3, 21]]);
+      }));
+
+      function createGroup(_x, _x2) {
+        return _ref.apply(this, arguments);
       }
-    }
+
+      return createGroup;
+    }()
 
     /**
      * @description: Fetches all available groups
@@ -99,25 +143,52 @@ var GroupController = function () {
 
   }, {
     key: 'getAllGroups',
-    value: function getAllGroups(req, res) {
-      this.group.findAll({
-        attributes: ['id', 'title', 'purpose'],
-        include: [{
-          model: this.user,
-          as: 'creator',
-          attributes: ['id', 'username', 'email']
-        }, {
-          model: this.user,
-          as: 'members',
-          attributes: ['id', 'username', 'email'],
-          through: { attributes: ['userRole'] }
-        }]
-      }).then(function (allGroups) {
-        res.status(200).json({ 'Available groups': allGroups });
-      }).catch(function (err) {
-        res.status(500).json({ message: err.message });
-      });
-    }
+    value: function () {
+      var _ref2 = _asyncToGenerator(regeneratorRuntime.mark(function _callee2(req, res) {
+        var allGroups;
+        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
+                _context2.next = 3;
+                return this.group.findAll({
+                  attributes: ['id', 'title', 'purpose'],
+                  include: [{
+                    model: this.user,
+                    as: 'creator',
+                    attributes: ['id', 'username', 'email']
+                  }, {
+                    model: this.user,
+                    as: 'members',
+                    attributes: ['id', 'username', 'email'],
+                    through: { attributes: ['userRole'] }
+                  }]
+                });
+
+              case 3:
+                allGroups = _context2.sent;
+                return _context2.abrupt('return', res.status(200).json({ 'Available groups': allGroups }));
+
+              case 7:
+                _context2.prev = 7;
+                _context2.t0 = _context2['catch'](0);
+                return _context2.abrupt('return', res.status(500).json({ message: _context2.t0.message }));
+
+              case 10:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 7]]);
+      }));
+
+      function getAllGroups(_x3, _x4) {
+        return _ref2.apply(this, arguments);
+      }
+
+      return getAllGroups;
+    }()
 
     /**
      * @description: Fetches a group matching specified groupKey
@@ -128,36 +199,72 @@ var GroupController = function () {
 
   }, {
     key: 'getGroupByKey',
-    value: function getGroupByKey(req, res) {
-      errorMessage = '';
-      if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
-      if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        this.group.findOne({
-          attributes: ['id', 'title', 'purpose'],
-          where: { id: req.params.groupId },
-          include: [{
-            model: this.user,
-            as: 'creator',
-            attributes: ['id', 'username', 'email']
-          }, {
-            model: this.user,
-            as: 'members',
-            attributes: ['id', 'username', 'email'],
-            through: { attributes: ['userRole'] }
-          }]
-        }).then(function (matchingGroup) {
-          if (matchingGroup) {
-            res.status(200).json({ 'Requested group': matchingGroup });
-          } else {
-            res.status(404).json({
-              message: 'Requested group does not exist!'
-            });
+    value: function () {
+      var _ref3 = _asyncToGenerator(regeneratorRuntime.mark(function _callee3(req, res) {
+        var matchingGroup;
+        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                errorMessage = _validator2.default.checkEmpty([{ 'Group ID': req.params.groupId }]);
+
+                if (!(errorMessage.trim() !== '')) {
+                  _context3.next = 3;
+                  break;
+                }
+
+                return _context3.abrupt('return', res.status(400).json({ message: errorMessage }));
+
+              case 3:
+                _context3.prev = 3;
+                _context3.next = 6;
+                return this.group.findOne({
+                  attributes: ['id', 'title', 'purpose'],
+                  where: { id: req.params.groupId },
+                  include: [{
+                    model: this.user,
+                    as: 'creator',
+                    attributes: ['id', 'username', 'email']
+                  }, {
+                    model: this.user,
+                    as: 'members',
+                    attributes: ['id', 'username', 'email'],
+                    through: { attributes: ['userRole'] }
+                  }]
+                });
+
+              case 6:
+                matchingGroup = _context3.sent;
+
+                if (!matchingGroup) {
+                  _context3.next = 9;
+                  break;
+                }
+
+                return _context3.abrupt('return', res.status(200).json({ 'Requested group': matchingGroup }));
+
+              case 9:
+                return _context3.abrupt('return', res.status(404).json({ message: 'Requested group does not exist!' }));
+
+              case 12:
+                _context3.prev = 12;
+                _context3.t0 = _context3['catch'](3);
+                return _context3.abrupt('return', res.status(500).json({ message: _context3.t0.message }));
+
+              case 15:
+              case 'end':
+                return _context3.stop();
+            }
           }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
-        });
+        }, _callee3, this, [[3, 12]]);
+      }));
+
+      function getGroupByKey(_x5, _x6) {
+        return _ref3.apply(this, arguments);
       }
-    }
+
+      return getGroupByKey;
+    }()
 
     /**
      * @description: Deletes a group matching specified groupKey
@@ -168,36 +275,71 @@ var GroupController = function () {
 
   }, {
     key: 'deleteGroup',
-    value: function deleteGroup(req, res) {
-      var _this2 = this;
+    value: function () {
+      var _ref4 = _asyncToGenerator(regeneratorRuntime.mark(function _callee4(req, res) {
+        var matchingGroup;
+        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                errorMessage = _validator2.default.checkEmpty([{ 'Group ID': req.params.groupId }]);
 
-      errorMessage = '';
-      if (_validator2.default.isEmpty('Group ID', req.params.groupId)) errorMessage = errorMessage + ' ' + _validator2.default.validationMessage;
-      if (errorMessage.trim() !== '') res.status(400).json({ message: errorMessage });else {
-        // Check if the specified group ID is valid
-        this.group.findById(req.params.groupId).then(function (matchingGroup) {
-          if (!matchingGroup) {
-            res.status(404).json({ message: 'Specified group does not exist!' });
-          } else {
-            /* Allow the current user delete the group only if he is
-            the original creator */
-            if (matchingGroup.creatorId === req.session.user.id) {
-              _this2.group.destroy({ where: { id: req.params.groupId } }).then(function () {
-                res.status(200).json({ message: 'Group deleted successfully!' });
-              }).catch(function (err) {
-                res.status(500).json({ message: err.message });
-              });
-            } else {
-              res.status(403).json({
-                message: 'You do not have the right to delete this group!'
-              });
+                if (!(errorMessage.trim() !== '')) {
+                  _context4.next = 3;
+                  break;
+                }
+
+                return _context4.abrupt('return', res.status(400).json({ message: errorMessage }));
+
+              case 3:
+                _context4.prev = 3;
+                _context4.next = 6;
+                return this.group.findById(req.params.groupId);
+
+              case 6:
+                matchingGroup = _context4.sent;
+
+                if (matchingGroup) {
+                  _context4.next = 9;
+                  break;
+                }
+
+                return _context4.abrupt('return', res.status(404).json({ message: 'Specified group does not exist!' }));
+
+              case 9:
+                if (!(matchingGroup.creatorId === req.session.user.id)) {
+                  _context4.next = 13;
+                  break;
+                }
+
+                _context4.next = 12;
+                return this.group.destroy({ where: { id: req.params.groupId } });
+
+              case 12:
+                return _context4.abrupt('return', res.status(200).json({ message: 'Group deleted successfully!' }));
+
+              case 13:
+                return _context4.abrupt('return', res.status(403).json({ message: 'You do not have the right to delete this group!' }));
+
+              case 16:
+                _context4.prev = 16;
+                _context4.t0 = _context4['catch'](3);
+                return _context4.abrupt('return', res.status(500).json({ message: _context4.t0.message }));
+
+              case 19:
+              case 'end':
+                return _context4.stop();
             }
           }
-        }).catch(function (err) {
-          res.status(500).json({ message: err.message });
-        });
+        }, _callee4, this, [[3, 16]]);
+      }));
+
+      function deleteGroup(_x7, _x8) {
+        return _ref4.apply(this, arguments);
       }
-    }
+
+      return deleteGroup;
+    }()
   }]);
 
   return GroupController;

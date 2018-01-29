@@ -63,3 +63,4 @@ typings/
 .sass-cache
 .vscode/
 server/db/config
+package-lock.json
