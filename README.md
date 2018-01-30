@@ -40,9 +40,14 @@ You can access the hosted API [here](https://postit-phil.herokuapp.com/api).
 - Run the following command: ```npm install```.
 
 ### Setting up the database
-- .
+- Install PostgreSQL.
+- For `development` purposes, create a database named `postit-db-dev`.
+- For `testing` purposes, create a database named `postit-db-test`.
+- Run the migration scripts using the command ```sequelize db:migrate```.
+- Seed the database by running the commad ```sequelize db:seed:all ```
 
 ### Running the tests
+- Run the command ```npm run start:test```.
 
 ### Using the app
 #### Using Postman
