@@ -35,17 +35,16 @@ class MembershipController {
     }
     try {
       // Check if the specified group ID is valid
-      const matchingGroup = await this.group
-        .findById(req.params.groupId);
+      const matchingGroup = await this.group.findById(req.params.groupId);
       if (!matchingGroup) {
         return res.status(404)
-          .json({ message: 'Specified group does not exist!' });
+        .json({ message: 'Specified group does not exist!' });
       }
       // Check if the specified user ID is valid
       const matchingUser = await this.user.findById(req.body.userId);
       if (!matchingUser) {
         return res.status(404)
-          .json({ message: 'Specified user does not exist!' });
+        .json({ message: 'Specified user does not exist!' });
       }
       // Check if the user is already in the group
       const existingMembership = await this.membership.findOne({
@@ -56,7 +55,7 @@ class MembershipController {
       });
       if (existingMembership) {
         return res.status(409)
-          .json({ message: 'User is already in the group!' });
+        .json({ message: 'User is already in the group!' });
       }
       await this.membership.sync();
       const newMembership = await this.membership.create({
@@ -64,7 +63,7 @@ class MembershipController {
         memberId: req.body.userId,
         userRole: 'member'
       });
-      return res.status(201).json({
+      res.status(201).json({
         message: 'User added to group successfully!',
         membership: newMembership
       });
@@ -95,9 +94,9 @@ class MembershipController {
           attributes: ['id', 'username', 'email']
         }]
       });
-      return res.status(200).json({ Memberships: memberships });
+      res.status(200).json({ Memberships: memberships });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -120,13 +119,13 @@ class MembershipController {
       const matchingGroup = await this.group.findById(req.params.groupId);
       if (!matchingGroup) {
         return res.status(404)
-          .json({ message: 'Specified group does not exist!' });
+        .json({ message: 'Specified group does not exist!' });
       }
       // Check if the specified user ID is valid
       const matchingUser = await this.user.findById(req.params.userId);
       if (!matchingUser) {
         return res.status(404)
-          .json({ message: 'Specified user does not exist!' });
+        .json({ message: 'Specified user does not exist!' });
       }
       /* Allow the current user delete the member only if he is
       the creator of this group or the affected member */
@@ -146,10 +145,10 @@ class MembershipController {
         return res.status(404)
           .json({ message: 'Specified membership does not exist!' });
       }
-      return res.status(403)
+      res.status(403)
         .json({ message: 'You do not have the right to delete this member.' });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 

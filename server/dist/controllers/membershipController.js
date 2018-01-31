@@ -10,7 +10,7 @@ var _index = require('../models/index');
 
 var _index2 = _interopRequireDefault(_index);
 
-var _validator = require('./validator');
+var _validator = require('../helpers/validator');
 
 var _validator2 = _interopRequireDefault(_validator);
 
@@ -129,10 +129,13 @@ var MembershipController = function () {
 
               case 23:
                 newMembership = _context.sent;
-                return _context.abrupt('return', res.status(201).json({
+
+                res.status(201).json({
                   message: 'User added to group successfully!',
                   membership: newMembership
-                }));
+                });
+                _context.next = 30;
+                break;
 
               case 27:
                 _context.prev = 27;
@@ -194,12 +197,16 @@ var MembershipController = function () {
 
               case 6:
                 memberships = _context2.sent;
-                return _context2.abrupt('return', res.status(200).json({ Memberships: memberships }));
+
+                res.status(200).json({ Memberships: memberships });
+                _context2.next = 13;
+                break;
 
               case 10:
                 _context2.prev = 10;
                 _context2.t0 = _context2['catch'](3);
-                return _context2.abrupt('return', res.status(500).json({ message: _context2.t0.message }));
+
+                res.status(500).json({ message: _context2.t0.message });
 
               case 13:
               case 'end':
@@ -303,12 +310,15 @@ var MembershipController = function () {
                 return _context3.abrupt('return', res.status(404).json({ message: 'Specified membership does not exist!' }));
 
               case 23:
-                return _context3.abrupt('return', res.status(403).json({ message: 'You do not have the right to delete this member.' }));
+                res.status(403).json({ message: 'You do not have the right to delete this member.' });
+                _context3.next = 29;
+                break;
 
               case 26:
                 _context3.prev = 26;
                 _context3.t0 = _context3['catch'](3);
-                return _context3.abrupt('return', res.status(500).json({ message: _context3.t0.message }));
+
+                res.status(500).json({ message: _context3.t0.message });
 
               case 29:
               case 'end':

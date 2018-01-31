@@ -55,7 +55,7 @@ class GroupController {
         groupId: newGroup.id,
         memberId: req.session.user.id
       });
-      return res.status(201).json({
+      res.status(201).json({
         message: 'Group created successfully!',
         group: Validator.trimFields(newGroup)
       });
@@ -86,9 +86,9 @@ class GroupController {
           through: { attributes: ['userRole'] }
         }]
       });
-      return res.status(200).json({ 'Available groups': allGroups });
+      res.status(200).json({ 'Available groups': allGroups });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -119,13 +119,13 @@ class GroupController {
           through: { attributes: ['userRole'] }
         }]
       });
-      if (matchingGroup) {
-        return res.status(200).json({ 'Requested group': matchingGroup });
-      }
-      return res.status(404)
+      if (!matchingGroup) {
+        return res.status(404)
         .json({ message: 'Requested group does not exist!' });
+      }
+      res.status(200).json({ 'Requested group': matchingGroup });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -145,7 +145,7 @@ class GroupController {
       const matchingGroup = await this.group.findById(req.params.groupId);
       if (!matchingGroup) {
         return res.status(404)
-          .json({ message: 'Specified group does not exist!' });
+        .json({ message: 'Specified group does not exist!' });
       }
       /* Allow the current user delete the group only if he is
       the original creator */
@@ -153,10 +153,10 @@ class GroupController {
         await this.group.destroy({ where: { id: req.params.groupId } });
         return res.status(200).json({ message: 'Group deleted successfully!' });
       }
-      return res.status(403)
+      res.status(403)
         .json({ message: 'You do not have the right to delete this group!' });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 

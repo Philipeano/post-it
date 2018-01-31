@@ -10,7 +10,7 @@ var _index = require('../models/index');
 
 var _index2 = _interopRequireDefault(_index);
 
-var _validator = require('./validator');
+var _validator = require('../helpers/validator');
 
 var _validator2 = _interopRequireDefault(_validator);
 
@@ -141,15 +141,18 @@ var UserController = function () {
                 newUser = _context.sent;
 
                 req.session.user = newUser;
-                return _context.abrupt('return', res.status(201).json({
+                res.status(201).json({
                   message: 'You signed up successfully!',
                   user: _validator2.default.trimFields(newUser)
-                }));
+                });
+                _context.next = 43;
+                break;
 
               case 40:
                 _context.prev = 40;
                 _context.t0 = _context['catch'](18);
-                return _context.abrupt('return', res.status(500).json({ message: _context.t0.message }));
+
+                res.status(500).json({ message: _context.t0.message });
 
               case 43:
               case 'end':
@@ -217,13 +220,16 @@ var UserController = function () {
 
               case 11:
                 req.session.user = matchingUser;
-                return _context2.abrupt('return', res.status(200).json({ message: 'You signed in successfully!',
-                  user: _validator2.default.trimFields(matchingUser) }));
+                res.status(200).json({ message: 'You signed in successfully!',
+                  user: _validator2.default.trimFields(matchingUser) });
+                _context2.next = 18;
+                break;
 
               case 15:
                 _context2.prev = 15;
                 _context2.t0 = _context2['catch'](3);
-                return _context2.abrupt('return', res.status(500).json({ message: _context2.t0.message }));
+
+                res.status(500).json({ message: _context2.t0.message });
 
               case 18:
               case 'end':
@@ -251,7 +257,7 @@ var UserController = function () {
     key: 'signOutUser',
     value: function signOutUser(req, res) {
       req.session.destroy(function () {
-        return res.status(200).json({ message: 'You have been logged out.' });
+        res.status(200).json({ message: 'You have been logged out.' });
       });
     }
 
@@ -302,12 +308,16 @@ var UserController = function () {
 
               case 5:
                 allUsers = _context3.sent;
-                return _context3.abrupt('return', res.status(200).json({ 'Registered users': allUsers }));
+
+                res.status(200).json({ 'Registered users': allUsers });
+                _context3.next = 12;
+                break;
 
               case 9:
                 _context3.prev = 9;
                 _context3.t0 = _context3['catch'](2);
-                return _context3.abrupt('return', res.status(500).json({ message: _context3.t0.message }));
+
+                res.status(500).json({ message: _context3.t0.message });
 
               case 12:
               case 'end':
@@ -368,20 +378,23 @@ var UserController = function () {
               case 8:
                 matchingUser = _context4.sent;
 
-                if (!matchingUser) {
+                if (matchingUser) {
                   _context4.next = 11;
                   break;
                 }
 
-                return _context4.abrupt('return', res.status(200).json({ 'Specified user': matchingUser }));
+                return _context4.abrupt('return', res.status(404).json({ message: 'Specified user does not exist!' }));
 
               case 11:
-                return _context4.abrupt('return', res.status(404).json({ message: 'Specified user does not exist!' }));
+                res.status(200).json({ 'Specified user': matchingUser });
+                _context4.next = 17;
+                break;
 
               case 14:
                 _context4.prev = 14;
                 _context4.t0 = _context4['catch'](5);
-                return _context4.abrupt('return', res.status(500).json({ message: _context4.t0.message }));
+
+                res.status(500).json({ message: _context4.t0.message });
 
               case 17:
               case 'end':
@@ -439,24 +452,27 @@ var UserController = function () {
               case 8:
                 matchingUser = _context5.sent;
 
-                if (!matchingUser) {
-                  _context5.next = 13;
+                if (matchingUser) {
+                  _context5.next = 11;
                   break;
                 }
 
-                _context5.next = 12;
+                return _context5.abrupt('return', res.status(404).json({ message: 'Specified user does not exist!' }));
+
+              case 11:
+                _context5.next = 13;
                 return this.user.destroy({ where: { id: req.params.userId } });
 
-              case 12:
-                return _context5.abrupt('return', res.status(200).json({ message: 'User deleted successfully!' }));
-
               case 13:
-                return _context5.abrupt('return', res.status(404).json({ message: 'Specified user does not exist!' }));
+                res.status(200).json({ message: 'User deleted successfully!' });
+                _context5.next = 19;
+                break;
 
               case 16:
                 _context5.prev = 16;
                 _context5.t0 = _context5['catch'](5);
-                return _context5.abrupt('return', res.status(500).json({ message: _context5.t0.message }));
+
+                res.status(500).json({ message: _context5.t0.message });
 
               case 19:
               case 'end':

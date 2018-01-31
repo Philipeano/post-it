@@ -48,8 +48,7 @@ class UserController {
       existingUser = await this.user.findOne({
         where: { username: req.body.username } });
       if (existingUser) {
-        return res.status(409)
-        .json({ message: 'Username is already in use!' });
+        return res.status(409).json({ message: 'Username is already in use!' });
       }
       existingUser = await this.user.findOne({
         where: { email: req.body.email } });
@@ -65,12 +64,12 @@ class UserController {
         password: reqPasswordHash
       });
       req.session.user = newUser;
-      return res.status(201).json({
+      res.status(201).json({
         message: 'You signed up successfully!',
         user: Validator.trimFields(newUser)
       });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -99,10 +98,10 @@ class UserController {
         return res.status(400).json({ message: 'Password is wrong!' });
       }
       req.session.user = matchingUser;
-      return res.status(200).json({ message: 'You signed in successfully!',
+      res.status(200).json({ message: 'You signed in successfully!',
         user: Validator.trimFields(matchingUser) });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -114,7 +113,7 @@ class UserController {
    */
   signOutUser(req, res) {
     req.session.destroy(() => {
-      return res.status(200).json({ message: 'You have been logged out.' });
+      res.status(200).json({ message: 'You have been logged out.' });
     });
   }
 
@@ -145,9 +144,9 @@ class UserController {
       const allUsers = await this.user.findAll({
         attributes: ['id', 'username', 'email']
       });
-      return res.status(200).json({ 'Registered users': allUsers });
+      res.status(200).json({ 'Registered users': allUsers });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -171,13 +170,13 @@ class UserController {
         attributes: ['id', 'username', 'email'],
         where: { id: req.params.userId }
       });
-      if (matchingUser) {
-        return res.status(200).json({ 'Specified user': matchingUser });
-      }
-      return res.status(404)
+      if (!matchingUser) {
+        return res.status(404)
         .json({ message: 'Specified user does not exist!' });
+      }
+      res.status(200).json({ 'Specified user': matchingUser });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -199,14 +198,14 @@ class UserController {
     try {
       const matchingUser = await this.user
       .findOne({ where: { id: req.params.userId } });
-      if (matchingUser) {
-        await this.user.destroy({ where: { id: req.params.userId } });
-        return res.status(200).json({ message: 'User deleted successfully!' });
-      }
-      return res.status(404)
+      if (!matchingUser) {
+        return res.status(404)
         .json({ message: 'Specified user does not exist!' });
+      }
+      await this.user.destroy({ where: { id: req.params.userId } });
+      res.status(200).json({ message: 'User deleted successfully!' });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 }
