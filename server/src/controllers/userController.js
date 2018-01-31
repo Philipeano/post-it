@@ -1,5 +1,5 @@
 import db from '../models/index';
-import Validator from './validator';
+import Validator from '../helpers/validator';
 
 let reqPasswordHash;
 let errorMessage;
