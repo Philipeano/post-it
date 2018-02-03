@@ -14,9 +14,9 @@ const invalidGroupRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6';
 let createdGroupId, validGroupRoute, testGroup, authToken;
 
 describe('PostIT API', () => {
-  before(() => {
+  before((done) => {
     chai.request(app).post('/api/users/signin').send(validCredentials)
-      .then((res) => { authToken = res.body.token; });
+      .then((res) => { authToken = res.body.token; done(); });
   });
 
   beforeEach(() => {
