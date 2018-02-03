@@ -1,5 +1,6 @@
 import db from '../models/index';
 import Validator from '../helpers/validator';
+import Auth from '../helpers/auth';
 
 let errorMessage;
 
@@ -129,8 +130,8 @@ class MembershipController {
       }
       /* Allow the current user delete the member only if he is
       the creator of this group or the affected member */
-      if ((matchingGroup.creatorId === req.session.user.id)
-        || (req.params.userId === req.session.user.id)) {
+      if ((matchingGroup.creatorId === Auth.getUserIdFromRequest(req))
+        || (req.params.userId === Auth.getUserIdFromRequest(req))) {
         const matchingMembership = await this.membership.findOne({
           where: { groupId: req.params.groupId, memberId: req.params.userId }
         });

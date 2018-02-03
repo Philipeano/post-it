@@ -14,6 +14,10 @@ var _validator = require('../helpers/validator');
 
 var _validator2 = _interopRequireDefault(_validator);
 
+var _auth = require('../helpers/auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -140,26 +144,26 @@ var UserController = function () {
               case 35:
                 newUser = _context.sent;
 
-                req.session.user = newUser;
                 res.status(201).json({
                   message: 'You signed up successfully!',
-                  user: _validator2.default.trimFields(newUser)
+                  user: _validator2.default.trimFields(newUser),
+                  token: _auth2.default.generateToken({ userId: newUser.id })
                 });
-                _context.next = 43;
+                _context.next = 42;
                 break;
 
-              case 40:
-                _context.prev = 40;
+              case 39:
+                _context.prev = 39;
                 _context.t0 = _context['catch'](18);
 
                 res.status(500).json({ message: _context.t0.message });
 
-              case 43:
+              case 42:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[18, 40]]);
+        }, _callee, this, [[18, 39]]);
       }));
 
       function signUpUser(_x, _x2) {
@@ -219,24 +223,26 @@ var UserController = function () {
                 return _context2.abrupt('return', res.status(400).json({ message: 'Password is wrong!' }));
 
               case 11:
-                req.session.user = matchingUser;
-                res.status(200).json({ message: 'You signed in successfully!',
-                  user: _validator2.default.trimFields(matchingUser) });
-                _context2.next = 18;
+                res.status(200).json({
+                  message: 'You signed in successfully!',
+                  user: _validator2.default.trimFields(matchingUser),
+                  token: _auth2.default.generateToken({ userId: matchingUser.id })
+                });
+                _context2.next = 17;
                 break;
 
-              case 15:
-                _context2.prev = 15;
+              case 14:
+                _context2.prev = 14;
                 _context2.t0 = _context2['catch'](3);
 
                 res.status(500).json({ message: _context2.t0.message });
 
-              case 18:
+              case 17:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[3, 15]]);
+        }, _callee2, this, [[3, 14]]);
       }));
 
       function signInUser(_x3, _x4) {
@@ -256,24 +262,15 @@ var UserController = function () {
   }, {
     key: 'signOutUser',
     value: function signOutUser(req, res) {
-      req.session.destroy(function () {
-        res.status(200).json({ message: 'You have been logged out.' });
-      });
-    }
-
-    /**
-     * @description: Checks if user is signed in
-     * @param {Object} req The incoming request from the client
-     * @return {Boolean} true/false
-     */
-
-  }, {
-    key: 'isSignedIn',
-    value: function isSignedIn(req) {
-      if (req.session.user) {
-        return true;
+      if (req.headers.token) {
+        req.headers.token = undefined;
+      } else if (req.body.token) {
+        req.body.token = undefined;
       }
-      return false;
+      res.status(200).json({
+        token: undefined,
+        message: 'You have been logged out.'
+      });
     }
 
     /**
@@ -292,39 +289,31 @@ var UserController = function () {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                if (req.session.user) {
-                  _context3.next = 2;
-                  break;
-                }
-
-                return _context3.abrupt('return', res.status(401).json({ message: 'Access denied! Please sign in first.' }));
-
-              case 2:
-                _context3.prev = 2;
-                _context3.next = 5;
+                _context3.prev = 0;
+                _context3.next = 3;
                 return this.user.findAll({
                   attributes: ['id', 'username', 'email']
                 });
 
-              case 5:
+              case 3:
                 allUsers = _context3.sent;
 
                 res.status(200).json({ 'Registered users': allUsers });
-                _context3.next = 12;
+                _context3.next = 10;
                 break;
 
-              case 9:
-                _context3.prev = 9;
-                _context3.t0 = _context3['catch'](2);
+              case 7:
+                _context3.prev = 7;
+                _context3.t0 = _context3['catch'](0);
 
                 res.status(500).json({ message: _context3.t0.message });
 
-              case 12:
+              case 10:
               case 'end':
                 return _context3.stop();
             }
           }
-        }, _callee3, this, [[2, 9]]);
+        }, _callee3, this, [[0, 7]]);
       }));
 
       function getAllUsers(_x5, _x6) {
@@ -350,58 +339,50 @@ var UserController = function () {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                if (req.session.user) {
-                  _context4.next = 2;
-                  break;
-                }
-
-                return _context4.abrupt('return', res.status(401).json({ message: 'Access denied! Please sign in first.' }));
-
-              case 2:
                 errorMessage = _validator2.default.checkEmpty([{ 'User ID': req.params.userId }]);
 
                 if (!(errorMessage.trim() !== '')) {
-                  _context4.next = 5;
+                  _context4.next = 3;
                   break;
                 }
 
                 return _context4.abrupt('return', res.status(400).json({ message: errorMessage }));
 
-              case 5:
-                _context4.prev = 5;
-                _context4.next = 8;
+              case 3:
+                _context4.prev = 3;
+                _context4.next = 6;
                 return this.user.findOne({
                   attributes: ['id', 'username', 'email'],
                   where: { id: req.params.userId }
                 });
 
-              case 8:
+              case 6:
                 matchingUser = _context4.sent;
 
                 if (matchingUser) {
-                  _context4.next = 11;
+                  _context4.next = 9;
                   break;
                 }
 
                 return _context4.abrupt('return', res.status(404).json({ message: 'Specified user does not exist!' }));
 
-              case 11:
+              case 9:
                 res.status(200).json({ 'Specified user': matchingUser });
-                _context4.next = 17;
+                _context4.next = 15;
                 break;
 
-              case 14:
-                _context4.prev = 14;
-                _context4.t0 = _context4['catch'](5);
+              case 12:
+                _context4.prev = 12;
+                _context4.t0 = _context4['catch'](3);
 
                 res.status(500).json({ message: _context4.t0.message });
 
-              case 17:
+              case 15:
               case 'end':
                 return _context4.stop();
             }
           }
-        }, _callee4, this, [[5, 14]]);
+        }, _callee4, this, [[3, 12]]);
       }));
 
       function getUserByKey(_x7, _x8) {
@@ -427,59 +408,51 @@ var UserController = function () {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                if (req.session.user) {
-                  _context5.next = 2;
-                  break;
-                }
-
-                return _context5.abrupt('return', res.status(401).json({ message: 'Access denied! Please sign in first.' }));
-
-              case 2:
                 errorMessage = _validator2.default.checkEmpty([{ 'User ID': req.params.userId }]);
 
                 if (!(errorMessage.trim() !== '')) {
-                  _context5.next = 5;
+                  _context5.next = 3;
                   break;
                 }
 
                 return _context5.abrupt('return', res.status(400).json({ message: errorMessage }));
 
-              case 5:
-                _context5.prev = 5;
-                _context5.next = 8;
+              case 3:
+                _context5.prev = 3;
+                _context5.next = 6;
                 return this.user.findOne({ where: { id: req.params.userId } });
 
-              case 8:
+              case 6:
                 matchingUser = _context5.sent;
 
                 if (matchingUser) {
-                  _context5.next = 11;
+                  _context5.next = 9;
                   break;
                 }
 
                 return _context5.abrupt('return', res.status(404).json({ message: 'Specified user does not exist!' }));
 
-              case 11:
-                _context5.next = 13;
+              case 9:
+                _context5.next = 11;
                 return this.user.destroy({ where: { id: req.params.userId } });
 
-              case 13:
+              case 11:
                 res.status(200).json({ message: 'User deleted successfully!' });
-                _context5.next = 19;
+                _context5.next = 17;
                 break;
 
-              case 16:
-                _context5.prev = 16;
-                _context5.t0 = _context5['catch'](5);
+              case 14:
+                _context5.prev = 14;
+                _context5.t0 = _context5['catch'](3);
 
                 res.status(500).json({ message: _context5.t0.message });
 
-              case 19:
+              case 17:
               case 'end':
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[5, 16]]);
+        }, _callee5, this, [[3, 14]]);
       }));
 
       function deleteUser(_x9, _x10) {

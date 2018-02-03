@@ -22,10 +22,6 @@ var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
 
-var _expressSession = require('express-session');
-
-var _expressSession2 = _interopRequireDefault(_expressSession);
-
 var _cookieParser = require('cookie-parser');
 
 var _cookieParser2 = _interopRequireDefault(_cookieParser);
@@ -46,6 +42,10 @@ var _messageRouter = require('./routes/messageRouter');
 
 var _messageRouter2 = _interopRequireDefault(_messageRouter);
 
+var _auth = require('./helpers/auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import notificationRouter from './routes/notificationRouter';
@@ -63,33 +63,18 @@ app.use((0, _morgan2.default)('dev'));
 app.use(_bodyParser2.default.json());
 app.use(_bodyParser2.default.urlencoded({ extended: true }));
 app.use((0, _cookieParser2.default)());
-app.use((0, _expressSession2.default)({ secret: 'PostItMessagingSystemByPhilipeano' }));
-
-/**
- * @description: Checks if user is authenticated
- * @param {Object} req The incoming request from the client
- * @param {Object} res The outgoing response from the server
- * @param {Function} next
- * @return {void}
- */
-var checkSignIn = function checkSignIn(req, res, next) {
-  if (req.session.user) {
-    next();
-  } else {
-    res.status(401).json({ message: 'Access denied! Please sign in first.' });
-  }
-};
 
 // Unprotected routes
 app.use('/api/users', _userRouter2.default);
 
 // Protected routes
-// app.use('/api/users/:userId/notifications', checkSignIn, (req, res, next) =>{
+// app.use('/api/users/:userId/notifications',
+// Auth.isAuthenticated, (req, res, next) => {
 //   next();
 // });
 // app.use('/api/users/:userId/notifications', notificationRouter);
 
-app.use('/api/groups', checkSignIn, function (req, res, next) {
+app.use('/api/groups', _auth2.default.isAuthenticated, function (req, res, next) {
   next();
 });
 app.use('/api/groups', _groupRouter2.default);

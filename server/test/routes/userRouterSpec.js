@@ -5,7 +5,6 @@ import server from '../../src/app';
 chai.use(chaiHttp);
 const should = chai.should();
 const app = server;
-const agent = chai.request.agent(app);
 const validUser = {
   username: 'philnewman',
   email: 'philnewman@gmail.com',
@@ -13,7 +12,7 @@ const validUser = {
   cPassword: 'P@55w0rd'
 };
 const invalidUserRoute = '/api/users/c4afc0a0-ba72-11e7-91e3-f5d58be223cf';
-let createdUserId, testUser, validUserRoute;
+let createdUserId, testUser, validUserRoute, authToken;
 
 describe('PostIT API', () => {
   describe('/POST api/users/signup', () => {
@@ -149,10 +148,12 @@ describe('PostIT API', () => {
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('user');
+          res.body.should.have.property('token');
           res.body.should.have.property('message');
           res.body.message.trim().should.be
             .eql('You signed up successfully!');
           createdUserId = res.body.user.id;
+          authToken = res.body.token;
           done();
         });
     });
@@ -227,9 +228,11 @@ describe('PostIT API', () => {
           res.body.should.have.property('user');
           res.body.user.username.should.be.eql(testUser.username);
           res.body.user.email.should.be.eql(testUser.email);
+          res.body.should.have.property('token');
           res.body.should.have.property('message');
           res.body.message.trim().should.be
             .eql('You signed in successfully!');
+          authToken = res.body.token;
           done();
         });
     });
@@ -251,86 +254,134 @@ describe('PostIT API', () => {
   });
 
   describe('/GET api/users', () => {
-    it('should fetch all registered users', (done) => {
-      agent.post('/api/users/signin').send(validUser).then(() => {
-        agent.get('/api/users').send()
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.a('object');
-            res.body.should.have.property('Registered users');
-            done();
-          });
+    before(() => {
+      testUser = Object.assign({}, validUser);
+      chai.request(app).post('/api/users/signin').send(validUser)
+        .then((res) => {
+          authToken = res.body.token;
+        });
+    });
+
+    it('should return an error if authentication token is missing', (done) => {
+      chai.request(app).get('/api/users').end((err, res) => {
+        res.should.have.status(401);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message');
+        res.body.message.trim().should.be
+          .eql('Access denied! Please sign in first.');
+        done();
       });
+    });
+
+    it('should fetch all registered users if validation passes', (done) => {
+      chai.request(app).get('/api/users')
+        .set('token', authToken)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('Registered users');
+          done();
+        });
     });
   });
 
   describe('/GET api/users/:userId', () => {
+    before(() => {
+      testUser = Object.assign({}, validUser);
+      chai.request(app).post('/api/users/signin').send(validUser)
+        .then((res) => {
+          authToken = res.body.token;
+        });
+    });
+
+    it('should return an error if authentication token is missing', (done) => {
+      chai.request(app).get(invalidUserRoute)
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('Access denied! Please sign in first.');
+          done();
+        });
+    });
+
     it('should return an error if supplied user ID does not exist', (done) => {
-      agent.post('/api/users/signin').send(validUser).then(() => {
-        agent.get(invalidUserRoute)
-          .send()
-          .end((err, res) => {
-            res.should.have.status(404);
-            res.body.should.be.a('object');
-            res.body.should.not.have.property('Specified user');
-            res.body.should.have.property('message');
-            res.body.message.trim().should.be
-              .eql('Specified user does not exist!');
-            done();
-          });
-      });
+      chai.request(app).get(invalidUserRoute)
+        .set('token', authToken)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.not.have.property('Specified user');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('Specified user does not exist!');
+          done();
+        });
     });
 
     it('should fetch a particular user if supplied user ID exists', (done) => {
       validUserRoute = `/api/users/${createdUserId}`;
-      agent.post('/api/users/signin').send(validUser).then(() => {
-        agent.get(validUserRoute)
-          .send()
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.a('object');
-            res.body.should.have.property('Specified user');
-            res.body['Specified user'].username.should.be.eql('philnewman1');
-            res.body['Specified user'].email.should.be
-              .eql('philnewman1@gmail.com');
-            done();
-          });
-      });
+      chai.request(app).get(validUserRoute)
+        .set('token', authToken)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('Specified user');
+          res.body['Specified user'].username.should.be.eql('philnewman1');
+          res.body['Specified user'].email.should.be
+            .eql('philnewman1@gmail.com');
+          done();
+        });
     });
   });
 
   describe('/DELETE api/users/:userId', () => {
+    before(() => {
+      testUser = Object.assign({}, validUser);
+      chai.request(app).post('/api/users/signin').send(validUser)
+        .then((res) => {
+          authToken = res.body.token;
+        });
+    });
+
+    it('should return an error if authentication token is missing', (done) => {
+      chai.request(app).delete(invalidUserRoute)
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('Access denied! Please sign in first.');
+          done();
+        });
+    });
+
     it('should return an error if supplied user ID does not exist', (done) => {
-      agent.post('/api/users/signin').send(validUser).then(() => {
-        agent
-          .delete(invalidUserRoute)
-          .send()
-          .end((err, res) => {
-            res.should.have.status(404);
-            res.body.should.be.a('object');
-            res.body.should.have.property('message');
-            res.body.message.trim().should.be
-              .eql('Specified user does not exist!');
-            done();
-          });
-      });
+      chai.request(app).delete(invalidUserRoute)
+        .set('token', authToken)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('Specified user does not exist!');
+          done();
+        });
     });
 
     it('should delete a particular user if supplied user ID exists', (done) => {
       validUserRoute = `/api/users/${createdUserId}`;
-      agent.post('/api/users/signin').send(validUser).then(() => {
-        agent
-          .delete(validUserRoute)
-          .send()
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.be.a('object');
-            res.body.should.have.property('message');
-            res.body.message.trim().should.be
-              .eql('User deleted successfully!');
-            done();
-          });
-      });
+      chai.request(app).delete(validUserRoute)
+        .set('token', authToken)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.be.a('object');
+          res.body.should.have.property('message');
+          res.body.message.trim().should.be
+            .eql('User deleted successfully!');
+          done();
+        });
     });
   });
 });

@@ -5,7 +5,6 @@ import server from '../../src/app';
 chai.use(chaiHttp);
 const should = chai.should();
 const app = server;
-const agent = chai.request.agent(app);
 const memberLogin1 = { username: 'philnewman', password: 'P@55w0rd' };
 const memberLogin2 = { username: 'sammy', password: 'P@55w0rd' };
 const nonMemberLogin = { username: 'vicky', password: 'P@55w0rd' };
@@ -15,14 +14,39 @@ const dummyText = 'This is a demo message for testing.';
 const dummyText2 = 'This is the updated version of the demo message.';
 const invalidMessageId = '04f42880-cab9-11e7-8c5b-afe51c5b1c7b';
 let postedMessageId, testMessage, testRoute;
+let memberToken1, memberToken2, nonMemberToken;
 
 describe('PostIT API', () => {
+  before(() => {
+    chai.request(app).post('/api/users/signin').send(memberLogin1)
+      .then((res) => { memberToken1 = res.body.token; });
+    chai.request(app).post('/api/users/signin').send(memberLogin2)
+      .then((res) => { memberToken2 = res.body.token; });
+    chai.request(app).post('/api/users/signin').send(nonMemberLogin)
+      .then((res) => { nonMemberToken = res.body.token; });
+  });
+
+  describe('/GET api/groups/:groupId/messages/*', () => {
+    it('should not have access to this route without a token', (done) => {
+      chai.request(app).get(validRoute).end((err, res) => {
+        res.should.have.status(401);
+        res.body.should.be.a('object');
+        res.body.should.have.property('message');
+        res.body.message.trim().should.be
+          .eql('Access denied! Please sign in first.');
+        done();
+      });
+    });
+  });
+
   describe('/POST api/groups/:groupId/messages', () => {
     it('should return an error for missing message content', (done) => {
       testRoute = validRoute;
       testMessage = {};
-      agent.post('/api/users/signin').send(memberLogin1).then(() => {
-        agent.post(testRoute).send(testMessage).end((err, res) => {
+      chai.request(app).post(testRoute)
+        .set('token', memberToken1)
+        .send(testMessage)
+        .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
           res.body.should.not.have.property('Posted Message');
@@ -31,14 +55,15 @@ describe('PostIT API', () => {
             .eql('Content cannot be null or empty.');
           done();
         });
-      });
     });
 
     it('should return an error for invalid group ID', (done) => {
       testRoute = invalidRoute;
       testMessage = { content: dummyText };
-      agent.post('/api/users/signin').send(memberLogin1).then(() => {
-        agent.post(testRoute).send(testMessage).end((err, res) => {
+      chai.request(app).post(testRoute)
+        .set('token', memberToken1)
+        .send(testMessage)
+        .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
           res.body.should.not.have.property('Posted Message');
@@ -47,31 +72,33 @@ describe('PostIT API', () => {
             .eql('Specified group does not exist!');
           done();
         });
-      });
     });
 
     it('should return an error if sender is not a member of the group',
       (done) => {
         testRoute = validRoute;
         testMessage = { content: dummyText };
-        agent.post('/api/users/signin').send(nonMemberLogin).then(() => {
-          agent.post(testRoute).send(testMessage).end((err, res) => {
-            // res.should.have.status(403);
+        chai.request(app).post(testRoute)
+          .set('token', nonMemberToken)
+          .send(testMessage)
+          .end((err, res) => {
+            res.should.have.status(403);
             res.body.should.be.a('object');
-            // res.body.should.not.have.property('Posted Message');
+            res.body.should.not.have.property('Posted Message');
             res.body.should.have.property('message');
-            // res.body.message.trim().should.be
-            //   .eql('You do not belong to this group!');
+            res.body.message.trim().should.be
+              .eql('You do not belong to this group!');
             done();
-          });
         });
-      });
+    });
 
     it('should post the message to the group if validation passes', (done) => {
       testRoute = validRoute;
       testMessage = { content: dummyText };
-      agent.post('/api/users/signin').send(memberLogin1).then(() => {
-        agent.post(testRoute).send(testMessage).end((err, res) => {
+      chai.request(app).post(testRoute)
+        .set('token', memberToken1)
+        .send(testMessage)
+        .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.a('object');
           res.body.should.have.property('Posted Message');
@@ -82,15 +109,15 @@ describe('PostIT API', () => {
           done();
           postedMessageId = res.body['Posted Message'].id;
         });
-      });
     });
   });
 
   describe('/GET api/groups/:groupId/messages', () => {
     it('should return an error if supplied group ID does not exist', (done) => {
       testRoute = invalidRoute;
-      agent.post('/api/users/signin').send(memberLogin1).then(() => {
-        agent.get(testRoute).send().end((err, res) => {
+      chai.request(app).get(testRoute)
+        .set('token', memberToken1)        
+        .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
           res.body.should.not.have.property('Messages');
@@ -99,45 +126,46 @@ describe('PostIT API', () => {
             .eql('Specified group does not exist!');
           done();
         });
-      });
     });
 
     it('should return an error if the user is not a member of the group',
       (done) => {
-        testRoute = validRoute;
-        agent.post('/api/users/signin').send(nonMemberLogin).then(() => {
-          agent.get(testRoute).send().end((err, res) => {
-            // res.should.have.status(403);
+        testRoute = validRoute;        
+        chai.request(app).get(testRoute)
+          .set('token', nonMemberToken)
+          .end((err, res) => {
+            res.should.have.status(403);
             res.body.should.be.a('object');
-            // res.body.should.not.have.property('Messages');
-            // res.body.should.have.property('message');
-            // res.body.message.trim().should.be
-            //   .eql('You do not belong to this group!');
+            res.body.should.not.have.property('Messages');
+            res.body.should.have.property('message');
+            res.body.message.trim().should.be
+              .eql('You do not belong to this group!');
             done();
           });
-        });
       });
 
     it('should fetch all messages meant for the group if validation passes',
       (done) => {
-        testRoute = validRoute;
-        agent.post('/api/users/signin').send(memberLogin2).then(() => {
-          agent.get(testRoute).send().end((err, res) => {
+        testRoute = validRoute;        
+        chai.request(app).get(testRoute)
+          .set('token', memberToken1)
+          .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('Messages');
             done();
           });
-        });
-      });
+    });
   });
 
   describe('/PATCH api/groups/:groupId/messages/:messageId', () => {
     it('should return an error for missing message content', (done) => {
       testRoute = `${validRoute}${postedMessageId}`;
-      testMessage = {};
-      agent.post('/api/users/signin').send(memberLogin1).then(() => {
-        agent.patch(testRoute).send(testMessage).end((err, res) => {
+      testMessage = {};     
+      chai.request(app).patch(testRoute)
+        .set('token', memberToken1)
+        .send(testMessage)
+        .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
           res.body.should.not.have.property('Updated Message');
@@ -146,14 +174,15 @@ describe('PostIT API', () => {
             .eql('Content cannot be null or empty.');
           done();
         });
-      });
     });
 
     it('should return an error for invalid group ID', (done) => {
       testRoute = `${invalidRoute}${postedMessageId}`;
       testMessage = { content: dummyText2 };
-      agent.post('/api/users/signin').send(memberLogin1).then(() => {
-        agent.patch(testRoute).send(testMessage).end((err, res) => {
+      chai.request(app).patch(testRoute)
+        .set('token', memberToken1)
+        .send(testMessage)
+        .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
           res.body.should.not.have.property('Updated Message');
@@ -162,15 +191,16 @@ describe('PostIT API', () => {
             .eql('Specified group does not exist!');
           done();
         });
-      });
     });
 
     it('should return an error if supplied message ID does not exist',
       (done) => {
         testRoute = `${validRoute}${invalidMessageId}`;
         testMessage = { content: dummyText2 };
-        agent.post('/api/users/signin').send(memberLogin1).then(() => {
-          agent.patch(testRoute).send(testMessage).end((err, res) => {
+        chai.request(app).patch(testRoute)
+          .set('token', memberToken1)
+          .send(testMessage)
+          .end((err, res) => {
             res.should.have.status(404);
             res.body.should.be.a('object');
             res.body.should.not.have.property('Updated Message');
@@ -179,32 +209,34 @@ describe('PostIT API', () => {
               .eql('Specified message does not exist!');
             done();
           });
-        });
       });
 
     it('should return an error if the user is not a member of the group',
       (done) => {
         testRoute = `${validRoute}${postedMessageId}`;
         testMessage = { content: dummyText2 };
-        agent.post('/api/users/signin').send(nonMemberLogin).then(() => {
-          agent.patch(testRoute).send(testMessage).end((err, res) => {
-            // res.should.have.status(403);
+        chai.request(app).patch(testRoute)
+          .set('token', nonMemberToken)
+          .send(testMessage)
+          .end((err, res) => {
+            res.should.have.status(403);
             res.body.should.be.a('object');
-            // res.body.should.not.have.property('Updated Message');
+            res.body.should.not.have.property('Updated Message');
             res.body.should.have.property('message');
-            // res.body.message.trim().should.be
-            //   .eql('You do not belong to this group!');
+            res.body.message.trim().should.be
+              .eql('You do not belong to this group!');
             done();
           });
-        });
       });
 
     it('should return an error if the user is not the original sender',
       (done) => {
         testRoute = `${validRoute}${postedMessageId}`;
         testMessage = { content: dummyText2 };
-        agent.post('/api/users/signin').send(memberLogin2).then(() => {
-          agent.patch(testRoute).send(testMessage).end((err, res) => {
+        chai.request(app).patch(testRoute)
+          .set('token', memberToken2)
+          .send(testMessage)
+          .end((err, res) => {
             res.should.have.status(403);
             res.body.should.be.a('object');
             res.body.should.not.have.property('Updated Message');
@@ -213,15 +245,16 @@ describe('PostIT API', () => {
               .eql('You are not the sender of this message!');
             done();
           });
-        });
       });
 
     it('should update the previously posted message if validation passes',
       (done) => {
         testRoute = `${validRoute}${postedMessageId}`;
         testMessage = { content: dummyText2 };
-        agent.post('/api/users/signin').send(memberLogin1).then(() => {
-          agent.patch(testRoute).send(testMessage).end((err, res) => {
+        chai.request(app).patch(testRoute)
+          .set('token', memberToken1)
+          .send(testMessage)
+          .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('Updated Message');
@@ -230,15 +263,15 @@ describe('PostIT API', () => {
               .eql('Message updated successfully!');
             done();
           });
-        });
       });
   });
 
   describe('/DELETE api/groups/:groupId/messages/:messageId', () => {
     it('should return an error for invalid group ID', (done) => {
       testRoute = `${invalidRoute}${postedMessageId}`;
-      agent.post('/api/users/signin').send(memberLogin1).then(() => {
-        agent.delete(testRoute).send().end((err, res) => {
+      chai.request(app).delete(testRoute)
+        .set('token', memberToken1)
+        .end((err, res) => {
           res.should.have.status(404);
           res.body.should.be.a('object');
           res.body.should.have.property('message');
@@ -246,14 +279,14 @@ describe('PostIT API', () => {
             .eql('Specified group does not exist!');
           done();
         });
-      });
     });
 
     it('should return an error if supplied message ID does not exist',
       (done) => {
         testRoute = `${validRoute}${invalidMessageId}`;
-        agent.post('/api/users/signin').send(memberLogin1).then(() => {
-          agent.delete(testRoute).send().end((err, res) => {
+        chai.request(app).delete(testRoute)
+          .set('token', memberToken1)
+          .end((err, res) => {
             res.should.have.status(404);
             res.body.should.be.a('object');
             res.body.should.have.property('message');
@@ -261,29 +294,29 @@ describe('PostIT API', () => {
               .eql('Specified message does not exist!');
             done();
           });
-        });
       });
 
     it('should return an error if the user is not a member of the group',
       (done) => {
         testRoute = `${validRoute}${postedMessageId}`;
-        agent.post('/api/users/signin').send(nonMemberLogin).then(() => {
-          agent.delete(testRoute).send().end((err, res) => {
-            // res.should.have.status(403);
+        chai.request(app).delete(testRoute)
+          .set('token', nonMemberToken)
+          .end((err, res) => {
+            res.should.have.status(403);
             res.body.should.be.a('object');
             res.body.should.have.property('message');
-            // res.body.message.trim().should.be
-            //   .eql('You do not belong to this group!');
+            res.body.message.trim().should.be
+              .eql('You do not belong to this group!');
             done();
           });
-        });
       });
 
     it('should return an error if the user is not the original sender',
       (done) => {
         testRoute = `${validRoute}${postedMessageId}`;
-        agent.post('/api/users/signin').send(memberLogin2).then(() => {
-          agent.delete(testRoute).send().end((err, res) => {
+        chai.request(app).delete(testRoute)
+          .set('token', memberToken2)
+          .end((err, res) => {
             res.should.have.status(403);
             res.body.should.be.a('object');
             res.body.should.have.property('message');
@@ -291,14 +324,14 @@ describe('PostIT API', () => {
               .eql('You are not the sender of this message!');
             done();
           });
-        });
       });
 
     it('should delete the previously posted message if validation passes',
       (done) => {
         testRoute = `${validRoute}${postedMessageId}`;
-        agent.post('/api/users/signin').send(memberLogin1).then(() => {
-          agent.delete(testRoute).send().end((err, res) => {
+        chai.request(app).delete(testRoute)
+          .set('token', memberToken1)
+          .end((err, res) => {
             res.should.have.status(200);
             res.body.should.be.a('object');
             res.body.should.have.property('message');
@@ -306,7 +339,6 @@ describe('PostIT API', () => {
               .eql('Message deleted successfully!');
             done();
           });
-        });
       });
   });
 });

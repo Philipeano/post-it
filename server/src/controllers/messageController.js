@@ -1,5 +1,6 @@
 import db from '../models/index';
 import Validator from '../helpers/validator';
+import Auth from '../helpers/auth';
 // import NotificationController from './notificationController';
 
 let errorMessage;
@@ -48,7 +49,7 @@ class MessageController {
       const membership = await this.membership.findOne({
         where: {
           groupId: req.params.groupId,
-          memberId: req.session.user.id
+          memberId: Auth.getUserIdFromRequest(req)
         }
       });
       if (!membership) {
@@ -59,7 +60,7 @@ class MessageController {
       const recipients = await this.membership.findAll({
         where: {
           groupId: req.params.groupId,
-          memberId: { $ne: req.session.user.id }
+          memberId: { $ne: Auth.getUserIdFromRequest(req) }
         }
       });
       if (!recipients) {
@@ -71,7 +72,7 @@ class MessageController {
       await this.message.sync();
       const newMessage = await this.message.create({
         groupId: req.params.groupId,
-        senderId: req.session.user.id,
+        senderId: Auth.getUserIdFromRequest(req),
         content: req.body.content
       });
       //  Send notifications to all other group members about the new message
@@ -137,7 +138,10 @@ class MessageController {
       }
       // Check if the current user is a member of this group
       const membership = await this.membership.findOne({
-        where: { groupId: req.params.groupId, memberId: req.session.user.id }
+        where: {
+          groupId: req.params.groupId,
+          memberId: Auth.getUserIdFromRequest(req)
+        }
       });
       if (!membership) {
         return res.status(403)
@@ -189,7 +193,10 @@ class MessageController {
       }
       // Check if the current user belongs to the specified group
       const membership = await this.membership.findOne({
-        where: { groupId: req.params.groupId, memberId: req.session.user.id }
+        where: {
+          groupId: req.params.groupId,
+          memberId: Auth.getUserIdFromRequest(req)
+        }
       });
       if (!membership) {
         return res.status(403)
@@ -201,7 +208,7 @@ class MessageController {
         where: {
           groupId: req.params.groupId,
           id: req.params.messageId,
-          senderId: req.session.user.id
+          senderId: Auth.getUserIdFromRequest(req)
         }
       });
       if (!message) {
@@ -256,7 +263,7 @@ class MessageController {
       const membership = await this.membership.findOne({
         where: {
           groupId: req.params.groupId,
-          memberId: req.session.user.id
+          memberId: Auth.getUserIdFromRequest(req)
         }
       });
       if (!membership) {
@@ -269,7 +276,7 @@ class MessageController {
         where: {
           groupId: req.params.groupId,
           id: req.params.messageId,
-          senderId: req.session.user.id
+          senderId: Auth.getUserIdFromRequest(req)
         }
       });
       if (!originalMessage) {

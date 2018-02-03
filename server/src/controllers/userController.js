@@ -1,5 +1,6 @@
 import db from '../models/index';
 import Validator from '../helpers/validator';
+import Auth from '../helpers/auth';
 
 let reqPasswordHash;
 let errorMessage;
@@ -63,10 +64,10 @@ class UserController {
         email: req.body.email,
         password: reqPasswordHash
       });
-      req.session.user = newUser;
       res.status(201).json({
         message: 'You signed up successfully!',
-        user: Validator.trimFields(newUser)
+        user: Validator.trimFields(newUser),
+        token: Auth.generateToken({ userId: newUser.id })
       });
     } catch (err) {
       res.status(500).json({ message: err.message });
@@ -97,9 +98,11 @@ class UserController {
         .verifyPassword(req.body.password, matchingUser.password)) {
         return res.status(400).json({ message: 'Password is wrong!' });
       }
-      req.session.user = matchingUser;
-      res.status(200).json({ message: 'You signed in successfully!',
-        user: Validator.trimFields(matchingUser) });
+      res.status(200).json({
+        message: 'You signed in successfully!',
+        user: Validator.trimFields(matchingUser),
+        token: Auth.generateToken({ userId: matchingUser.id })
+      });
     } catch (err) {
       res.status(500).json({ message: err.message });
     }
@@ -112,21 +115,15 @@ class UserController {
    * @return {void}
    */
   signOutUser(req, res) {
-    req.session.destroy(() => {
-      res.status(200).json({ message: 'You have been logged out.' });
-    });
-  }
-
-  /**
-   * @description: Checks if user is signed in
-   * @param {Object} req The incoming request from the client
-   * @return {Boolean} true/false
-   */
-  isSignedIn(req) {
-    if (req.session.user) {
-      return true;
+    if (req.headers.token) {
+      req.headers.token = undefined;
+    } else if (req.body.token) {
+      req.body.token = undefined;
     }
-    return false;
+    res.status(200).json({
+      token: undefined,
+      message: 'You have been logged out.'
+    });
   }
 
   /**
@@ -136,10 +133,6 @@ class UserController {
    * @return {Object} allUsers
    */
   async getAllUsers(req, res) {
-    if (!req.session.user) {
-      return res.status(401)
-      .json({ message: 'Access denied! Please sign in first.' });
-    }
     try {
       const allUsers = await this.user.findAll({
         attributes: ['id', 'username', 'email']
@@ -157,10 +150,6 @@ class UserController {
    * @return {Object} matchingUser
    */
   async getUserByKey(req, res) {
-    if (!req.session.user) {
-      return res.status(401)
-      .json({ message: 'Access denied! Please sign in first.' });
-    }
     errorMessage = Validator.checkEmpty([{ 'User ID': req.params.userId }]);
     if (errorMessage.trim() !== '') {
       return res.status(400).json({ message: errorMessage });
@@ -187,10 +176,6 @@ class UserController {
    * @return {Object} null
    */
   async deleteUser(req, res) {
-    if (!req.session.user) {
-      return res.status(401)
-      .json({ message: 'Access denied! Please sign in first.' });
-    }
     errorMessage = Validator.checkEmpty([{ 'User ID': req.params.userId }]);
     if (errorMessage.trim() !== '') {
       return res.status(400).json({ message: errorMessage });

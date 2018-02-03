@@ -14,6 +14,10 @@ var _validator = require('../helpers/validator');
 
 var _validator2 = _interopRequireDefault(_validator);
 
+var _auth = require('../helpers/auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -278,7 +282,7 @@ var MembershipController = function () {
                 return _context3.abrupt('return', res.status(404).json({ message: 'Specified user does not exist!' }));
 
               case 14:
-                if (!(matchingGroup.creatorId === req.session.user.id || req.params.userId === req.session.user.id)) {
+                if (!(matchingGroup.creatorId === _auth2.default.getUserIdFromRequest(req) || req.params.userId === _auth2.default.getUserIdFromRequest(req))) {
                   _context3.next = 23;
                   break;
                 }

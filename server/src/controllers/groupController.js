@@ -1,5 +1,6 @@
 import db from '../models/index';
 import Validator from '../helpers/validator';
+import Auth from '../helpers/auth';
 
 let errorMessage;
 
@@ -39,21 +40,21 @@ class GroupController {
         .findOne({ where: { title: req.body.title } });
       if (matchingGroup) {
         return res.status(409)
-        .json({ message: 'Group Title is already taken!' });
+          .json({ message: 'Group Title is already taken!' });
       }
       // Create the new group with the title, purpose and creator ID
       await this.group.sync();
       const newGroup = await this.group.create({
         title: req.body.title,
         purpose: req.body.purpose,
-        creatorId: req.session.user.id
+        creatorId: Auth.getUserIdFromRequest(req)
       });
       // Add the creator as the first member of the group
       await this.membership.sync();
       await this.membership.create({
         userRole: 'admin',
         groupId: newGroup.id,
-        memberId: req.session.user.id
+        memberId: Auth.getUserIdFromRequest(req)
       });
       res.status(201).json({
         message: 'Group created successfully!',
@@ -149,7 +150,7 @@ class GroupController {
       }
       /* Allow the current user delete the group only if he is
       the original creator */
-      if (matchingGroup.creatorId === req.session.user.id) {
+      if (matchingGroup.creatorId === Auth.getUserIdFromRequest(req)) {
         await this.group.destroy({ where: { id: req.params.groupId } });
         return res.status(200).json({ message: 'Group deleted successfully!' });
       }

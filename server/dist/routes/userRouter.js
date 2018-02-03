@@ -12,6 +12,10 @@ var _userController = require('../controllers/userController');
 
 var _userController2 = _interopRequireDefault(_userController);
 
+var _auth = require('../helpers/auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var userRouter = _express2.default.Router({ mergeParams: true });
@@ -55,7 +59,7 @@ userRouter.post('/signout', function (req, res) {
  * @param {Object} req The incoming request from the client
  * @param {Object} res The outgoing response from the server
  */
-userRouter.get('/', function (req, res) {
+userRouter.get('/', _auth2.default.isAuthenticated, function (req, res) {
   userController.getAllUsers(req, res);
 });
 
@@ -64,7 +68,7 @@ userRouter.get('/', function (req, res) {
  * @param {Object} req The incoming request from the client
  * @param {Object} res The outgoing response from the server
  */
-userRouter.get('/:userId', function (req, res) {
+userRouter.get('/:userId', _auth2.default.isAuthenticated, function (req, res) {
   userController.getUserByKey(req, res);
 });
 
@@ -73,7 +77,7 @@ userRouter.get('/:userId', function (req, res) {
  * @param {Object} req The incoming request from the client
  * @param {Object} res The outgoing response from the server
  */
-userRouter.delete('/:userId', function (req, res) {
+userRouter.delete('/:userId', _auth2.default.isAuthenticated, function (req, res) {
   userController.deleteUser(req, res);
 });
 

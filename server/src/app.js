@@ -3,12 +3,12 @@ import express from 'express';
 import dotenv from 'dotenv';
 import logger from 'morgan';
 import bodyParser from 'body-parser';
-import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/userRouter';
 import groupRouter from './routes/groupRouter';
 import membershipRouter from './routes/membershipRouter';
 import messageRouter from './routes/messageRouter';
+import Auth from './helpers/auth';
 // import notificationRouter from './routes/notificationRouter';
 
 // Configure environment settings
@@ -24,35 +24,18 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({ secret: 'PostItMessagingSystemByPhilipeano' }));
-
-/**
- * @description: Checks if user is authenticated
- * @param {Object} req The incoming request from the client
- * @param {Object} res The outgoing response from the server
- * @param {Function} next
- * @return {void}
- */
-const checkSignIn = (req, res, next) => {
-  if (req.session.user) {
-    next();
-  } else {
-    res.status(401).json({ message: 'Access denied! Please sign in first.' });
-  }
-};
 
 // Unprotected routes
 app.use('/api/users', userRouter);
 
 // Protected routes
-// app.use('/api/users/:userId/notifications', checkSignIn, (req, res, next) =>{
+// app.use('/api/users/:userId/notifications',
+// Auth.isAuthenticated, (req, res, next) => {
 //   next();
 // });
 // app.use('/api/users/:userId/notifications', notificationRouter);
 
-app.use('/api/groups', checkSignIn, (req, res, next) => {
-  next();
-});
+app.use('/api/groups', Auth.isAuthenticated, (req, res, next) => { next(); });
 app.use('/api/groups', groupRouter);
 app.use('/api/groups/:groupId/users', membershipRouter);
 app.use('/api/groups/:groupId/messages', messageRouter);

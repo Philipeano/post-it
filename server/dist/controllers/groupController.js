@@ -14,6 +14,10 @@ var _validator = require('../helpers/validator');
 
 var _validator2 = _interopRequireDefault(_validator);
 
+var _auth = require('../helpers/auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -91,7 +95,7 @@ var GroupController = function () {
                 return this.group.create({
                   title: req.body.title,
                   purpose: req.body.purpose,
-                  creatorId: req.session.user.id
+                  creatorId: _auth2.default.getUserIdFromRequest(req)
                 });
 
               case 13:
@@ -104,7 +108,7 @@ var GroupController = function () {
                 return this.membership.create({
                   userRole: 'admin',
                   groupId: newGroup.id,
-                  memberId: req.session.user.id
+                  memberId: _auth2.default.getUserIdFromRequest(req)
                 });
 
               case 18:
@@ -316,7 +320,7 @@ var GroupController = function () {
                 return _context4.abrupt('return', res.status(404).json({ message: 'Specified group does not exist!' }));
 
               case 9:
-                if (!(matchingGroup.creatorId === req.session.user.id)) {
+                if (!(matchingGroup.creatorId === _auth2.default.getUserIdFromRequest(req))) {
                   _context4.next = 13;
                   break;
                 }

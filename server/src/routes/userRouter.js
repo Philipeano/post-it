@@ -1,5 +1,6 @@
 import express from 'express';
 import UserController from '../controllers/userController';
+import Auth from '../helpers/auth';
 
 const userRouter = express.Router({ mergeParams: true });
 
@@ -42,7 +43,7 @@ userRouter.post('/signout', (req, res) => {
  * @param {Object} req The incoming request from the client
  * @param {Object} res The outgoing response from the server
  */
-userRouter.get('/', (req, res) => {
+userRouter.get('/', Auth.isAuthenticated, (req, res) => {
   userController.getAllUsers(req, res);
 });
 
@@ -51,7 +52,7 @@ userRouter.get('/', (req, res) => {
  * @param {Object} req The incoming request from the client
  * @param {Object} res The outgoing response from the server
  */
-userRouter.get('/:userId', (req, res) => {
+userRouter.get('/:userId', Auth.isAuthenticated, (req, res) => {
   userController.getUserByKey(req, res);
 });
 
@@ -60,7 +61,7 @@ userRouter.get('/:userId', (req, res) => {
  * @param {Object} req The incoming request from the client
  * @param {Object} res The outgoing response from the server
  */
-userRouter.delete('/:userId', (req, res) => {
+userRouter.delete('/:userId', Auth.isAuthenticated, (req, res) => {
   userController.deleteUser(req, res);
 });
 

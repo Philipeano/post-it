@@ -14,6 +14,10 @@ var _validator = require('../helpers/validator');
 
 var _validator2 = _interopRequireDefault(_validator);
 
+var _auth = require('../helpers/auth');
+
+var _auth2 = _interopRequireDefault(_auth);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -92,7 +96,7 @@ var MessageController = function () {
                 return this.membership.findOne({
                   where: {
                     groupId: req.params.groupId,
-                    memberId: req.session.user.id
+                    memberId: _auth2.default.getUserIdFromRequest(req)
                   }
                 });
 
@@ -111,7 +115,7 @@ var MessageController = function () {
                 return this.membership.findAll({
                   where: {
                     groupId: req.params.groupId,
-                    memberId: { $ne: req.session.user.id }
+                    memberId: { $ne: _auth2.default.getUserIdFromRequest(req) }
                   }
                 });
 
@@ -135,7 +139,7 @@ var MessageController = function () {
                 _context.next = 23;
                 return this.message.create({
                   groupId: req.params.groupId,
-                  senderId: req.session.user.id,
+                  senderId: _auth2.default.getUserIdFromRequest(req),
                   content: req.body.content
                 });
 
@@ -282,7 +286,10 @@ var MessageController = function () {
               case 9:
                 _context3.next = 11;
                 return this.membership.findOne({
-                  where: { groupId: req.params.groupId, memberId: req.session.user.id }
+                  where: {
+                    groupId: req.params.groupId,
+                    memberId: _auth2.default.getUserIdFromRequest(req)
+                  }
                 });
 
               case 11:
@@ -388,7 +395,10 @@ var MessageController = function () {
               case 14:
                 _context4.next = 16;
                 return this.membership.findOne({
-                  where: { groupId: req.params.groupId, memberId: req.session.user.id }
+                  where: {
+                    groupId: req.params.groupId,
+                    memberId: _auth2.default.getUserIdFromRequest(req)
+                  }
                 });
 
               case 16:
@@ -407,7 +417,7 @@ var MessageController = function () {
                   where: {
                     groupId: req.params.groupId,
                     id: req.params.messageId,
-                    senderId: req.session.user.id
+                    senderId: _auth2.default.getUserIdFromRequest(req)
                   }
                 });
 
@@ -521,7 +531,7 @@ var MessageController = function () {
                 return this.membership.findOne({
                   where: {
                     groupId: req.params.groupId,
-                    memberId: req.session.user.id
+                    memberId: _auth2.default.getUserIdFromRequest(req)
                   }
                 });
 
@@ -541,7 +551,7 @@ var MessageController = function () {
                   where: {
                     groupId: req.params.groupId,
                     id: req.params.messageId,
-                    senderId: req.session.user.id
+                    senderId: _auth2.default.getUserIdFromRequest(req)
                   }
                 });
 
