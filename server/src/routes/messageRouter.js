@@ -1,5 +1,8 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import MessageController from '../controllers/messageController';
+
+dotenv.config();
 
 const messageRouter = express.Router({ mergeParams: true });
 

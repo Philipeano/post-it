@@ -1,6 +1,9 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import UserController from '../controllers/userController';
 import Auth from '../helpers/auth';
+
+dotenv.config();
 
 const userRouter = express.Router({ mergeParams: true });
 
