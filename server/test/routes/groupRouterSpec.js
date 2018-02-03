@@ -16,7 +16,8 @@ let createdGroupId, validGroupRoute, testGroup, authToken;
 describe('PostIT API', () => {
   before((done) => {
     chai.request(app).post('/api/users/signin').send(validCredentials)
-      .then((res) => { authToken = res.body.token; done(); });
+      .then((res) => { authToken = res.body.token; });
+    done();
   });
 
   beforeEach(() => {

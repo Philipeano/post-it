@@ -254,12 +254,11 @@ describe('PostIT API', () => {
   });
 
   describe('/GET api/users', () => {
-    before(() => {
+    before((done) => {
       testUser = Object.assign({}, validUser);
       chai.request(app).post('/api/users/signin').send(validUser)
-        .then((res) => {
-          authToken = res.body.token;
-        });
+        .then((res) => { authToken = res.body.token; });
+      done();
     });
 
     it('should return an error if authentication token is missing', (done) => {
@@ -286,12 +285,11 @@ describe('PostIT API', () => {
   });
 
   describe('/GET api/users/:userId', () => {
-    before(() => {
+    before((done) => {
       testUser = Object.assign({}, validUser);
       chai.request(app).post('/api/users/signin').send(validUser)
-        .then((res) => {
-          authToken = res.body.token;
-        });
+        .then((res) => { authToken = res.body.token; });
+      done();
     });
 
     it('should return an error if authentication token is missing', (done) => {
@@ -337,12 +335,11 @@ describe('PostIT API', () => {
   });
 
   describe('/DELETE api/users/:userId', () => {
-    before(() => {
+    before((done) => {
       testUser = Object.assign({}, validUser);
       chai.request(app).post('/api/users/signin').send(validUser)
-        .then((res) => {
-          authToken = res.body.token;
-        });
+        .then((res) => { authToken = res.body.token; });
+      done();
     });
 
     it('should return an error if authentication token is missing', (done) => {

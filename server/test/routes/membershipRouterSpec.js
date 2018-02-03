@@ -14,9 +14,10 @@ const memberUserId = '75b936c0-ba72-11e7-84e1-058ffffd96c5';
 let testMember, testRoute, authToken;
 
 describe('PostIT API', () => {
-  before(() => {
+  before((done) => {
     chai.request(app).post('/api/users/signin').send(validCredentials)
       .then((res) => { authToken = res.body.token; });
+    done();
   });
 
   describe('/GET api/groups/:groupId/users/*', () => {

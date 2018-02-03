@@ -17,13 +17,14 @@ let postedMessageId, testMessage, testRoute;
 let memberToken1, memberToken2, nonMemberToken;
 
 describe('PostIT API', () => {
-  before(() => {
+  before((done) => {
     chai.request(app).post('/api/users/signin').send(memberLogin1)
       .then((res) => { memberToken1 = res.body.token; });
     chai.request(app).post('/api/users/signin').send(memberLogin2)
       .then((res) => { memberToken2 = res.body.token; });
     chai.request(app).post('/api/users/signin').send(nonMemberLogin)
       .then((res) => { nonMemberToken = res.body.token; });
+    done();
   });
 
   describe('/GET api/groups/:groupId/messages/*', () => {
