@@ -1,8 +1,5 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import MembershipController from '../controllers/membershipController';
-
-dotenv.config();
 
 const membershipRouter = express.Router({ mergeParams: true });
 
