@@ -8,8 +8,8 @@ const app = server;
 const memberLogin1 = { username: 'philnewman', password: 'P@55w0rd' };
 const memberLogin2 = { username: 'sammy', password: 'P@55w0rd' };
 const nonMemberLogin = { username: 'vicky', password: 'P@55w0rd' };
-const validRoute = '/api/groups/c46ebe90-bd68-11e7-922f-4d48c5331440/messages/';
-const invalidRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6/messages/';
+const validRoute = '/api/v1/groups/c46ebe90-bd68-11e7-922f-4d48c5331440/messages/';
+const invalidRoute = '/api/v1/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6/messages/';
 const dummyText = 'This is a demo message for testing.';
 const dummyText2 = 'This is the updated version of the demo message.';
 const invalidMessageId = '04f42880-cab9-11e7-8c5b-afe51c5b1c7b';
@@ -18,11 +18,11 @@ let memberToken1, memberToken2, nonMemberToken;
 
 describe('PostIT API', () => {
   before((done) => {
-    chai.request(app).post('/api/users/signin').send(memberLogin1)
+    chai.request(app).post('/api/v1/users/signin').send(memberLogin1)
       .then((res) => { memberToken1 = res.body.token; });
-    chai.request(app).post('/api/users/signin').send(memberLogin2)
+    chai.request(app).post('/api/v1/users/signin').send(memberLogin2)
       .then((res) => { memberToken2 = res.body.token; });
-    chai.request(app).post('/api/users/signin').send(nonMemberLogin)
+    chai.request(app).post('/api/v1/users/signin').send(nonMemberLogin)
       .then((res) => { nonMemberToken = res.body.token; });
     done();
   });

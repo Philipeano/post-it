@@ -26,22 +26,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Unprotected routes
-app.use('/api/users', userRouter);
+app.use('/api/v1/users', userRouter);
 
 // Protected routes
-// app.use('/api/users/:userId/notifications',
+// app.use('/api/v1/users/:userId/notifications',
 // Auth.isAuthenticated, (req, res, next) => {
 //   next();
 // });
-// app.use('/api/users/:userId/notifications', notificationRouter);
+// app.use('/api/v1/users/:userId/notifications', notificationRouter);
 
-app.use('/api/groups', Auth.isAuthenticated, (req, res, next) => { next(); });
-app.use('/api/groups', groupRouter);
-app.use('/api/groups/:groupId/users', membershipRouter);
-app.use('/api/groups/:groupId/messages', messageRouter);
+app.use('/api/v1/groups',
+ Auth.isAuthenticated, (req, res, next) => { next(); });
+app.use('/api/v1/groups', groupRouter);
+app.use('/api/v1/groups/:groupId/users', membershipRouter);
+app.use('/api/v1/groups/:groupId/messages', messageRouter);
 
 // Default API request
-app.get('/api/', (req, res) => {
+app.get('/api/v1/', (req, res) => {
   res.set('Content-Type', 'application/json');
   res.status(200).send({ message: 'PostIT API is running...' });
 });

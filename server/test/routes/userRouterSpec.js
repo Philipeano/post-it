@@ -11,7 +11,7 @@ const validUser = {
   password: 'P@55w0rd',
   cPassword: 'P@55w0rd'
 };
-const invalidUserRoute = '/api/users/c4afc0a0-ba72-11e7-91e3-f5d58be223cf';
+const invalidUserRoute = '/api/v1/users/c4afc0a0-ba72-11e7-91e3-f5d58be223cf';
 let createdUserId, testUser, validUserRoute, authToken;
 
 describe('PostIT API', () => {
@@ -22,7 +22,7 @@ describe('PostIT API', () => {
 
     it('should return an error for missing username', (done) => {
       testUser.username = '';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -35,7 +35,7 @@ describe('PostIT API', () => {
 
     it('should return an error for missing email address', (done) => {
       testUser.email = '';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -48,7 +48,7 @@ describe('PostIT API', () => {
 
     it('should return an error for missing password', (done) => {
       testUser.password = '';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -61,7 +61,7 @@ describe('PostIT API', () => {
 
     it('should return an error for missing password retype', (done) => {
       testUser.cPassword = '';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -74,7 +74,7 @@ describe('PostIT API', () => {
 
     it('should return an error for invalid email address', (done) => {
       testUser.email = 'badEmail';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -88,7 +88,7 @@ describe('PostIT API', () => {
     it('should return an error for invalid password', (done) => {
       testUser.password = 'badPassword';
       testUser.cPassword = 'badPassword';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -101,7 +101,7 @@ describe('PostIT API', () => {
 
     it('should return an error for password mismatch', (done) => {
       testUser.cPassword = 'badPassword';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -115,7 +115,7 @@ describe('PostIT API', () => {
     it('should return an error message if username is unavailable', (done) => {
       testUser.username = 'philnewman';
       testUser.email = 'philnewman1@gmail.com';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(409);
           res.body.should.be.a('object');
@@ -129,7 +129,7 @@ describe('PostIT API', () => {
     it('should return an error message if email already exists', (done) => {
       testUser.username = 'philnewman1';
       testUser.email = 'philnewman@gmail.com';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(409);
           res.body.should.be.a('object');
@@ -143,7 +143,7 @@ describe('PostIT API', () => {
     it('should create a new user if all fields are valid', (done) => {
       testUser.username = 'philnewman1';
       testUser.email = 'philnewman1@gmail.com';
-      chai.request(app).post('/api/users/signup').send(testUser)
+      chai.request(app).post('/api/v1/users/signup').send(testUser)
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.be.a('object');
@@ -166,7 +166,7 @@ describe('PostIT API', () => {
 
     it('should return an error for missing username', (done) => {
       testUser.username = '';
-      chai.request(app).post('/api/users/signin').send(testUser)
+      chai.request(app).post('/api/v1/users/signin').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -180,7 +180,7 @@ describe('PostIT API', () => {
 
     it('should return an error for missing password', (done) => {
       testUser.password = '';
-      chai.request(app).post('/api/users/signin').send(testUser)
+      chai.request(app).post('/api/v1/users/signin').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -194,7 +194,7 @@ describe('PostIT API', () => {
 
     it('should return an error for unregistered username', (done) => {
       testUser.username = 'unknownUser';
-      chai.request(app).post('/api/users/signin').send(testUser)
+      chai.request(app).post('/api/v1/users/signin').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -208,7 +208,7 @@ describe('PostIT API', () => {
 
     it('should return an error for wrong password', (done) => {
       testUser.password = 'wrongPassword';
-      chai.request(app).post('/api/users/signin').send(testUser)
+      chai.request(app).post('/api/v1/users/signin').send(testUser)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.be.a('object');
@@ -221,7 +221,7 @@ describe('PostIT API', () => {
     });
 
     it('should sign in the user if both fields are valid', (done) => {
-      chai.request(app).post('/api/users/signin').send(testUser)
+      chai.request(app).post('/api/v1/users/signin').send(testUser)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -240,7 +240,7 @@ describe('PostIT API', () => {
 
   describe('/POST api/users/signout', () => {
     it('should return a success message after signing user out', (done) => {
-      chai.request(app).post('/api/users/signout').send()
+      chai.request(app).post('/api/v1/users/signout').send()
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
@@ -256,13 +256,13 @@ describe('PostIT API', () => {
   describe('/GET api/users', () => {
     before((done) => {
       testUser = Object.assign({}, validUser);
-      chai.request(app).post('/api/users/signin').send(validUser)
+      chai.request(app).post('/api/v1/users/signin').send(validUser)
         .then((res) => { authToken = res.body.token; });
       done();
     });
 
     it('should return an error if authentication token is missing', (done) => {
-      chai.request(app).get('/api/users').end((err, res) => {
+      chai.request(app).get('/api/v1/users').end((err, res) => {
         res.should.have.status(401);
         res.body.should.be.a('object');
         res.body.should.have.property('message');
@@ -273,7 +273,7 @@ describe('PostIT API', () => {
     });
 
     it('should fetch all registered users if validation passes', (done) => {
-      chai.request(app).get('/api/users')
+      chai.request(app).get('/api/v1/users')
         .set('token', authToken)
         .end((err, res) => {
           res.should.have.status(200);
@@ -287,7 +287,7 @@ describe('PostIT API', () => {
   describe('/GET api/users/:userId', () => {
     before((done) => {
       testUser = Object.assign({}, validUser);
-      chai.request(app).post('/api/users/signin').send(validUser)
+      chai.request(app).post('/api/v1/users/signin').send(validUser)
         .then((res) => { authToken = res.body.token; });
       done();
     });
@@ -319,7 +319,7 @@ describe('PostIT API', () => {
     });
 
     it('should fetch a particular user if supplied user ID exists', (done) => {
-      validUserRoute = `/api/users/${createdUserId}`;
+      validUserRoute = `/api/v1/users/${createdUserId}`;
       chai.request(app).get(validUserRoute)
         .set('token', authToken)
         .end((err, res) => {
@@ -337,7 +337,7 @@ describe('PostIT API', () => {
   describe('/DELETE api/users/:userId', () => {
     before((done) => {
       testUser = Object.assign({}, validUser);
-      chai.request(app).post('/api/users/signin').send(validUser)
+      chai.request(app).post('/api/v1/users/signin').send(validUser)
         .then((res) => { authToken = res.body.token; });
       done();
     });
@@ -368,7 +368,7 @@ describe('PostIT API', () => {
     });
 
     it('should delete a particular user if supplied user ID exists', (done) => {
-      validUserRoute = `/api/users/${createdUserId}`;
+      validUserRoute = `/api/v1/users/${createdUserId}`;
       chai.request(app).delete(validUserRoute)
         .set('token', authToken)
         .end((err, res) => {

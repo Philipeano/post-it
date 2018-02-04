@@ -65,24 +65,24 @@ app.use(_bodyParser2.default.urlencoded({ extended: true }));
 app.use((0, _cookieParser2.default)());
 
 // Unprotected routes
-app.use('/api/users', _userRouter2.default);
+app.use('/api/v1/users', _userRouter2.default);
 
 // Protected routes
-// app.use('/api/users/:userId/notifications',
+// app.use('/api/v1/users/:userId/notifications',
 // Auth.isAuthenticated, (req, res, next) => {
 //   next();
 // });
-// app.use('/api/users/:userId/notifications', notificationRouter);
+// app.use('/api/v1/users/:userId/notifications', notificationRouter);
 
-app.use('/api/groups', _auth2.default.isAuthenticated, function (req, res, next) {
+app.use('/api/v1/groups', _auth2.default.isAuthenticated, function (req, res, next) {
   next();
 });
-app.use('/api/groups', _groupRouter2.default);
-app.use('/api/groups/:groupId/users', _membershipRouter2.default);
-app.use('/api/groups/:groupId/messages', _messageRouter2.default);
+app.use('/api/v1/groups', _groupRouter2.default);
+app.use('/api/v1/groups/:groupId/users', _membershipRouter2.default);
+app.use('/api/v1/groups/:groupId/messages', _messageRouter2.default);
 
 // Default API request
-app.get('/api/', function (req, res) {
+app.get('/api/v1/', function (req, res) {
   res.set('Content-Type', 'application/json');
   res.status(200).send({ message: 'PostIT API is running...' });
 });

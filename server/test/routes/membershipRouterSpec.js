@@ -6,8 +6,8 @@ chai.use(chaiHttp);
 const should = chai.should();
 const app = server;
 const validCredentials = { username: 'philnewman', password: 'P@55w0rd' };
-const validRoute = '/api/groups/c46ebe90-bd68-11e7-922f-4d48c5331440/users/';
-const invalidRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6/users/';
+const validRoute = '/api/v1/groups/c46ebe90-bd68-11e7-922f-4d48c5331440/users/';
+const invalidRoute = '/api/v1/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6/users/';
 const validUserId = '50bd1190-a116-11e7-8614-2b874e7804bc';
 const invalidUserId = '9c75f270-a15f-11e7-9bb0-b7bf1c74a69d';
 const memberUserId = '75b936c0-ba72-11e7-84e1-058ffffd96c5';
@@ -15,7 +15,7 @@ let testMember, testRoute, authToken;
 
 describe('PostIT API', () => {
   before((done) => {
-    chai.request(app).post('/api/users/signin').send(validCredentials)
+    chai.request(app).post('/api/v1/users/signin').send(validCredentials)
       .then((res) => { authToken = res.body.token; });
     done();
   });

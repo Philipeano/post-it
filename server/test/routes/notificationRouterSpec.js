@@ -9,11 +9,11 @@
 // const memberLogin = { username: 'sammy', password: 'P@55w0rd' };
 // const nonMemberLogin = { username: 'vicky', password: 'P@55w0rd' };
 // const authorisedRoute
-//   = '/api/users/9ee489d0-9c6f-11e7-a4d2-3b6a4940d978/notifications';
+//   = '/api/v1/users/9ee489d0-9c6f-11e7-a4d2-3b6a4940d978/notifications';
 // const unauthorisedRoute
-//   = '/api/users/75b936c0-ba72-11e7-84e1-058ffffd96c5/notifications';
+//   = '/api/v1/users/75b936c0-ba72-11e7-84e1-058ffffd96c5/notifications';
 // const invalidRoute
-//   = '/api/users/75b936c0-ba72-11e7-84e1-058ffffd96c6/notifications';
+//   = '/api/v1/users/75b936c0-ba72-11e7-84e1-058ffffd96c6/notifications';
 // const validNotificationId = '8d72627a-8169-40c4-958c-ab97c9b9ba8f';
 // const invalidNotificationId = '8d72627a-8169-40c4-958c-ab97c9b9ba8e';
 // const validGroupId = 'c46ebe90-bd68-11e7-922f-4d48c5331440';
@@ -25,7 +25,7 @@
 //   //   it('should return an error for missing message content', (done) => {
 //   //     testRoute = validRoute;
 //   //     testMessage = {};
-//   //     agent.post('/api/users/signin').send(memberLogin).then(() => {
+//   //     agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //   //       agent.post(testRoute).send(testMessage).end((err, res) => {
 //   //         res.should.have.status(400);
 //   //         res.body.should.be.a('object');
@@ -41,7 +41,7 @@
 //   //   it('should return an error for invalid group ID', (done) => {
 //   //     testRoute = invalidRoute;
 //   //     testMessage = { content: dummyText };
-//   //     agent.post('/api/users/signin').send(memberLogin).then(() => {
+//   //     agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //   //       agent.post(testRoute).send(testMessage).end((err, res) => {
 //   //         res.should.have.status(404);
 //   //         res.body.should.be.a('object');
@@ -58,7 +58,7 @@
 //   //     (done) => {
 //   //       testRoute = validRoute;
 //   //       testMessage = { content: dummyText };
-//   //       agent.post('/api/users/signin').send(nonMemberLogin).then(() => {
+//   //       agent.post('/api/v1/users/signin').send(nonMemberLogin).then(() => {
 //   //         agent.post(testRoute).send(testMessage).end((err, res) => {
 //   //           res.should.have.status(403);
 //   //           res.body.should.be.a('object');
@@ -74,7 +74,7 @@
 //   //   it('should post the message to the group if validation passes', (done) => {
 //   //     testRoute = validRoute;
 //   //     testMessage = { content: dummyText };
-//   //     agent.post('/api/users/signin').send(memberLogin).then(() => {
+//   //     agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //   //       agent.post(testRoute).send(testMessage).end((err, res) => {
 //   //         res.should.have.status(201);
 //   //         res.body.should.be.a('object');
@@ -93,7 +93,7 @@
 //   describe('/GET api/users/:userId/notifications', () => {
 //     it('should return an error if supplied user ID does not exist', (done) => {
 //       testRoute = invalidRoute;
-//       agent.get('/api/users/signin').send(memberLogin).then(() => {
+//       agent.get('/api/v1/users/signin').send(memberLogin).then(() => {
 //         agent.get(testRoute).send().end((err, res) => {
 //           res.should.have.status(404);
 //           res.body.should.be.a('object');
@@ -109,7 +109,7 @@
 //     it('should return an error if the user is not a member of the group',
 //       (done) => {
 //         testRoute = `${authorisedRoute}/filter?groupId=${invalidGroupId}`;
-//         agent.post('/api/users/signin').send(nonMemberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(nonMemberLogin).then(() => {
 //           agent.get(testRoute).send().end((err, res) => {
 //             res.should.have.status(403);
 //             res.body.should.be.a('object');
@@ -125,7 +125,7 @@
 //     it('should fetch all notifications meant for the user if validation passes',
 //       (done) => {
 //         testRoute = authorisedRoute;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.get(testRoute).send().end((err, res) => {
 //             res.should.have.status(200);
 //             res.body.should.be.a('object');
@@ -139,7 +139,7 @@
 //       ' if validation passes',
 //       (done) => {
 //         testRoute = `${authorisedRoute}/filter?groupId=${validGroupId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.get(testRoute).send().end((err, res) => {
 //             res.should.have.status(200);
 //             res.body.should.be.a('object');
@@ -153,7 +153,7 @@
 //   describe('/GET api/users/:userId/notifications/:notificationId', () => {
 //     it('should return an error if supplied user ID does not exist', (done) => {
 //       testRoute = `${authorisedRoute}/${validNotificationId}`;
-//       agent.post('/api/users/signin').send(memberLogin).then(() => {
+//       agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //         agent.get(testRoute).send().end((err, res) => {
 //           res.should.have.status(404);
 //           res.body.should.be.a('object');
@@ -169,7 +169,7 @@
 //     it('should return an error if the user is not the original recipient',
 //       (done) => {
 //         testRoute = `${unauthorisedRoute}/${validNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.get(testRoute).send().end((err, res) => {
 //             res.should.have.status(403);
 //             res.body.should.be.a('object');
@@ -185,7 +185,7 @@
 //     it('should return an error if the notification ID does not exist',
 //       (done) => {
 //         testRoute = `${authorisedRoute}/${invalidNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.get(testRoute).send().end((err, res) => {
 //             res.should.have.status(404);
 //             res.body.should.be.a('object');
@@ -201,7 +201,7 @@
 //     it('should fetch a specific notification if validation passes',
 //       (done) => {
 //         testRoute = `${authorisedRoute}/${validNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.get(testRoute).send().end((err, res) => {
 //             res.should.have.status(200);
 //             res.body.should.be.a('object');
@@ -215,7 +215,7 @@
 //   describe('/PATCH api/users/:userId/notifications/:notificationId', () => {
 //     it('should return an error if supplied user ID does not exist', (done) => {
 //       testRoute = `${authorisedRoute}/${validNotificationId}`;
-//       agent.post('/api/users/signin').send(memberLogin).then(() => {
+//       agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //         agent.patch(testRoute).send().end((err, res) => {
 //           res.should.have.status(404);
 //           res.body.should.be.a('object');
@@ -231,7 +231,7 @@
 //     it('should return an error if the user is not the original recipient',
 //       (done) => {
 //         testRoute = `${unauthorisedRoute}/${validNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.patch(testRoute).send().end((err, res) => {
 //             res.should.have.status(403);
 //             res.body.should.be.a('object');
@@ -247,7 +247,7 @@
 //     it('should return an error if the notification ID does not exist',
 //       (done) => {
 //         testRoute = `${authorisedRoute}/${invalidNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.patch(testRoute).send().end((err, res) => {
 //             res.should.have.status(404);
 //             res.body.should.be.a('object');
@@ -263,7 +263,7 @@
 //     it('should update a specific notification if validation passes',
 //       (done) => {
 //         testRoute = `${authorisedRoute}/${validNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.patch(testRoute).send().end((err, res) => {
 //             res.should.have.status(200);
 //             res.body.should.be.a('object');
@@ -280,7 +280,7 @@
 //   describe('/DELETE api/users/:userId/notifications/:notificationId', () => {
 //     it('should return an error if supplied user ID does not exist', (done) => {
 //       testRoute = `${authorisedRoute}/${validNotificationId}`;
-//       agent.post('/api/users/signin').send(memberLogin).then(() => {
+//       agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //         agent.delete(testRoute).send().end((err, res) => {
 //           res.should.have.status(404);
 //           res.body.should.be.a('object');
@@ -295,7 +295,7 @@
 //     it('should return an error if the user is not the original recipient',
 //       (done) => {
 //         testRoute = `${unauthorisedRoute}/${validNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.delete(testRoute).send().end((err, res) => {
 //             res.should.have.status(403);
 //             res.body.should.be.a('object');
@@ -310,7 +310,7 @@
 //     it('should return an error if the notification ID does not exist',
 //       (done) => {
 //         testRoute = `${authorisedRoute}/${invalidNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.delete(testRoute).send().end((err, res) => {
 //             res.should.have.status(404);
 //             res.body.should.be.a('object');
@@ -325,7 +325,7 @@
 //     it('should delete a specific notification if validation passes',
 //       (done) => {
 //         testRoute = `${authorisedRoute}/${validNotificationId}`;
-//         agent.post('/api/users/signin').send(memberLogin).then(() => {
+//         agent.post('/api/v1/users/signin').send(memberLogin).then(() => {
 //           agent.delete(testRoute).send().end((err, res) => {
 //             res.should.have.status(200);
 //             res.body.should.be.a('object');

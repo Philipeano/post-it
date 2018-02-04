@@ -10,12 +10,12 @@ const validGroup = {
   title: 'Demo Group',
   purpose: 'This is a sample broadcast group for testing the app.'
 };
-const invalidGroupRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6';
+const invalidGroupRoute = '/api/v1/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6';
 let createdGroupId, validGroupRoute, testGroup, authToken;
 
 describe('PostIT API', () => {
   before((done) => {
-    chai.request(app).post('/api/users/signin').send(validCredentials)
+    chai.request(app).post('/api/v1/users/signin').send(validCredentials)
       .then((res) => { authToken = res.body.token; });
     done();
   });
@@ -26,7 +26,7 @@ describe('PostIT API', () => {
 
   describe('/GET api/groups/*', () => {
     it('should not have access to this route without a token', (done) => {
-      chai.request(app).get('/api/groups')
+      chai.request(app).get('/api/v1/groups')
         .end((err, res) => {
           res.should.have.status(401);
           res.body.should.be.a('object');
@@ -41,7 +41,7 @@ describe('PostIT API', () => {
   describe('/POST api/groups', () => {
     it('should return an error for missing group title', (done) => {
       testGroup.title = '';
-      chai.request(app).post('/api/groups')
+      chai.request(app).post('/api/v1/groups')
         .set('token', authToken)
         .send(testGroup)
         .end((err, res) => {
@@ -56,7 +56,7 @@ describe('PostIT API', () => {
 
     it('should return an error for missing group purpose', (done) => {
       testGroup.purpose = '';
-      chai.request(app).post('/api/groups')
+      chai.request(app).post('/api/v1/groups')
         .set('token', authToken)
         .send(testGroup)
         .end((err, res) => {
@@ -71,7 +71,7 @@ describe('PostIT API', () => {
 
     it('should return an error if group title is already in use', (done) => {
       testGroup.title = 'Demo Group';
-      chai.request(app).post('/api/groups')
+      chai.request(app).post('/api/v1/groups')
         .set('token', authToken)
         .send(testGroup)
         .end((err, res) => {
@@ -87,7 +87,7 @@ describe('PostIT API', () => {
     it('should create a new group if both fields are valid', (done) => {
       testGroup.title = 'Demo Group 2';
       testGroup.purpose = 'Yet another sample group';
-      chai.request(app).post('/api/groups')
+      chai.request(app).post('/api/v1/groups')
         .set('token', authToken)
         .send(testGroup)
         .end((err, res) => {
@@ -105,7 +105,7 @@ describe('PostIT API', () => {
 
   describe('/GET api/groups', () => {
     it('should fetch all available groups', (done) => {
-      chai.request(app).get('/api/groups')
+      chai.request(app).get('/api/v1/groups')
         .set('token', authToken)
         .end((err, res) => {
           res.should.have.status(200);
@@ -132,7 +132,7 @@ describe('PostIT API', () => {
     });
 
     it('should fetch a particular group given a valid group ID', (done) => {
-      validGroupRoute = `/api/groups/${createdGroupId}`;
+      validGroupRoute = `/api/v1/groups/${createdGroupId}`;
       chai.request(app).get(validGroupRoute)
         .set('token', authToken)
         .end((err, res) => {
@@ -161,7 +161,7 @@ describe('PostIT API', () => {
 
     it('should delete a particular group if supplied group ID exists',
       (done) => {
-        validGroupRoute = `/api/groups/${createdGroupId}`;
+        validGroupRoute = `/api/v1/groups/${createdGroupId}`;
         chai.request(app).delete(validGroupRoute)
           .set('token', authToken)
           .end((err, res) => {

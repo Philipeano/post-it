@@ -13,9 +13,6 @@ module.exports = {
     dialect: 'postgres'
   },
   test: {
-    // username: 'Newman',
-    // password: 'andela2017',
-    // database: 'postit-db-test',
     username: 'postgres',
     password: '',
     database: 'postit_db_test',
