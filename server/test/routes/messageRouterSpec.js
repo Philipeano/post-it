@@ -14,18 +14,22 @@ const dummyText = 'This is a demo message for testing.';
 const dummyText2 = 'This is the updated version of the demo message.';
 const invalidMessageId = '04f42880-cab9-11e7-8c5b-afe51c5b1c7b';
 let postedMessageId, testMessage, testRoute;
-let memberToken1, memberToken2, nonMemberToken;
+// let memberToken1, memberToken2, nonMemberToken;
+let memberToken1 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWI5MzZjMC1iYTcyLTExZTctODRlMS0wNThmZmZmZDk2YzUiLCJpYXQiOjE1MTc3NTM0NDksImV4cCI6MTUxNzgzOTg0OX0.2l7v6sDwMkNHgcb2k8Hr_pKVEzzOMJ2c3XS4isK-tCk';
+let memberToken2 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWI5MzZjMC1iYTcyLTExZTctODRlMS0wNThmZmZmZDk2YzUiLCJpYXQiOjE1MTc3NTM0NDksImV4cCI6MTUxNzgzOTg0OX0.2l7v6sDwMkNHgcb2k8Hr_pKVEzzOMJ2c3XS4isK-tCk';
+let nonMemberToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWI5MzZjMC1iYTcyLTExZTctODRlMS0wNThmZmZmZDk2YzUiLCJpYXQiOjE1MTc3NTM0NDksImV4cCI6MTUxNzgzOTg0OX0.2l7v6sDwMkNHgcb2k8Hr_pKVEzzOMJ2c3XS4isK-tCk';
+
 
 describe('PostIT API', () => {
-  before((done) => {
-    chai.request(app).post('/api/users/signin').send(memberLogin1)
-      .then((res) => { memberToken1 = res.body.token; });
-    chai.request(app).post('/api/users/signin').send(memberLogin2)
-      .then((res) => { memberToken2 = res.body.token; });
-    chai.request(app).post('/api/users/signin').send(nonMemberLogin)
-      .then((res) => { nonMemberToken = res.body.token; });
-    done();
-  });
+  // before((done) => {
+  //   chai.request(app).post('/api/users/signin').send(memberLogin1)
+  //     .then((res) => { memberToken1 = res.body.token; });
+  //   chai.request(app).post('/api/users/signin').send(memberLogin2)
+  //     .then((res) => { memberToken2 = res.body.token; });
+  //   chai.request(app).post('/api/users/signin').send(nonMemberLogin)
+  //     .then((res) => { nonMemberToken = res.body.token; });
+  //   done();
+  // });
 
   describe('/GET api/groups/:groupId/messages/*', () => {
     it('should not have access to this route without a token', (done) => {

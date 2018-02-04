@@ -11,14 +11,14 @@ const validGroup = {
   purpose: 'This is a sample broadcast group for testing the app.'
 };
 const invalidGroupRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6';
-let createdGroupId, validGroupRoute, testGroup, authToken;
+let createdGroupId, validGroupRoute, testGroup, authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWI5MzZjMC1iYTcyLTExZTctODRlMS0wNThmZmZmZDk2YzUiLCJpYXQiOjE1MTc3NTM0NDksImV4cCI6MTUxNzgzOTg0OX0.2l7v6sDwMkNHgcb2k8Hr_pKVEzzOMJ2c3XS4isK-tCk';
 
 describe('PostIT API', () => {
-  before((done) => {
-    chai.request(app).post('/api/users/signin').send(validCredentials)
-      .then((res) => { authToken = res.body.token; });
-    done();
-  });
+  // before((done) => {
+  //   chai.request(app).post('/api/users/signin').send(validCredentials)
+  //     .then((res) => { authToken = res.body.token; });
+  //   done();
+  // });
 
   beforeEach(() => {
     testGroup = Object.assign({}, validGroup);
