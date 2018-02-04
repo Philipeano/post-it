@@ -1,5 +1,6 @@
 import db from '../models/index';
-import Validator from './validator';
+import Validator from '../helpers/validator';
+import Auth from '../helpers/auth';
 // import NotificationController from './notificationController';
 
 let errorMessage;
@@ -39,28 +40,27 @@ class MessageController {
     }
     try {
       // Check if the specified group ID is valid
-      const matchingGroup = await this.group
-        .findById(req.params.groupId);
+      const matchingGroup = await this.group.findById(req.params.groupId);
       if (!matchingGroup) {
         return res.status(404)
-          .json({ message: 'Specified group does not exist!' });
+        .json({ message: 'Specified group does not exist!' });
       }
       // Check if the user belongs to this group
       const membership = await this.membership.findOne({
         where: {
           groupId: req.params.groupId,
-          memberId: req.session.user.id
+          memberId: Auth.getUserIdFromRequest(req)
         }
       });
       if (!membership) {
         return res.status(403)
-          .json({ message: 'You do not belong to this group!' });
+        .json({ message: 'You do not belong to this group!' });
       }
       // Check if there are members in the group, other than the sender
       const recipients = await this.membership.findAll({
         where: {
           groupId: req.params.groupId,
-          memberId: { $ne: req.session.user.id }
+          memberId: { $ne: Auth.getUserIdFromRequest(req) }
         }
       });
       if (!recipients) {
@@ -72,13 +72,13 @@ class MessageController {
       await this.message.sync();
       const newMessage = await this.message.create({
         groupId: req.params.groupId,
-        senderId: req.session.user.id,
+        senderId: Auth.getUserIdFromRequest(req),
         content: req.body.content
       });
       //  Send notifications to all other group members about the new message
-      return await this.sendNotifications(req, res, newMessage, recipients);
+      await this.sendNotifications(req, res, newMessage, recipients);
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -106,13 +106,13 @@ class MessageController {
       });
       await this.notification.sync();
       await this.notification.bulkCreate(notificationsList);
-      return res.status(201).json({
+      res.status(201).json({
         message: 'Message posted to group successfully!',
         'Posted Message': postedMessage,
         recipients: notificationsList.length
       });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -134,11 +134,14 @@ class MessageController {
       const matchingGroup = await this.group.findById(req.params.groupId);
       if (!matchingGroup) {
         return res.status(404)
-          .json({ message: 'Specified group does not exist!' });
+        .json({ message: 'Specified group does not exist!' });
       }
       // Check if the current user is a member of this group
       const membership = await this.membership.findOne({
-        where: { groupId: req.params.groupId, memberId: req.session.user.id }
+        where: {
+          groupId: req.params.groupId,
+          memberId: Auth.getUserIdFromRequest(req)
+        }
       });
       if (!membership) {
         return res.status(403)
@@ -153,9 +156,9 @@ class MessageController {
           attributes: ['id', 'username', 'email']
         }]
       });
-      return res.status(200).json({ Messages: messages });
+      res.status(200).json({ Messages: messages });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -179,22 +182,25 @@ class MessageController {
       const matchingGroup = await this.group.findById(req.params.groupId);
       if (!matchingGroup) {
         return res.status(404)
-          .json({ message: 'Specified group does not exist!' });
+        .json({ message: 'Specified group does not exist!' });
       }
       // Check if the specified message ID is valid
       const matchingMessage = await this.message
         .findById(req.params.messageId);
       if (!matchingMessage) {
         return res.status(404)
-          .json({ message: 'Specified message does not exist!' });
+        .json({ message: 'Specified message does not exist!' });
       }
       // Check if the current user belongs to the specified group
       const membership = await this.membership.findOne({
-        where: { groupId: req.params.groupId, memberId: req.session.user.id }
+        where: {
+          groupId: req.params.groupId,
+          memberId: Auth.getUserIdFromRequest(req)
+        }
       });
       if (!membership) {
         return res.status(403)
-          .json({ message: 'You do not belong to this group!' });
+        .json({ message: 'You do not belong to this group!' });
       }
       /* Allow the current user modify the message only if
       he is the original sender */
@@ -202,7 +208,7 @@ class MessageController {
         where: {
           groupId: req.params.groupId,
           id: req.params.messageId,
-          senderId: req.session.user.id
+          senderId: Auth.getUserIdFromRequest(req)
         }
       });
       if (!message) {
@@ -217,12 +223,12 @@ class MessageController {
           returning: true,
           plain: true
         });
-      return res.status(200).json({
+      res.status(200).json({
         message: 'Message updated successfully!',
         'Updated Message': updatedMessage
       });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -245,19 +251,19 @@ class MessageController {
       const matchingGroup = await this.group.findById(req.params.groupId);
       if (!matchingGroup) {
         return res.status(404)
-          .json({ message: 'Specified group does not exist!' });
+        .json({ message: 'Specified group does not exist!' });
       }
       // Check if the specified message ID is valid
       const matchingMessage = await this.message.findById(req.params.messageId);
       if (!matchingMessage) {
         return res.status(404)
-          .json({ message: 'Specified message does not exist!' });
+        .json({ message: 'Specified message does not exist!' });
       }
       // Check if the current user belongs to the specified group
       const membership = await this.membership.findOne({
         where: {
           groupId: req.params.groupId,
-          memberId: req.session.user.id
+          memberId: Auth.getUserIdFromRequest(req)
         }
       });
       if (!membership) {
@@ -270,7 +276,7 @@ class MessageController {
         where: {
           groupId: req.params.groupId,
           id: req.params.messageId,
-          senderId: req.session.user.id
+          senderId: Auth.getUserIdFromRequest(req)
         }
       });
       if (!originalMessage) {
@@ -278,10 +284,9 @@ class MessageController {
         .json({ message: 'You are not the sender of this message!' });
       }
       await this.message.destroy({ where: { id: req.params.messageId } });
-      return res.status(200)
-        .json({ message: 'Message deleted successfully!' });
+      res.status(200).json({ message: 'Message deleted successfully!' });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 

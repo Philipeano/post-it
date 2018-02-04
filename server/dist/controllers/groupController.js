@@ -10,9 +10,13 @@ var _index = require('../models/index');
 
 var _index2 = _interopRequireDefault(_index);
 
-var _validator = require('./validator');
+var _validator = require('../helpers/validator');
 
 var _validator2 = _interopRequireDefault(_validator);
+
+var _auth = require('../helpers/auth');
+
+var _auth2 = _interopRequireDefault(_auth);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -91,7 +95,7 @@ var GroupController = function () {
                 return this.group.create({
                   title: req.body.title,
                   purpose: req.body.purpose,
-                  creatorId: req.session.user.id
+                  creatorId: _auth2.default.getUserIdFromRequest(req)
                 });
 
               case 13:
@@ -104,14 +108,16 @@ var GroupController = function () {
                 return this.membership.create({
                   userRole: 'admin',
                   groupId: newGroup.id,
-                  memberId: req.session.user.id
+                  memberId: _auth2.default.getUserIdFromRequest(req)
                 });
 
               case 18:
-                return _context.abrupt('return', res.status(201).json({
+                res.status(201).json({
                   message: 'Group created successfully!',
                   group: _validator2.default.trimFields(newGroup)
-                }));
+                });
+                _context.next = 24;
+                break;
 
               case 21:
                 _context.prev = 21;
@@ -168,12 +174,16 @@ var GroupController = function () {
 
               case 3:
                 allGroups = _context2.sent;
-                return _context2.abrupt('return', res.status(200).json({ 'Available groups': allGroups }));
+
+                res.status(200).json({ 'Available groups': allGroups });
+                _context2.next = 10;
+                break;
 
               case 7:
                 _context2.prev = 7;
                 _context2.t0 = _context2['catch'](0);
-                return _context2.abrupt('return', res.status(500).json({ message: _context2.t0.message }));
+
+                res.status(500).json({ message: _context2.t0.message });
 
               case 10:
               case 'end':
@@ -236,20 +246,23 @@ var GroupController = function () {
               case 6:
                 matchingGroup = _context3.sent;
 
-                if (!matchingGroup) {
+                if (matchingGroup) {
                   _context3.next = 9;
                   break;
                 }
 
-                return _context3.abrupt('return', res.status(200).json({ 'Requested group': matchingGroup }));
+                return _context3.abrupt('return', res.status(404).json({ message: 'Requested group does not exist!' }));
 
               case 9:
-                return _context3.abrupt('return', res.status(404).json({ message: 'Requested group does not exist!' }));
+                res.status(200).json({ 'Requested group': matchingGroup });
+                _context3.next = 15;
+                break;
 
               case 12:
                 _context3.prev = 12;
                 _context3.t0 = _context3['catch'](3);
-                return _context3.abrupt('return', res.status(500).json({ message: _context3.t0.message }));
+
+                res.status(500).json({ message: _context3.t0.message });
 
               case 15:
               case 'end':
@@ -307,7 +320,7 @@ var GroupController = function () {
                 return _context4.abrupt('return', res.status(404).json({ message: 'Specified group does not exist!' }));
 
               case 9:
-                if (!(matchingGroup.creatorId === req.session.user.id)) {
+                if (!(matchingGroup.creatorId === _auth2.default.getUserIdFromRequest(req))) {
                   _context4.next = 13;
                   break;
                 }
@@ -319,12 +332,15 @@ var GroupController = function () {
                 return _context4.abrupt('return', res.status(200).json({ message: 'Group deleted successfully!' }));
 
               case 13:
-                return _context4.abrupt('return', res.status(403).json({ message: 'You do not have the right to delete this group!' }));
+                res.status(403).json({ message: 'You do not have the right to delete this group!' });
+                _context4.next = 19;
+                break;
 
               case 16:
                 _context4.prev = 16;
                 _context4.t0 = _context4['catch'](3);
-                return _context4.abrupt('return', res.status(500).json({ message: _context4.t0.message }));
+
+                res.status(500).json({ message: _context4.t0.message });
 
               case 19:
               case 'end':

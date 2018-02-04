@@ -1,5 +1,6 @@
 import db from '../models/index';
-import Validator from './validator';
+import Validator from '../helpers/validator';
+import Auth from '../helpers/auth';
 
 let reqPasswordHash;
 let errorMessage;
@@ -48,8 +49,7 @@ class UserController {
       existingUser = await this.user.findOne({
         where: { username: req.body.username } });
       if (existingUser) {
-        return res.status(409)
-        .json({ message: 'Username is already in use!' });
+        return res.status(409).json({ message: 'Username is already in use!' });
       }
       existingUser = await this.user.findOne({
         where: { email: req.body.email } });
@@ -64,13 +64,13 @@ class UserController {
         email: req.body.email,
         password: reqPasswordHash
       });
-      req.session.user = newUser;
-      return res.status(201).json({
+      res.status(201).json({
         message: 'You signed up successfully!',
-        user: Validator.trimFields(newUser)
+        user: Validator.trimFields(newUser),
+        token: Auth.generateToken({ userId: newUser.id })
       });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -98,11 +98,13 @@ class UserController {
         .verifyPassword(req.body.password, matchingUser.password)) {
         return res.status(400).json({ message: 'Password is wrong!' });
       }
-      req.session.user = matchingUser;
-      return res.status(200).json({ message: 'You signed in successfully!',
-        user: Validator.trimFields(matchingUser) });
+      res.status(200).json({
+        message: 'You signed in successfully!',
+        user: Validator.trimFields(matchingUser),
+        token: Auth.generateToken({ userId: matchingUser.id })
+      });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -113,21 +115,15 @@ class UserController {
    * @return {void}
    */
   signOutUser(req, res) {
-    req.session.destroy(() => {
-      return res.status(200).json({ message: 'You have been logged out.' });
-    });
-  }
-
-  /**
-   * @description: Checks if user is signed in
-   * @param {Object} req The incoming request from the client
-   * @return {Boolean} true/false
-   */
-  isSignedIn(req) {
-    if (req.session.user) {
-      return true;
+    if (req.headers.token) {
+      req.headers.token = undefined;
+    } else if (req.body.token) {
+      req.body.token = undefined;
     }
-    return false;
+    res.status(200).json({
+      token: undefined,
+      message: 'You have been logged out.'
+    });
   }
 
   /**
@@ -137,17 +133,13 @@ class UserController {
    * @return {Object} allUsers
    */
   async getAllUsers(req, res) {
-    if (!req.session.user) {
-      return res.status(401)
-      .json({ message: 'Access denied! Please sign in first.' });
-    }
     try {
       const allUsers = await this.user.findAll({
         attributes: ['id', 'username', 'email']
       });
-      return res.status(200).json({ 'Registered users': allUsers });
+      res.status(200).json({ 'Registered users': allUsers });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -158,10 +150,6 @@ class UserController {
    * @return {Object} matchingUser
    */
   async getUserByKey(req, res) {
-    if (!req.session.user) {
-      return res.status(401)
-      .json({ message: 'Access denied! Please sign in first.' });
-    }
     errorMessage = Validator.checkEmpty([{ 'User ID': req.params.userId }]);
     if (errorMessage.trim() !== '') {
       return res.status(400).json({ message: errorMessage });
@@ -171,13 +159,13 @@ class UserController {
         attributes: ['id', 'username', 'email'],
         where: { id: req.params.userId }
       });
-      if (matchingUser) {
-        return res.status(200).json({ 'Specified user': matchingUser });
-      }
-      return res.status(404)
+      if (!matchingUser) {
+        return res.status(404)
         .json({ message: 'Specified user does not exist!' });
+      }
+      res.status(200).json({ 'Specified user': matchingUser });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 
@@ -188,10 +176,6 @@ class UserController {
    * @return {Object} null
    */
   async deleteUser(req, res) {
-    if (!req.session.user) {
-      return res.status(401)
-      .json({ message: 'Access denied! Please sign in first.' });
-    }
     errorMessage = Validator.checkEmpty([{ 'User ID': req.params.userId }]);
     if (errorMessage.trim() !== '') {
       return res.status(400).json({ message: errorMessage });
@@ -199,14 +183,14 @@ class UserController {
     try {
       const matchingUser = await this.user
       .findOne({ where: { id: req.params.userId } });
-      if (matchingUser) {
-        await this.user.destroy({ where: { id: req.params.userId } });
-        return res.status(200).json({ message: 'User deleted successfully!' });
-      }
-      return res.status(404)
+      if (!matchingUser) {
+        return res.status(404)
         .json({ message: 'Specified user does not exist!' });
+      }
+      await this.user.destroy({ where: { id: req.params.userId } });
+      res.status(200).json({ message: 'User deleted successfully!' });
     } catch (err) {
-      return res.status(500).json({ message: err.message });
+      res.status(500).json({ message: err.message });
     }
   }
 }

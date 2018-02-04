@@ -10,9 +10,13 @@ var _index = require('../models/index');
 
 var _index2 = _interopRequireDefault(_index);
 
-var _validator = require('./validator');
+var _validator = require('../helpers/validator');
 
 var _validator2 = _interopRequireDefault(_validator);
+
+var _auth = require('../helpers/auth');
+
+var _auth2 = _interopRequireDefault(_auth);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -92,7 +96,7 @@ var MessageController = function () {
                 return this.membership.findOne({
                   where: {
                     groupId: req.params.groupId,
-                    memberId: req.session.user.id
+                    memberId: _auth2.default.getUserIdFromRequest(req)
                   }
                 });
 
@@ -111,7 +115,7 @@ var MessageController = function () {
                 return this.membership.findAll({
                   where: {
                     groupId: req.params.groupId,
-                    memberId: { $ne: req.session.user.id }
+                    memberId: { $ne: _auth2.default.getUserIdFromRequest(req) }
                   }
                 });
 
@@ -135,7 +139,7 @@ var MessageController = function () {
                 _context.next = 23;
                 return this.message.create({
                   groupId: req.params.groupId,
-                  senderId: req.session.user.id,
+                  senderId: _auth2.default.getUserIdFromRequest(req),
                   content: req.body.content
                 });
 
@@ -145,19 +149,21 @@ var MessageController = function () {
                 return this.sendNotifications(req, res, newMessage, recipients);
 
               case 26:
-                return _context.abrupt('return', _context.sent);
+                _context.next = 31;
+                break;
 
-              case 29:
-                _context.prev = 29;
+              case 28:
+                _context.prev = 28;
                 _context.t0 = _context['catch'](3);
-                return _context.abrupt('return', res.status(500).json({ message: _context.t0.message }));
 
-              case 32:
+                res.status(500).json({ message: _context.t0.message });
+
+              case 31:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[3, 29]]);
+        }, _callee, this, [[3, 28]]);
       }));
 
       function postMessageToGroup(_x, _x2) {
@@ -208,16 +214,19 @@ var MessageController = function () {
                 return this.notification.bulkCreate(notificationsList);
 
               case 8:
-                return _context2.abrupt('return', res.status(201).json({
+                res.status(201).json({
                   message: 'Message posted to group successfully!',
                   'Posted Message': postedMessage,
                   recipients: notificationsList.length
-                }));
+                });
+                _context2.next = 14;
+                break;
 
               case 11:
                 _context2.prev = 11;
                 _context2.t0 = _context2['catch'](0);
-                return _context2.abrupt('return', res.status(500).json({ message: _context2.t0.message }));
+
+                res.status(500).json({ message: _context2.t0.message });
 
               case 14:
               case 'end':
@@ -277,7 +286,10 @@ var MessageController = function () {
               case 9:
                 _context3.next = 11;
                 return this.membership.findOne({
-                  where: { groupId: req.params.groupId, memberId: req.session.user.id }
+                  where: {
+                    groupId: req.params.groupId,
+                    memberId: _auth2.default.getUserIdFromRequest(req)
+                  }
                 });
 
               case 11:
@@ -300,12 +312,16 @@ var MessageController = function () {
                     attributes: ['id', 'username', 'email']
                   }]
                 });
-                return _context3.abrupt('return', res.status(200).json({ Messages: messages }));
+
+                res.status(200).json({ Messages: messages });
+                _context3.next = 21;
+                break;
 
               case 18:
                 _context3.prev = 18;
                 _context3.t0 = _context3['catch'](3);
-                return _context3.abrupt('return', res.status(500).json({ message: _context3.t0.message }));
+
+                res.status(500).json({ message: _context3.t0.message });
 
               case 21:
               case 'end':
@@ -379,7 +395,10 @@ var MessageController = function () {
               case 14:
                 _context4.next = 16;
                 return this.membership.findOne({
-                  where: { groupId: req.params.groupId, memberId: req.session.user.id }
+                  where: {
+                    groupId: req.params.groupId,
+                    memberId: _auth2.default.getUserIdFromRequest(req)
+                  }
                 });
 
               case 16:
@@ -398,7 +417,7 @@ var MessageController = function () {
                   where: {
                     groupId: req.params.groupId,
                     id: req.params.messageId,
-                    senderId: req.session.user.id
+                    senderId: _auth2.default.getUserIdFromRequest(req)
                   }
                 });
 
@@ -424,15 +443,19 @@ var MessageController = function () {
 
               case 26:
                 updatedMessage = _context4.sent;
-                return _context4.abrupt('return', res.status(200).json({
+
+                res.status(200).json({
                   message: 'Message updated successfully!',
                   'Updated Message': updatedMessage
-                }));
+                });
+                _context4.next = 33;
+                break;
 
               case 30:
                 _context4.prev = 30;
                 _context4.t0 = _context4['catch'](3);
-                return _context4.abrupt('return', res.status(500).json({ message: _context4.t0.message }));
+
+                res.status(500).json({ message: _context4.t0.message });
 
               case 33:
               case 'end':
@@ -508,7 +531,7 @@ var MessageController = function () {
                 return this.membership.findOne({
                   where: {
                     groupId: req.params.groupId,
-                    memberId: req.session.user.id
+                    memberId: _auth2.default.getUserIdFromRequest(req)
                   }
                 });
 
@@ -528,7 +551,7 @@ var MessageController = function () {
                   where: {
                     groupId: req.params.groupId,
                     id: req.params.messageId,
-                    senderId: req.session.user.id
+                    senderId: _auth2.default.getUserIdFromRequest(req)
                   }
                 });
 
@@ -547,12 +570,15 @@ var MessageController = function () {
                 return this.message.destroy({ where: { id: req.params.messageId } });
 
               case 26:
-                return _context5.abrupt('return', res.status(200).json({ message: 'Message deleted successfully!' }));
+                res.status(200).json({ message: 'Message deleted successfully!' });
+                _context5.next = 32;
+                break;
 
               case 29:
                 _context5.prev = 29;
                 _context5.t0 = _context5['catch'](3);
-                return _context5.abrupt('return', res.status(500).json({ message: _context5.t0.message }));
+
+                res.status(500).json({ message: _context5.t0.message });
 
               case 32:
               case 'end':
