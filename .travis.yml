@@ -1,27 +1,32 @@
 language: node_js
+
 node_js:
-- "8.1.4"
+  - "stable"
+  # - "8.1.4"
+
 install: npm install
+
 services:
-- postgresql
-# env:
-# - NODE_ENV=test
-# - secure: nRw4LM+CiIyIde+lBL/9gH2JfGky53GEcLgMsEl7x2WAfIUMhAm1kWaKMwPDK7aQft+56JpYnekgAOqpeLMcPGt4zE+Ef/DlAh9SWJ61OSq1zNsrc0iznEn6BcKPi4WtZ4hjpTGneqfA2oGRo77Kc1qkLmcgYUBbprfojOgudgNjQZqkCgjD+8B4ziBdMYv2w29V57v/Lz8eo6mH7YSlgl6YRdYM6uIrs1NdWFd7Cs004bDCuwPsIEpGgLOSwlRtEf+OlzCuz0HsqCa+0hGMapnLTw5jOhWu+OsHjkot97lZSHJDnJe1Td36sOBc7ftV946BXDP0Fhsc/R8fq9tRzJa+LWU2ILljCege+XggPn0C+T9fn5wfYbFbOV5EeidcEWdZmIMYTqCoO9P/IGWjwrXIf7gSLiswbnA5dNzb+gdQHy5FscyarOAdIwLw3WdxQy3qOZ5z0g03qwiDv7252bH/uah8zcB8mQvxYvP6hkhzbHI7d/8v1E1BQeZQUBi+EaGMrXNqO6SvcZCjnlnKumYfikMNaTVNj4sBap3ZlNfjym0PkC1IqlIGny66fF5v44Io+UWvwpt3XEmAQyhkNq+n9e1UWq3+IWqadC+fyrNLnAxu96E76DI7ojE662GN39RaHGPdKQyIqci7Tcbc4QzOKifRjR1MWdgnQ6MMvZw=
+  - postgresql
+
 before_script:
-- psql -c 'create database postit_db_test;' -U postgres
-- npm run build-server
-- sequelize db:migrate
-- sequelize db:seed:all
+  - psql -c 'create database postit_db_test;' -U postgres
+  - npm run build-server
+  - sequelize db:migrate
+  - sequelize db:seed:all
+
 script: npm test
+
 after_script:
-- sudo service postgresql stop
+  - sudo service postgresql stop
+
 after_success:
-- npm run coverage
+  - npm run coverage
+
 cache:
   directories:
-  - node_modules
-# dd:
-#   secure: nRw4LM+CiIyIde+lBL/9gH2JfGky53GEcLgMsEl7x2WAfIUMhAm1kWaKMwPDK7aQft+56JpYnekgAOqpeLMcPGt4zE+Ef/DlAh9SWJ61OSq1zNsrc0iznEn6BcKPi4WtZ4hjpTGneqfA2oGRo77Kc1qkLmcgYUBbprfojOgudgNjQZqkCgjD+8B4ziBdMYv2w29V57v/Lz8eo6mH7YSlgl6YRdYM6uIrs1NdWFd7Cs004bDCuwPsIEpGgLOSwlRtEf+OlzCuz0HsqCa+0hGMapnLTw5jOhWu+OsHjkot97lZSHJDnJe1Td36sOBc7ftV946BXDP0Fhsc/R8fq9tRzJa+LWU2ILljCege+XggPn0C+T9fn5wfYbFbOV5EeidcEWdZmIMYTqCoO9P/IGWjwrXIf7gSLiswbnA5dNzb+gdQHy5FscyarOAdIwLw3WdxQy3qOZ5z0g03qwiDv7252bH/uah8zcB8mQvxYvP6hkhzbHI7d/8v1E1BQeZQUBi+EaGMrXNqO6SvcZCjnlnKumYfikMNaTVNj4sBap3ZlNfjym0PkC1IqlIGny66fF5v44Io+UWvwpt3XEmAQyhkNq+n9e1UWq3+IWqadC+fyrNLnAxu96E76DI7ojE662GN39RaHGPdKQyIqci7Tcbc4QzOKifRjR1MWdgnQ6MMvZw=
+    - node_modules
+
 env:
   global:
     - NODE_ENV=test
