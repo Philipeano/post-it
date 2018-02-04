@@ -25,8 +25,6 @@ class Auth {
    */
   static generateToken(payload) {
     const token = jwt.sign(payload, secretKey, { expiresIn: '24h' });
-    console.log(`SUPPLIED PAYLOAD: ${payload}`);
-    console.log(`GENERATED TOKEN: ${token}`);
     return token;
   }
 

@@ -54,8 +54,6 @@ var Auth = function () {
     key: 'generateToken',
     value: function generateToken(payload) {
       var token = _jsonwebtoken2.default.sign(payload, secretKey, { expiresIn: '24h' });
-      console.log('SUPPLIED PAYLOAD: ' + payload);
-      console.log('GENERATED TOKEN: ' + token);
       return token;
     }
 

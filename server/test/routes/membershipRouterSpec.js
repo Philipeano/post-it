@@ -11,15 +11,14 @@ const invalidRoute = '/api/groups/5465c9f0-bd80-11e7-9185-533cacd6c3f6/users/';
 const validUserId = '50bd1190-a116-11e7-8614-2b874e7804bc';
 const invalidUserId = '9c75f270-a15f-11e7-9bb0-b7bf1c74a69d';
 const memberUserId = '75b936c0-ba72-11e7-84e1-058ffffd96c5';
-let testMember, testRoute, authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3NWI5MzZjMC1iYTcyLTExZTctODRlMS0wNThmZmZmZDk2YzUiLCJpYXQiOjE1MTc3NTM0NDksImV4cCI6MTUxNzgzOTg0OX0.2l7v6sDwMkNHgcb2k8Hr_pKVEzzOMJ2c3XS4isK-tCk';
-
+let testMember, testRoute, authToken;
 
 describe('PostIT API', () => {
-  // before((done) => {
-  //   chai.request(app).post('/api/users/signin').send(validCredentials)
-  //     .then((res) => { authToken = res.body.token; });
-  //   done();
-  // });
+  before((done) => {
+    chai.request(app).post('/api/users/signin').send(validCredentials)
+      .then((res) => { authToken = res.body.token; });
+    done();
+  });
 
   describe('/GET api/groups/:groupId/users/*', () => {
     it('should not have access to this route without a token', (done) => {
