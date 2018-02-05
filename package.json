@@ -34,7 +34,13 @@
   },
   "homepage": "https://github.com/Philipeano/post-it#readme",
   "dependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.25.0",
+    "babel-loader": "^7.1.1",
     "babel-polyfill": "^6.26.0",
+    "babel-plugin-transform-regenerator": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
     "babel-register": "^6.24.1",
     "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
@@ -51,11 +57,6 @@
     "webpack": "^3.1.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.25.0",
-    "babel-loader": "^7.1.1",
-    "babel-plugin-transform-regenerator": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
     "coveralls": "^3.0.0",
