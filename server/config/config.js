@@ -22,11 +22,10 @@ module.exports = {
     dialect: 'postgres'
   },
   production: {
-    use_env_variable: 'PROD_DB_URL',
-    username: '?',
-    password: '?',
-    database: '?',
-    host: '?',
-    dialect: '?'
+    use_env_variable: 'DATABASE_URL',
+    username: 'postgres',
+    password: '',
+    host: 'postgresql-angular-59718.herokuapp.com',
+    dialect: 'postgres',
   }
 };
