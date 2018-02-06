@@ -16,7 +16,7 @@
     "start:test": "export NODE_ENV=test && npm run build-server && webpack && npm run pre-test-local && npm run test-local",
     "pre-test-local": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",
     "test-local": "echo \"Running tests...\" && mocha --recursive server/test --require babel-core/register --exit",
-    "post-deploy-prod": "sequelize db:migrate:undo:all && sequelize db:migrate",
+    "post-deploy-prod": "sequelize db:migrate:undo:all && sequelize db:migrate"
   },
   "repository": {
     "type": "git",
