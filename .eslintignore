@@ -1,2 +1,8 @@
+# Ignore third-party files 
+node_modules/*
+
 # Ignore built files 
 server/dist/*
+
+# Ignore test files 
+server/test/*

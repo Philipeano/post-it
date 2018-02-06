@@ -1,7 +1,7 @@
 import 'babel-polyfill';
 import express from 'express';
 import dotenv from 'dotenv';
-import logger from 'morgan';
+// import logger from 'morgan';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import userRouter from './routes/userRouter';
@@ -18,7 +18,7 @@ dotenv.config();
 const app = express();
 
 // Log requests to the console
-app.use(logger('dev'));
+// app.use(logger('dev'));
 
 // Parse incoming requests data
 app.use(bodyParser.json());
