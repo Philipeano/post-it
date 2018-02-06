@@ -8,8 +8,8 @@
   },
   "scripts": {
     "build-server": "babel server/src -d server/dist",
-    "postinstall": "NODE_ENV=production && npm run build-server && webpack && post-deploy",
     "post-deploy": "sequelize db:migrate:undo:all && sequelize db:migrate",
+    "postinstall": "NODE_ENV=production && npm run build-server && webpack && post-deploy",
     "start": "node server/dist/app.js",
     "start:dev": "export NODE_ENV=development && npm run build-server && webpack && nodemon server/dist/app.js",
     "test": "echo \"Running tests...\" && nyc mocha --recursive server/test --require babel-core/register --exit",
@@ -54,6 +54,7 @@
     "pg-hstore": "^2.3.2",
     "query-string": "^5.0.1",
     "sequelize": "^4.4.4",
+    "sequelize-cli": "^2.8.0",
     "webpack": "^3.1.0"
   },
   "devDependencies": {
@@ -70,7 +71,6 @@
     "mocha-lcov-reporter": "^1.3.0",
     "morgan": "^1.8.2",
     "nodemon": "^1.11.0",
-    "nyc": "^11.3.0",
-    "sequelize-cli": "^2.8.0"
+    "nyc": "^11.3.0"
   }
 }
