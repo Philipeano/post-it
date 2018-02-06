@@ -8,15 +8,15 @@
   },
   "scripts": {
     "build-server": "babel server/src -d server/dist",
-    "postinstall": "NODE_ENV=production && npm run build-server && webpack && post-deploy-prod",
+    "postinstall": "NODE_ENV=production && npm run build-server && webpack && post-deploy",
+    "post-deploy": "sequelize db:migrate:undo:all && sequelize db:migrate",
     "start": "node server/dist/app.js",
     "start:dev": "export NODE_ENV=development && npm run build-server && webpack && nodemon server/dist/app.js",
     "test": "echo \"Running tests...\" && nyc mocha --recursive server/test --require babel-core/register --exit",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "start:test": "export NODE_ENV=test && npm run build-server && webpack && npm run pre-test-local && npm run test-local",
     "pre-test-local": "sequelize db:migrate:undo:all && sequelize db:migrate && sequelize db:seed:all",
-    "test-local": "echo \"Running tests...\" && mocha --recursive server/test --require babel-core/register --exit",
-    "post-deploy-prod": "sequelize db:migrate:undo:all && sequelize db:migrate"
+    "test-local": "echo \"Running tests...\" && mocha --recursive server/test --require babel-core/register --exit"
   },
   "repository": {
     "type": "git",
