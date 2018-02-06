@@ -4,6 +4,8 @@ node_js:
   - "8.1.4"
   # - "stable"
 
+before_install: rm -rf node_modules
+
 install: npm install
 
 services:
