@@ -8,8 +8,8 @@
   },
   "scripts": {
     "build-server": "babel server/src -d server/dist",
-    "post-deploy": "sequelize db:migrate:undo:all && sequelize db:migrate",
-    "postinstall": "NODE_ENV=production && npm run build-server && webpack && post-deploy",
+    "postinstall": "NODE_ENV=production && npm run build-server && webpack",
+    "heroku-postbuild": "sequelize db:migrate:undo:all && sequelize db:migrate",
     "start": "node server/dist/app.js",
     "start:dev": "export NODE_ENV=development && npm run build-server && webpack && nodemon server/dist/app.js",
     "test": "echo \"Running tests...\" && nyc mocha --recursive server/test --require babel-core/register --exit",
