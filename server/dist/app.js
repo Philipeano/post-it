@@ -14,10 +14,6 @@ var _dotenv = require('dotenv');
 
 var _dotenv2 = _interopRequireDefault(_dotenv);
 
-var _morgan = require('morgan');
-
-var _morgan2 = _interopRequireDefault(_morgan);
-
 var _bodyParser = require('body-parser');
 
 var _bodyParser2 = _interopRequireDefault(_bodyParser);
@@ -54,10 +50,12 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _dotenv2.default.config();
 
 // Set up server express
+
+// import logger from 'morgan';
 var app = (0, _express2.default)();
 
 // Log requests to the console
-app.use((0, _morgan2.default)('dev'));
+// app.use(logger('dev'));
 
 // Parse incoming requests data
 app.use(_bodyParser2.default.json());
