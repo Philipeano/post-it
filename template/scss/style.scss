@@ -11,7 +11,10 @@ $font-primary: "Lucida Sans", sans-serif;
   box-sizing: border-box;
 }
 
-body {
+html, body {
+  width: 100%;
+  height: 100%;
+  border: 0;
   margin: 0;
   padding: 0;
 }
@@ -150,7 +153,7 @@ nav {
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
 }
 .menu li:hover {
-  background-color: $blue-hover;
+   background-color: $blue-hover;
 }
 
 .col-6 .central,.col-m-6 .central  {
@@ -162,7 +165,7 @@ nav {
   content: "";
   background-image: url("../images/logo-main.png");
   background-repeat: repeat;
-  opacity: 0.05;
+  opacity: 0.025;
   top: 0;
   left: 0;
   bottom: 0;
@@ -173,10 +176,16 @@ nav {
 
 .central {
   color: $grey-dark;
+  // display: flex;
+  // flex-direction: column;
 }
+
 .central .content-box {
   display: block;
   width: 100%;
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .central .content-box p {
   display: inline-block;
@@ -257,4 +266,94 @@ nav {
   font-size: 15px;
   font: 100% $font-primary;
   border-radius: 2px;
+}
+
+
+.aside .layout-box {
+  min-height: 100%;
+  height: 100vh;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.aside .layout-box ol, .aside .layout-box ul {
+  flex: 1;
+}
+
+
+
+
+.central .layout-box {
+  width: 100%;
+  border: solid 1px $blue-faint;
+  background-color: transparent;
+  padding: 20px;
+  min-height: 50%;
+  height: 100%;
+  color: $blue-major;
+  text-align: left;
+  font-size: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  font: 100% $font-secondary;
+  overflow-wrap: normal;
+  display: flex;
+  flex-direction: column;
+ }
+
+.central .layout-box h2 {
+  flex: none;
+}
+
+.layout-spacer {
+  height: 0px;
+  vertical-align: baseline;
+  flex: 0 0 auto;
+}
+
+.central .layout-box .content-box {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 450px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex: 1;
+  position: relative;
+}
+
+.central .layout-box .write-msg-box {
+  width: 100%;
+  display: block;
+  border: solid 1px $grey-faint;
+  background-color: white;
+  box-sizing: border-box;
+  min-height: 50px;
+  order: 3;
+  overflow: hidden;
+  align-self: flex-end;
+  flex: none;
+}
+
+.central .write-msg-box textarea {
+  width: 92%;
+  height: 40px;
+  border: solid 1px $grey-dark;
+  background-color: white;
+  resize: none;
+  padding: 10px;
+  overflow: auto;
+  border: none;
+  float: left;
+  // display: inline-block;
+}
+
+.central .write-msg-box button {
+  width: 7%;
+  min-width: 50px;
+  margin: 3px auto auto; 
+  background-color: $blue-faint;
+  padding: 10px;
+  float: right;
+  // display: inline-block;
 }

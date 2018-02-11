@@ -13,9 +13,12 @@ module.exports = {
     dialect: 'postgres'
   },
   test: {
-    username: 'postgres',
-    password: '',
-    database: 'postit_db_test',
+    username: 'Newman',
+    password: 'andela2017',
+    database: 'postit-db-test',
+   // username: 'postgres',
+   // password: '',
+   // database: 'postit_db_test',
     host: '127.0.0.1',
     port: 5432,
     secret_key: process.env.SECRET_KEY,

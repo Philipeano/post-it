@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>PostIt | Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/style.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="bundle/bundle.js"></script>
+</head>
+
+<body>
+<div class="header">
+
+    <nav class="navbar navbar-inverse" style="background-color:#01233f; border-color:#01233f; width:100%;">
+        <div class="container-fluid" style="padding-right: 5px; padding-left: 55px;">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" style="width:60px; height:60px; padding:0" href="#">
+                    <img class="logo-main" alt="logo" src="images/logo-main.png" />
+                </a>
+                <h1 class="logo-text">PostIT</h1>
+                <p class="slogan">...make your views count!</p>
+
+            </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" data-toggle="modal" data-target="#profileModal"><span class="glyphicon glyphicon-user"></span> Philip Newman</a></li>
+                    <li><a href="#" onclick="logOutUser();"><span class="glyphicon glyphicon-log-out"></span> Sign Out</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+</div>
+
+<div class="row">
+
+    <div class="col-3 menu">
+        <div class="aside layout-box">
+            <h2>List header here</h2>
+            <ul>
+                <li>List item 1.</li>
+                <li>List item 2.</li>
+                <li>List item 3.</li>
+                <li>List item 4.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-9 central">
+        <div class="layout-box">
+            <h1>Main header goes here</h1>
+            <div class"layout-spacer"></div>
+            <div class="content-box">
+                <ul>
+                    <li>Message 1</li>
+                    <li>Message 2</li>
+                    <li>Message 3</li>
+                    <li>Message 4</li>
+                </ul>
+                </div>
+            <div class"layout-spacer"></div>
+            <div class="write-msg-box">
+                <textarea id="write-msg" placeholder="Write your message here..."></textarea>
+                <button type="button">Send</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="footer">
+    <p>PostIT &copy; Phil Newman - 2017</p>
+</div>
+
+</body>
+
+</html>
