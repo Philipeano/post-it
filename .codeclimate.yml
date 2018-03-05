@@ -1,0 +1,26 @@
+engines:
+ duplication:
+   enabled: true
+   config:
+     languages:
+     - javascript:
+   checks:
+     Similar code:
+       enabled: false
+ eslint:
+   enabled: true
+   checks:
+     import/extensions:
+       enabled: false
+     no-multiple-empty-lines:
+       enabled: true
+     linebreak-style:
+       enabled: true
+exclude_paths:
+- "template/"
+- "client/"
+- "server/dist/"
+- "server/test/"
+ratings:
+  paths:
+  - "server/**/*"
